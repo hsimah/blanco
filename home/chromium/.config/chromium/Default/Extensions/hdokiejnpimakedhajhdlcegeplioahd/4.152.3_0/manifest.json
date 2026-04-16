@@ -1,0 +1,61 @@
+{
+   "action": {
+      "default_icon": {
+         "19": "images/iconset2/19x19_Gray.png",
+         "38": "images/iconset2/19x19_Gray_2x.png"
+      },
+      "default_popup": "webclient-extension-toolbar.html",
+      "default_title": "LastPass"
+   },
+   "author": "LastPass",
+   "background": {
+      "service_worker": "background-redux-new.js"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "exclude_matches": [ "https://cis.corp.com/spl/cis.jsp", "https://lastpass.com/extension-toolbar-messages" ],
+      "js": [ "web-client-content-script.js" ],
+      "matches": [ "http://*/*", "https://*/*" ]
+   }, {
+      "js": [ "vault-sync-document-start.js" ],
+      "matches": [ "https://lastpass.com/vault/*", "https://lastpass.com/migrate/*" ],
+      "run_at": "document_start"
+   }, {
+      "all_frames": true,
+      "js": [ "web-client-web-federated-login-document-start.js" ],
+      "matches": [ "https://lastpass.com/*", "https://backoffice.lastpass.com/*" ],
+      "run_at": "document_start"
+   } ],
+   "content_security_policy": {
+      "extension_pages": "default-src 'self'; frame-src 'self' https://lastpass.com https://lastpass.eu; connect-src 'self' https://lastpass.com https://login.microsoftonline.com https://graph.microsoft.com https://login.microsoftonline.us https://graph.microsoft.us https://*.oktapreview.com https://*.okta.com https://*.okta-emea.com https://*.pingone.com https://*.pingone.ca https://*.pingone.eu https://*.pingone.asia https://accounts.google.com https://www.googleapis.com https://openidconnect.googleapis.com https://content.googleapis.com https://*.onelogin.com https://accounts.lastpass.com wss://*.lastpass.com wss://*.lastpass.eu https://*.lastpass.com https://lastpass.eu https://browser-intake-datadoghq.com https://api.pwnedpasswords.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline';"
+   },
+   "default_locale": "en",
+   "description": "__MSG_appDesc__",
+   "host_permissions": [ "http://*/*", "https://*/*" ],
+   "icons": {
+      "128": "images/icon-128.png",
+      "256": "images/icon-256.png",
+      "48": "images/icon-48.png",
+      "512": "images/icon-512.png",
+      "64": "images/icon-64.png",
+      "96": "images/icon-96.png"
+   },
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCiL9y2jziKp5kjb13uYG1bAXsuemUKAYUAwR/N9qTuhMIuly02Ecm63dOkn+M2r26IGfDE/lbPv/dB/W+d34pqGo5uJJY+Omt9t3xsIuz7mQwuvF1H5ozj0OHok5XDFRaBIfPa06RhQw3M7sSZJvQ+qqD3+dr0aLX+mvi0LQ11uQIDAQAB",
+   "manifest_version": 3,
+   "name": "LastPass: Free Password Manager",
+   "omnibox": {
+      "keyword": "lp"
+   },
+   "optional_permissions": [ "privacy", "clipboardWrite" ],
+   "options_ui": {
+      "open_in_tab": true,
+      "page": "preferences.html"
+   },
+   "permissions": [ "scripting", "tabs", "notifications", "contextMenus", "storage", "unlimitedStorage", "webNavigation", "webRequest", "webRequestAuthProvider", "offscreen", "alarms" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "4.152.3",
+   "web_accessible_resources": [ {
+      "matches": [ "http://*/*", "https://*/*" ],
+      "resources": [ "webclient-infield.html", "webclient-tab-prompt.html", "first-password-loggedin-detector.js", "extension-pendo.html" ]
+   } ]
+}

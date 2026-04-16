@@ -1,0 +1,194 @@
+<div class="mainView">
+  <div class="siteTypeahead">
+    <label for="siteDialogURL" class="label first">URL:</label>
+    <input
+      id="siteDialogURL"
+      class="dialogInput"
+      type="text"
+      spellcheck="false"
+      data-field-name="URL"
+    />
+  </div>
+  <div class="twoColumn leftColumn">
+    <label for="siteDialogName" class="label">Name:</label>
+    <input
+      id="siteDialogName"
+      dialogField="name"
+      class="dialogInput"
+      type="text"
+      data-field-name="Name"
+    />
+  </div>
+  <div class="twoColumn rightColumn">
+    <div>
+      <label for="siteDialogGroup" class="label">Folder:</label>
+      <input
+        id="siteDialogGroup"
+        class="dialogInput typeaheadDropdown"
+        dialogField="group"
+        type="text"
+        data-field-name="Folder"
+      />
+    </div>
+  </div>
+  <div class="twoColumn leftColumn hideSaveAll">
+    <label for="siteDialogUsername" class="label"
+      >Username:<button
+        class="history iconButton"
+        id="siteDialogUsernameHistory"
+        title="Show Username History"
+      ></button
+    ></label>
+    <input
+      id="siteDialogUsername"
+      dialogField="unencryptedUsername"
+      class="dialogInput"
+      type="text"
+      spellcheck="false"
+      autocomplete="off"
+      data-field-name="Username"
+    />
+  </div>
+  <div class="twoColumn rightColumn hideSaveAll">
+    <div class="relative">
+      <label for="siteDialogPassword" class="label"
+        >Password:<button
+          class="history iconButton"
+          id="siteDialogPasswordHistory"
+          title="Show Password History"
+        ></button
+      ></label>
+      <input
+        id="siteDialogPassword"
+        dialogField="password"
+        class="dialogInput passwordToggle"
+        spellcheck="false"
+        type="password"
+        autocomplete="off"
+        data-field-name="Password"
+      />
+      <div id="autoChangePassword">Auto Change Password</div>
+    </div>
+  </div>
+  <div class="oneColumn hideSaveAll" id="totpBlock">
+    <div class="relative">
+      <label for="siteDialogTotp" class="label"
+        >One-time passcode:
+        <button
+          class="deleteTotpSecret iconButton"
+          id="siteDialogDeleteTotpSecret"
+          title="Stop showing one-time passcodes"
+        ></button>
+        <button
+          class="addTotpSecret iconButton"
+          id="siteDialogAddTotpSecret"
+          title="Enter your secret key to show one-time passcodes"
+          style="display:none"
+        >
+          Enter your secret key
+        </button>
+      </label>
+      <input
+        id="siteDialogTotpCode"
+        dialogField="totpCode"
+        class="dialogInput totpToggle"
+        spellcheck="false"
+        type="password"
+        autocomplete="off"
+      />
+      <input
+        id="siteDialogTotp"
+        dialogField="totp"
+        class="dialogInput"
+        type="text"
+        autocomplete="off"
+        style="display:none"
+      />
+    </div>
+  </div>
+  <div class="clear"></div>
+  <label aria-label="Fields" class="label fieldsLabel">Fields:</label>
+  <table class="saveAllFields"></table>
+  <label for="siteDialogNotes" class="label"
+    >Notes:<button
+      class="history iconButton"
+      id="siteDialogNoteHistory"
+      title="Note History"
+    ></button
+  ></label>
+  <textarea
+    id="siteDialogNotes"
+    dialogField="extra"
+    class="dialogInput responsiveTextArea"
+    data-field-name="Notes"
+  ></textarea>
+  <div class="advancedOptionsContainer">
+    <button class="label advancedOptionsLabel">Advanced Settings:</button>
+    <div class="advancedSiteSettings advancedOptions">
+      <input
+        id="siteDialogPasswordReprompt"
+        class="checkbox"
+        dialogField="pwprotect"
+        type="checkbox"
+        data-field-name="PasswordReprompt"
+      />
+      <label for="siteDialogPasswordReprompt">Require Password Reprompt</label>
+      <input
+        id="siteDialogAutologin"
+        class="checkbox"
+        dialogField="autologin"
+        type="checkbox"
+        data-field-name="AutoLogin"
+      />
+      <label for="siteDialogAutologin">AutoLogin</label>
+      <input
+        id="siteDialogDisableAutofill"
+        class="checkbox"
+        dialogField="never_autofill"
+        type="checkbox"
+        data-field-name="DisableAutofill"
+      />
+      <label for="siteDialogDisableAutofill">Disable AutoFill</label>
+    </div>
+  </div>
+  <div id="itemIdContainer">
+    <span id="itemIdLabel">Item ID:</span>
+    <span id="itemIdWrapper"></span>
+    <span id="itemIdIconWrapper">
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g clipPath="url(#clip0_216_22066)">
+          <path
+            d="M16 9.33331C14.6815 9.33331 13.3925 9.72431 12.2962 10.4568C11.1999 11.1894 10.3454 12.2306 9.84082 13.4488C9.33623 14.6669 9.20421 16.0074 9.46144 17.3006C9.71868 18.5938 10.3536 19.7817 11.286 20.714C12.2183 21.6464 13.4062 22.2813 14.6994 22.5385C15.9926 22.7958 17.3331 22.6638 18.5512 22.1592C19.7694 21.6546 20.8106 20.8001 21.5431 19.7038C22.2757 18.6075 22.6667 17.3185 22.6667 16C22.6667 14.2319 21.9643 12.5362 20.7141 11.2859C19.4638 10.0357 17.7681 9.33331 16 9.33331V9.33331ZM16.1389 12.1111C16.3037 12.1111 16.4648 12.16 16.6019 12.2515C16.7389 12.3431 16.8457 12.4732 16.9088 12.6255C16.9719 12.7778 16.9884 12.9453 16.9562 13.107C16.9241 13.2687 16.8447 13.4171 16.7282 13.5337C16.6116 13.6502 16.4631 13.7296 16.3015 13.7617C16.1398 13.7939 15.9723 13.7774 15.82 13.7143C15.6677 13.6513 15.5376 13.5444 15.446 13.4074C15.3544 13.2704 15.3056 13.1092 15.3056 12.9444C15.3056 12.7234 15.3934 12.5114 15.5496 12.3552C15.7059 12.1989 15.9179 12.1111 16.1389 12.1111ZM17.3889 19.6111H15.1667C15.0193 19.6111 14.878 19.5526 14.7738 19.4484C14.6697 19.3442 14.6111 19.2029 14.6111 19.0555C14.6111 18.9082 14.6697 18.7669 14.7738 18.6627C14.878 18.5585 15.0193 18.5 15.1667 18.5H15.5833C15.6202 18.5 15.6555 18.4853 15.6816 18.4593C15.7076 18.4333 15.7222 18.3979 15.7222 18.3611V15.8611C15.7222 15.8243 15.7076 15.7889 15.6816 15.7629C15.6555 15.7368 15.6202 15.7222 15.5833 15.7222H15.1667C15.0193 15.7222 14.878 15.6637 14.7738 15.5595C14.6697 15.4553 14.6111 15.314 14.6111 15.1666C14.6111 15.0193 14.6697 14.878 14.7738 14.7738C14.878 14.6696 15.0193 14.6111 15.1667 14.6111H15.7222C16.0169 14.6111 16.2995 14.7282 16.5079 14.9365C16.7163 15.1449 16.8333 15.4275 16.8333 15.7222V18.3611C16.8333 18.3979 16.848 18.4333 16.874 18.4593C16.9001 18.4853 16.9354 18.5 16.9722 18.5H17.3889C17.5362 18.5 17.6776 18.5585 17.7817 18.6627C17.8859 18.7669 17.9445 18.9082 17.9445 19.0555C17.9445 19.2029 17.8859 19.3442 17.7817 19.4484C17.6776 19.5526 17.5362 19.6111 17.3889 19.6111Z"
+            fill="#8E8E8E"
+          />
+        </g>
+        <defs>
+          <clipPath id="clip0_216_22066">
+            <rect width="32" height="32" rx="4" fill="white" />
+          </clipPath>
+        </defs>
+      </svg>
+    </span>
+  </div>
+</div>
+
+<div class="formFieldsView">
+  <table class="fieldsTable">
+    <thead>
+      <tr class="settingsHeader">
+        <th>Field</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody class="fieldsElement"></tbody>
+  </table>
+  <button class="nbtn rbtn btn_mini addButton addFormFieldButton">
+    Add Form Field
+  </button>
+</div>

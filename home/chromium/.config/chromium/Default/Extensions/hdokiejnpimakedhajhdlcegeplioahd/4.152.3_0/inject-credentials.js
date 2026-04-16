@@ -1,0 +1,1 @@
+window.addEventListener("load",(function(){const e=document.createElement("script"),n="undefined"!==typeof chrome?chrome:browser;e.src=n.runtime.getURL("credentials-library.js"),e.defer=!0,e.onload=function(){e.remove()},document.head.appendChild(e)}));
