@@ -13,6 +13,21 @@ home/
   chromium/.config/chromium/
 ```
 
+## Adding a new package
+
+`add-package.sh` moves an existing `~/.config/<package>` into the repo, stows it, and stages it for commit:
+
+```bash
+./add-package.sh <package-name>
+```
+
+Then review the staged files and commit:
+
+```bash
+git diff --cached
+git commit -m "Add <package-name> config"
+```
+
 ## Usage
 
 Install a package by stowing it into `$HOME`:
