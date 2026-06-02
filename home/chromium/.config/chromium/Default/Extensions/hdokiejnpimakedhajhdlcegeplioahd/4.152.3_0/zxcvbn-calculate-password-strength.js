@@ -1,1 +1,0 @@
-runtime.onMessage.addListener(((e,a,t)=>{if("offscreen-zxcvbn-doc"!==e.target||"calculate-password-strength"!==e.type)return;t(challengegetstrength(e.data.username,e.data.password,e.data.passwordStrengthHardeningEnabled))}));

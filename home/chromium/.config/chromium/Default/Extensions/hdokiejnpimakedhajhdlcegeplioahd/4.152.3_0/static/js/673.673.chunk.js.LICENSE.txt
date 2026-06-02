@@ -1,5 +1,0 @@
-/**
- * @file {@link http://asmjs.org Asm.js} implementation of the {@link https://en.wikipedia.org/wiki/Advanced_Encryption_Standard Advanced Encryption Standard}.
- * @author Artem S Vybornov <vybornov@gmail.com>
- * @license MIT
- */
