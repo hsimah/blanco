@@ -1,52 +1,61 @@
 # blanco
-A repository of configuration for my daily driver machine, managed with [GNU Stow](https://www.gnu.org/software/stow/).
+
+A repository of configuration for my daily drivers, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## Structure
 
-Packages live under `home/`, each mirroring the path they should occupy relative to `$HOME`:
+Configs are split by machine. Each tool is its own stow package mirroring `$HOME`:
 
 ```
-home/
+home/           # CachyOS personal laptop
   fish/.config/fish/
   kitty/.config/kitty/
   micro/.config/micro/
-  chromium/.config/chromium/
+
+work/           # Fedora work laptop
+  fish/.config/fish/
+  kitty/.config/kitty/
+  micro/.config/micro/
+  niri/.config/niri/
+  noctalia/.config/noctalia/
 ```
+
+## Usage
+
+Run stow from the environment directory:
+
+```bash
+# Deploy packages
+cd ~/.dotfiles/work && stow --target=$HOME fish kitty micro niri noctalia
+
+# Pull live config edits into the repo
+stow --target=$HOME --adopt fish
+
+# Remove symlinks
+stow --target=$HOME --delete fish
+```
+
+After stowing, live files are symlinks to the repo — edits are in-place.
 
 ## Adding a new package
 
-`add-package.sh` moves an existing `~/.config/<package>` into the repo, stows it, and stages it for commit:
+`add-package.sh` moves `~/.config/<package>` into `home/` and stows it:
 
 ```bash
 ./add-package.sh <package-name>
 ```
 
-Then review the staged files and commit:
-
-```bash
-git diff --cached
-git commit -m "Add <package-name> config"
-```
-
-## Usage
-
-Install a package by stowing it into `$HOME`:
-
-```bash
-stow -Rv -t ~ fish
-```
-
-Remove a package:
-
-```bash
-stow -Rv -t ~ --delete fish
-```
+For work, manually create `work/[tool]/.config/[tool]/`, copy files in, then stow.
 
 ## Packages
 
-| Package | Config location |
-|---------|----------------|
-| fish | `~/.config/fish/` |
-| kitty | `~/.config/kitty/` |
-| micro | `~/.config/micro/` |
-| chromium | `~/.config/chromium/` |
+| Environment | Package | Config location |
+|-------------|---------|-----------------|
+| home | fish | `~/.config/fish/` |
+| home | kitty | `~/.config/kitty/` |
+| home | micro | `~/.config/micro/` |
+| work | fish | `~/.config/fish/` |
+| work | kitty | `~/.config/kitty/` |
+| work | micro | `~/.config/micro/` |
+| work | niri | `~/.config/niri/` |
+| work | noctalia | `~/.config/noctalia/` |

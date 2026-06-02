@@ -36,6 +36,12 @@ Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
 - **home** (CachyOS): fish sources CachyOS base config, custom fish prompt functions (calavera, fjord, space-needle, viking), blanco-claude micro colorscheme, kitty terminal
 - **work** (Fedora + niri): fish sets `SSH_AUTH_SOCK` for systemd ssh-agent, kitty with DankMaterialShell theme, niri config with DMS includes (`dms/*.kdl`), noctalia bar
 
+## Rules
+
+- **Commit messages**: Always prefix with `[tool-name]`, e.g. `[fish] add custom git prompt`. For multi-tool or repo-wide changes use `[dotfiles]`.
+- **Comments in config files**: Keep to an absolute minimum. Communicate context in conversation and commit messages, not inline comments.
+- **README.md**: Review and update on every change — keep the package table and structure docs current.
+
 ## Adding a New Package
 
 `add-package.sh` moves `~/.config/<name>` into `home/` and stows it (home machine only). For work, manually create `work/[tool]/.config/[tool]/`, copy files in, then `stow --target=$HOME [tool]`.
