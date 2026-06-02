@@ -38,7 +38,7 @@ Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
 
 ## Rules
 
-- **Commit messages**: Always prefix with `[tool-name]`, e.g. `[fish] add custom git prompt`. For multi-tool or repo-wide changes use `[dotfiles]`.
+- **Commit messages**: Always prefix with `[tool-name]`, e.g. `[fish] add custom git prompt`. For multi-tool include all tools, e.g. `[niri][noctalia] add screen recorder`. For repo-wide changes use `[dotfiles]`.
 - **Comments in config files**: Keep to an absolute minimum. Communicate context in conversation and commit messages, not inline comments.
 - **README.md**: Review and update on every change — keep the package table and structure docs current.
 
