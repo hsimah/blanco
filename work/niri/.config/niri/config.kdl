@@ -110,20 +110,17 @@ input {
     scale 1.25
 }
 
-// ===
+// [work]
+output "Dell Inc. DELL P3222QE D135T83" {
+    scale 1.25
+    position x=1646 y=0
+}
 
-  output "Dell Inc. DELL P3222QE D135T83" {
-      scale 1.25
-      position x=0 y=0
-  }
-
-  output "Samsung Display Corp. 0x419F Unknown" {
-      scale 1.75
-      position x=210 y=0
-  }
-
-
-
+// [internal]
+output "Samsung Display Corp. 0x419F Unknown" {
+    scale 1.75
+    position x=0 y=0
+}
 
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
@@ -651,9 +648,9 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 }
 
-include "dms/cursor.kdl"
+//include "dms/cursor.kdl"
 
-include "dms/outputs.kdl"
+//include "dms/outputs.kdl"
 
 spawn-at-startup "qs" "-c" "noctalia-shell"
 spawn-at-startup "sh" "-c" "swayidle -w timeout 300 'qs -c noctalia-shell ipc call lockScreen lock' timeout 600 'niri msg action power-off-monitors'"
