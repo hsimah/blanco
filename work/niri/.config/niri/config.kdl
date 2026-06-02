@@ -3,7 +3,12 @@
 // Check the wiki for a full description of the configuration:
 // https://niri-wm.github.io/niri/Configuration:-Introduction
 
-// Input device configuration.
+//  _                   _       
+// (_)_ __  _ __  _   _| |_ ___ 
+// | | '_ \| '_ \| | | | __/ __|
+// | | | | | |_) | |_| | |_\__ \
+// |_|_| |_| .__/ \__,_|\__|___/
+//         |_|                  
 // Find the full list of options on the wiki:
 // https://niri-wm.github.io/niri/Configuration:-Input
 input {
@@ -69,57 +74,36 @@ input {
     // focus-follows-mouse max-scroll-amount="0%"
 }
 
+//              _               _       
+//   ___  _   _| |_ _ __  _   _| |_ ___ 
+//  / _ \| | | | __| '_ \| | | | __/ __|
+// | (_) | |_| | |_| |_) | |_| | |_\__ \
+//  \___/ \__,_|\__| .__/ \__,_|\__|___/
+//                 |_|                  
+
 // You can configure outputs by their name, which you can find
 // by running `niri msg outputs` while inside a niri instance.
 // The built-in laptop monitor is usually called "eDP-1".
 // Find more information on the wiki:
 // https://niri-wm.github.io/niri/Configuration:-Outputs
 // Remember to uncomment the node by removing "/-"!
-/-output "eDP-1" {
-    // Uncomment this line to disable this output.
-    // off
 
-    // Resolution and, optionally, refresh rate of the output.
-    // The format is "<width>x<height>" or "<width>x<height>@<refresh rate>".
-    // If the refresh rate is omitted, niri will pick the highest refresh rate
-    // for the resolution.
-    // If the mode is omitted altogether or is invalid, niri will pick one automatically.
-    // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    mode "1920x1080@120.030"
-
-    // You can use integer or fractional scale, for example use 1.5 for 150% scale.
+// [internal] Thinkpad; internal; positioned central
+output "Samsung Display Corp. 0x419F Unknown" {
     scale 1.75
-
-    // Transform allows to rotate the output counter-clockwise, valid values are:
-    // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
-    transform "normal"
-
-    // Position of the output in the global coordinate space.
-    // This affects directional monitor actions like "focus-monitor-left", and cursor movement.
-    // The cursor can only move between directly adjacent outputs.
-    // Output scale and rotation has to be taken into account for positioning:
-    // outputs are sized in logical, or scaled, pixels.
-    // For example, a 3840×2160 output with scale 2.0 will have a logical size of 1920×1080,
-    // so to put another output directly adjacent to it on the right, set its x to 1920.
-    // If the position is unset or results in an overlap, the output is instead placed
-    // automatically.
+    position x=0 y=0
 }
 
-/-output "DP-1" {
-    position x=1280 y=0
-    scale 1.25
-}
-
-// [work]
+// [work] Dell; landscape; positioned right of laptop
 output "Dell Inc. DELL P3222QE D135T83" {
     scale 1.25
     position x=1646 y=0
 }
 
-// [internal]
-output "Samsung Display Corp. 0x419F Unknown" {
-    scale 1.75
-    position x=0 y=0
+// [home] Dell; landscape; positioned left of laptop
+/-output "Dell ..." {
+	scale 1.25
+	position x=-2048 y=0
 }
 
 // Settings that influence how windows are positioned and sized.
@@ -648,9 +632,7 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 }
 
-//include "dms/cursor.kdl"
-
-//include "dms/outputs.kdl"
-
+// [shell] start noctalia shell
 spawn-at-startup "qs" "-c" "noctalia-shell"
-spawn-at-startup "sh" "-c" "swayidle -w timeout 300 'qs -c noctalia-shell ipc call lockScreen lock' timeout 600 'niri msg action power-off-monitors'"
+// [security] lock screen at 180s; power off monitors at 300s
+spawn-at-startup "sh" "-c" "swayidle -w timeout 180 'qs -c noctalia-shell ipc call lockScreen lock' timeout 300 'niri msg action power-off-monitors'"
