@@ -8,10 +8,10 @@ Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland composito
 
 | | Personal | Work |
 |---|---|---|
-| Model | ASUS ROG Zephyrus G14 (2024, GA403UI) | — |
-| CPU | AMD Ryzen 9 8945HS (8C/16T) | — |
-| GPU | Radeon 780M (iGPU) + NVIDIA RTX 4070 Mobile | — |
-| Memory | 32 GB | — |
+| Model | ASUS ROG Zephyrus G14 (2024, GA403UI) | Lenovo ThinkPad X1 Carbon Gen 13 |
+| CPU | AMD Ryzen 9 8945HS (8C/16T) | Intel Core Ultra 7 268V (8C/8T) |
+| GPU | Radeon 780M (iGPU) + NVIDIA RTX 4070 Mobile | Intel Arc Graphics 140V (iGPU) |
+| Memory | 32 GB | 32 GB |
 | Distro | CachyOS | Fedora |
 
 ## Structure
