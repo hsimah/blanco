@@ -4,12 +4,12 @@ A repository of configuration for my daily drivers, managed with [GNU Stow](http
 
 ## Structure
 
-Each tool is its own stow package mirroring `$HOME`. Two trees exist: `work/`
+Each tool is its own stow package mirroring `$HOME`. Two trees exist: `configs/`
 holds the shared packages stowed on every machine, and `home/` is reserved for
 CachyOS-specific overrides (currently none — everything is shared).
 
 ```
-work/           # shared, stowed on every machine
+configs/        # shared, stowed on every machine
   fish/.config/fish/
   fuzzel/.config/fuzzel/
   kitty/.config/kitty/
@@ -25,34 +25,34 @@ config only when present (`test -f … and source …`).
 
 ## Usage
 
-Run stow from the environment directory:
+Stow from the repo root with `--dir`:
 
 ```bash
 # Deploy packages
-cd ~/.dotfiles/work && stow --target=$HOME fish fuzzel kitty micro niri noctalia
+stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
 
 # Pull live config edits into the repo
-stow --target=$HOME --adopt fish
+stow --dir=configs --target=$HOME --adopt fish
 
 # Remove symlinks
-stow --target=$HOME --delete fish
+stow --dir=configs --target=$HOME --delete fish
 ```
 
 After stowing, live files are symlinks to the repo — edits are in-place.
 
 ## Adding a new package
 
-`add-package.sh` moves `~/.config/<package>` into `home/` and stows it:
+`add-package.sh` moves `~/.config/<package>` into `configs/` and stows it:
 
 ```bash
 ./add-package.sh <package-name>
 ```
 
-For work, manually create `work/[tool]/.config/[tool]/`, copy files in, then stow.
+To add a CachyOS-only override instead, create `home/[tool]/.config/[tool]/` by hand and stow with `--dir=home`.
 
 ## Packages
 
-All packages are shared — they live in `work/` and are stowed on every machine:
+All packages are shared — they live in `configs/` and are stowed on every machine:
 
 | Package | Config location |
 |---------|-----------------|
@@ -64,5 +64,5 @@ All packages are shared — they live in `work/` and are stowed on every machine
 | noctalia | `~/.config/noctalia/` |
 
 ```bash
-stow --dir=work --target=$HOME fish fuzzel kitty micro niri noctalia
+stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
 ```

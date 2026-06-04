@@ -7,8 +7,9 @@ if [[ $# -lt 1 ]]; then
 fi
 
 PACKAGE="$1"
+REPO="$(cd "$(dirname "$0")" && pwd)"
 SOURCE="$HOME/.config/$PACKAGE"
-DEST="$(dirname "$0")/home/$PACKAGE/.config/$PACKAGE"
+DEST="$REPO/configs/$PACKAGE/.config/$PACKAGE"
 
 if [[ ! -e "$SOURCE" ]]; then
     echo "Error: $SOURCE does not exist"
@@ -19,7 +20,7 @@ mkdir -p "$(dirname "$DEST")"
 mv "$SOURCE" "$DEST"
 echo "Moved $SOURCE → $DEST"
 
-stow -Rv -t ~ "$PACKAGE"
+stow --dir="$REPO/configs" --target="$HOME" -Rv "$PACKAGE"
 
-git -C "$(dirname "$0")" add "./home/$PACKAGE"
-echo "Staged home/$PACKAGE — review with 'git diff --cached' then commit"
+git -C "$REPO" add "./configs/$PACKAGE"
+echo "Staged configs/$PACKAGE — review with 'git diff --cached' then commit"

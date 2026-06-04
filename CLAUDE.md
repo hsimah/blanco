@@ -4,21 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-GNU Stow dotfiles repo (`blanco`) for two machines (CachyOS personal laptop, Fedora work laptop), both running niri as the Wayland compositor. All tool packages currently live in `work/` and are stowed on every machine; `home/` is reserved for CachyOS-specific overrides and currently holds none.
+GNU Stow dotfiles repo (`blanco`) for two machines (CachyOS personal laptop, Fedora work laptop), both running niri as the Wayland compositor. All tool packages currently live in `configs/` and are stowed on every machine; `home/` is reserved for CachyOS-specific overrides and currently holds none.
 
 ## Stow Commands
 
-Each environment directory contains per-tool stow packages. Run stow from inside the environment directory:
+Per-tool stow packages live under `configs/`. Stow from the repo root with `--dir`:
 
 ```bash
-# Deploy packages (from home/ or work/)
-cd ~/.dotfiles/work && stow --target=$HOME fish fuzzel kitty micro niri noctalia
+# Deploy packages
+stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
 
 # Pull live config changes into the repo
-stow --target=$HOME --adopt fish
+stow --dir=configs --target=$HOME --adopt fish
 
 # Remove symlinks
-stow --target=$HOME --delete fish
+stow --dir=configs --target=$HOME --delete fish
 ```
 
 After `--adopt` or initial `stow`, live files become symlinks to the repo — edits are in-place from then on.
@@ -26,14 +26,15 @@ After `--adopt` or initial `stow`, live files become symlinks to the repo — ed
 ## Package Structure
 
 ```
-{home,work}/[tool]/.config/[tool]/...
+configs/[tool]/.config/[tool]/...    # shared on every machine
+home/[tool]/.config/[tool]/...       # CachyOS-only overrides (currently none)
 ```
 
 Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
 
 ## Environment Differences
 
-All packages (fish, fuzzel, kitty, micro, niri, noctalia) are shared from `work/` and stowed on every machine. Portability is handled inside the configs rather than by per-machine packages:
+All packages (fish, fuzzel, kitty, micro, niri, noctalia) are shared from `configs/` and stowed on every machine. Portability is handled inside the configs rather than by per-machine packages:
 
 - **fish**: `config.fish` sources the CachyOS base config only when present (`test -f … and source …`) and sets `SSH_AUTH_SOCK` for the systemd ssh-agent; custom prompt functions (calavera, fjord, space-needle, viking) ship in the package.
 - **kitty**: Slate theme via `include current-theme.conf`.
@@ -47,4 +48,4 @@ All packages (fish, fuzzel, kitty, micro, niri, noctalia) are shared from `work/
 
 ## Adding a New Package
 
-Shared packages live under `work/`: create `work/[tool]/.config/[tool]/`, copy files in, then `stow --dir=work --target=$HOME [tool]`. Only add to `home/` when a package genuinely needs to differ on CachyOS. (`add-package.sh` predates the all-shared layout and moves `~/.config/<name>` into `home/`.)
+Shared packages live under `configs/`: `add-package.sh <name>` moves `~/.config/<name>` into `configs/` and stows it. Only add to `home/` when a package genuinely needs to differ on CachyOS — create `home/[tool]/.config/[tool]/` by hand and stow with `--dir=home`.
