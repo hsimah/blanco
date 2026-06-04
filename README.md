@@ -16,18 +16,22 @@ Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland composito
 
 ## Structure
 
-Each tool is its own stow package mirroring `$HOME`, all under `configs/` and
-stowed on every machine. Everything is shared; there are no per-machine
-overrides at the moment.
+Each tool is its own stow package mirroring `$HOME`, stowed on every machine.
+Everything is shared; there are no per-machine overrides at the moment. The
+`configs/` tree holds `~/.config` payloads; the `local/` tree holds `~/.local`
+payloads under the same per-tool layout.
 
 ```
-configs/        # shared, stowed on every machine
+configs/        # ~/.config payloads, stowed on every machine
   fish/.config/fish/
   fuzzel/.config/fuzzel/
   kitty/.config/kitty/
   micro/.config/micro/
   niri/.config/niri/
   noctalia/.config/noctalia/
+
+local/          # ~/.local payloads
+  micro/.local/share/applications/micro.desktop
 ```
 
 `fish/config.fish` is portable across machines: it sources the CachyOS base
@@ -40,6 +44,7 @@ Stow from the repo root with `--dir`:
 ```bash
 # Deploy packages
 stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
+stow --dir=local --target=$HOME micro
 
 # Pull live config edits into the repo
 stow --dir=configs --target=$HOME --adopt fish
@@ -73,6 +78,11 @@ All packages are shared — they live in `configs/` and are stowed on every mach
 | niri | `~/.config/niri/` |
 | noctalia | `~/.config/noctalia/` |
 
+micro also ships a desktop launcher (`~/.local/share/applications/micro.desktop`,
+`kitty micro %F`) via the `local/` tree, so file managers open text files in
+micro inside kitty.
+
 ```bash
 stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
+stow --dir=local --target=$HOME micro
 ```
