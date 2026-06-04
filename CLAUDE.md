@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-GNU Stow dotfiles repo (`blanco`) for two machines (CachyOS personal laptop, Fedora work laptop), both running niri as the Wayland compositor. All tool packages currently live in `configs/` and are stowed on every machine; `home/` is reserved for CachyOS-specific overrides and currently holds none.
+GNU Stow dotfiles repo (`blanco`) for two machines (CachyOS personal laptop, Fedora work laptop), both running niri as the Wayland compositor. All tool packages live in `configs/` and are stowed on every machine. Everything is shared; there are no per-machine overrides at the moment.
 
 ## Stow Commands
 
@@ -27,7 +27,6 @@ After `--adopt` or initial `stow`, live files become symlinks to the repo — ed
 
 ```
 configs/[tool]/.config/[tool]/...    # shared on every machine
-home/[tool]/.config/[tool]/...       # CachyOS-only overrides (currently none)
 ```
 
 Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
@@ -48,4 +47,4 @@ All packages (fish, fuzzel, kitty, micro, niri, noctalia) are shared from `confi
 
 ## Adding a New Package
 
-Shared packages live under `configs/`: `add-package.sh <name>` moves `~/.config/<name>` into `configs/` and stows it. Only add to `home/` when a package genuinely needs to differ on CachyOS — create `home/[tool]/.config/[tool]/` by hand and stow with `--dir=home`.
+Shared packages live under `configs/`: `add-package.sh <name>` moves `~/.config/<name>` into `configs/` and stows it. If a package ever needs to differ per machine, add a separate tree (e.g. `home/`) and stow it with `--dir`.

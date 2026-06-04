@@ -4,9 +4,9 @@ A repository of configuration for my daily drivers, managed with [GNU Stow](http
 
 ## Structure
 
-Each tool is its own stow package mirroring `$HOME`. Two trees exist: `configs/`
-holds the shared packages stowed on every machine, and `home/` is reserved for
-CachyOS-specific overrides (currently none — everything is shared).
+Each tool is its own stow package mirroring `$HOME`, all under `configs/` and
+stowed on every machine. Everything is shared; there are no per-machine
+overrides at the moment.
 
 ```
 configs/        # shared, stowed on every machine
@@ -16,8 +16,6 @@ configs/        # shared, stowed on every machine
   micro/.config/micro/
   niri/.config/niri/
   noctalia/.config/noctalia/
-
-home/           # CachyOS-only overrides (currently none)
 ```
 
 `fish/config.fish` is portable across machines: it sources the CachyOS base
@@ -48,7 +46,7 @@ After stowing, live files are symlinks to the repo — edits are in-place.
 ./add-package.sh <package-name>
 ```
 
-To add a CachyOS-only override instead, create `home/[tool]/.config/[tool]/` by hand and stow with `--dir=home`.
+If a machine ever needs to diverge, add a separate tree (e.g. `home/`) and stow it with `--dir`.
 
 ## Packages
 
