@@ -4,10 +4,12 @@ A repository of configuration for my daily drivers, managed with [GNU Stow](http
 
 ## Structure
 
-Configs are split by machine. Each tool is its own stow package mirroring `$HOME`:
+Each tool is its own stow package mirroring `$HOME`. Two trees exist: `work/`
+holds the shared packages stowed on every machine, and `home/` is reserved for
+CachyOS-specific overrides (currently none — everything is shared).
 
 ```
-home/           # CachyOS personal laptop
+work/           # shared, stowed on every machine
   fish/.config/fish/
   fuzzel/.config/fuzzel/
   kitty/.config/kitty/
@@ -15,14 +17,11 @@ home/           # CachyOS personal laptop
   niri/.config/niri/
   noctalia/.config/noctalia/
 
-work/           # Fedora work laptop
-  fish/.config/fish/
-  fuzzel/.config/fuzzel/
-  kitty/.config/kitty/
-  micro/.config/micro/
-  niri/.config/niri/
-  noctalia/.config/noctalia/
+home/           # CachyOS-only overrides (currently none)
 ```
+
+`fish/config.fish` is portable across machines: it sources the CachyOS base
+config only when present (`test -f … and source …`).
 
 ## Usage
 
@@ -53,17 +52,17 @@ For work, manually create `work/[tool]/.config/[tool]/`, copy files in, then sto
 
 ## Packages
 
-| Environment | Package | Config location |
-|-------------|---------|-----------------|
-| home | fish | `~/.config/fish/` |
-| home | fuzzel | `~/.config/fuzzel/` |
-| home | kitty | `~/.config/kitty/` |
-| home | micro | `~/.config/micro/` |
-| home | niri | `~/.config/niri/` |
-| home | noctalia | `~/.config/noctalia/` |
-| work | fish | `~/.config/fish/` |
-| work | fuzzel | `~/.config/fuzzel/` |
-| work | kitty | `~/.config/kitty/` |
-| work | micro | `~/.config/micro/` |
-| work | niri | `~/.config/niri/` |
-| work | noctalia | `~/.config/noctalia/` |
+All packages are shared — they live in `work/` and are stowed on every machine:
+
+| Package | Config location |
+|---------|-----------------|
+| fish | `~/.config/fish/` |
+| fuzzel | `~/.config/fuzzel/` |
+| kitty | `~/.config/kitty/` |
+| micro | `~/.config/micro/` |
+| niri | `~/.config/niri/` |
+| noctalia | `~/.config/noctalia/` |
+
+```bash
+stow --dir=work --target=$HOME fish fuzzel kitty micro niri noctalia
+```

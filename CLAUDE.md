@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-GNU Stow dotfiles repo (`blanco`) split across two machines: `home/` (CachyOS personal laptop) and `work/` (Fedora work laptop). Both use niri as the Wayland compositor.
+GNU Stow dotfiles repo (`blanco`) for two machines (CachyOS personal laptop, Fedora work laptop), both running niri as the Wayland compositor. All tool packages currently live in `work/` and are stowed on every machine; `home/` is reserved for CachyOS-specific overrides and currently holds none.
 
 ## Stow Commands
 
@@ -33,8 +33,11 @@ Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
 
 ## Environment Differences
 
-- **home** (CachyOS): fish sources CachyOS base config and sets `SSH_AUTH_SOCK` for systemd ssh-agent, custom fish prompt functions (calavera, fjord, space-needle, viking), kitty with Slate theme, catppuccin-frappe micro colorscheme, niri compositor, noctalia bar, fuzzel launcher. Tracks the work variants of kitty/micro/niri/noctalia/fuzzel.
-- **work** (Fedora + niri): fish sets `SSH_AUTH_SOCK` for systemd ssh-agent, kitty with Slate theme, fuzzel launcher, noctalia bar
+All packages (fish, fuzzel, kitty, micro, niri, noctalia) are shared from `work/` and stowed on every machine. Portability is handled inside the configs rather than by per-machine packages:
+
+- **fish**: `config.fish` sources the CachyOS base config only when present (`test -f … and source …`) and sets `SSH_AUTH_SOCK` for the systemd ssh-agent; custom prompt functions (calavera, fjord, space-needle, viking) ship in the package.
+- **kitty**: Slate theme via `include current-theme.conf`.
+- **niri**: single `config.kdl`; the most likely candidate for future per-machine divergence (display outputs) via an `include "local.kdl"` split.
 
 ## Rules
 
@@ -44,4 +47,4 @@ Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
 
 ## Adding a New Package
 
-`add-package.sh` moves `~/.config/<name>` into `home/` and stows it (home machine only). For work, manually create `work/[tool]/.config/[tool]/`, copy files in, then `stow --target=$HOME [tool]`.
+Shared packages live under `work/`: create `work/[tool]/.config/[tool]/`, copy files in, then `stow --dir=work --target=$HOME [tool]`. Only add to `home/` when a package genuinely needs to differ on CachyOS. (`add-package.sh` predates the all-shared layout and moves `~/.config/<name>` into `home/`.)
