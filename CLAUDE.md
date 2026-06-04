@@ -12,7 +12,7 @@ Each environment directory contains per-tool stow packages. Run stow from inside
 
 ```bash
 # Deploy packages (from home/ or work/)
-cd ~/.dotfiles/work && stow --target=$HOME fish kitty micro niri noctalia
+cd ~/.dotfiles/work && stow --target=$HOME fish fuzzel kitty micro niri noctalia
 
 # Pull live config changes into the repo
 stow --target=$HOME --adopt fish
@@ -34,7 +34,7 @@ Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
 ## Environment Differences
 
 - **home** (CachyOS): fish sources CachyOS base config, custom fish prompt functions (calavera, fjord, space-needle, viking), blanco-claude micro colorscheme, kitty terminal
-- **work** (Fedora + niri): fish sets `SSH_AUTH_SOCK` for systemd ssh-agent, kitty with DankMaterialShell theme, niri config with DMS includes (`dms/*.kdl`), noctalia bar
+- **work** (Fedora + niri): fish sets `SSH_AUTH_SOCK` for systemd ssh-agent, kitty with Slate theme, fuzzel launcher, noctalia bar
 
 ## Rules
 

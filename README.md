@@ -14,6 +14,7 @@ home/           # CachyOS personal laptop
 
 work/           # Fedora work laptop
   fish/.config/fish/
+  fuzzel/.config/fuzzel/
   kitty/.config/kitty/
   micro/.config/micro/
   niri/.config/niri/
@@ -26,7 +27,7 @@ Run stow from the environment directory:
 
 ```bash
 # Deploy packages
-cd ~/.dotfiles/work && stow --target=$HOME fish kitty micro niri noctalia
+cd ~/.dotfiles/work && stow --target=$HOME fish fuzzel kitty micro niri noctalia
 
 # Pull live config edits into the repo
 stow --target=$HOME --adopt fish
@@ -55,6 +56,7 @@ For work, manually create `work/[tool]/.config/[tool]/`, copy files in, then sto
 | home | kitty | `~/.config/kitty/` |
 | home | micro | `~/.config/micro/` |
 | work | fish | `~/.config/fish/` |
+| work | fuzzel | `~/.config/fuzzel/` |
 | work | kitty | `~/.config/kitty/` |
 | work | micro | `~/.config/micro/` |
 | work | niri | `~/.config/niri/` |
