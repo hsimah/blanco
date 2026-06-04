@@ -2,6 +2,18 @@
 
 A repository of configuration for my daily drivers, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
+## Machines
+
+Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland compositor and share every package from `configs/`.
+
+| | Personal | Work |
+|---|---|---|
+| Model | ASUS ROG Zephyrus G14 (2024, GA403UI) | — |
+| CPU | AMD Ryzen 9 8945HS (8C/16T) | — |
+| GPU | Radeon 780M (iGPU) + NVIDIA RTX 4070 Mobile | — |
+| Memory | 32 GB | — |
+| Distro | CachyOS | Fedora |
+
 ## Structure
 
 Each tool is its own stow package mirroring `$HOME`, all under `configs/` and
