@@ -27,6 +27,7 @@ configs/        # ~/.config payloads, stowed on every machine
   fuzzel/.config/fuzzel/
   kitty/.config/kitty/
   micro/.config/micro/
+  micro/.config/mimeapps.list   # MIME associations (text/* -> micro)
   niri/.config/niri/
   noctalia/.config/noctalia/
 
@@ -78,9 +79,9 @@ All packages are shared — they live in `configs/` and are stowed on every mach
 | niri | `~/.config/niri/` |
 | noctalia | `~/.config/noctalia/` |
 
-micro also ships a desktop launcher (`~/.local/share/applications/micro.desktop`,
-`kitty micro %F`) via the `local/` tree, so file managers open text files in
-micro inside kitty.
+micro also owns the MIME registry (`~/.config/mimeapps.list`) and a desktop
+launcher (`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the
+`local/` tree, so file managers open `text/*` files in micro inside kitty.
 
 ```bash
 stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
