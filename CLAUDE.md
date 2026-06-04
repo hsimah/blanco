@@ -33,7 +33,7 @@ Each tool is its own stow package. The directory tree inside mirrors `$HOME`.
 
 ## Environment Differences
 
-- **home** (CachyOS): fish sources CachyOS base config, custom fish prompt functions (calavera, fjord, space-needle, viking), blanco-claude micro colorscheme, kitty terminal
+- **home** (CachyOS): fish sources CachyOS base config and sets `SSH_AUTH_SOCK` for systemd ssh-agent, custom fish prompt functions (calavera, fjord, space-needle, viking), kitty with Slate theme, catppuccin-frappe micro colorscheme, niri compositor, noctalia bar, fuzzel launcher. Tracks the work variants of kitty/micro/niri/noctalia/fuzzel.
 - **work** (Fedora + niri): fish sets `SSH_AUTH_SOCK` for systemd ssh-agent, kitty with Slate theme, fuzzel launcher, noctalia bar
 
 ## Rules

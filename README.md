@@ -9,8 +9,11 @@ Configs are split by machine. Each tool is its own stow package mirroring `$HOME
 ```
 home/           # CachyOS personal laptop
   fish/.config/fish/
+  fuzzel/.config/fuzzel/
   kitty/.config/kitty/
   micro/.config/micro/
+  niri/.config/niri/
+  noctalia/.config/noctalia/
 
 work/           # Fedora work laptop
   fish/.config/fish/
@@ -53,8 +56,11 @@ For work, manually create `work/[tool]/.config/[tool]/`, copy files in, then sto
 | Environment | Package | Config location |
 |-------------|---------|-----------------|
 | home | fish | `~/.config/fish/` |
+| home | fuzzel | `~/.config/fuzzel/` |
 | home | kitty | `~/.config/kitty/` |
 | home | micro | `~/.config/micro/` |
+| home | niri | `~/.config/niri/` |
+| home | noctalia | `~/.config/noctalia/` |
 | work | fish | `~/.config/fish/` |
 | work | fuzzel | `~/.config/fuzzel/` |
 | work | kitty | `~/.config/kitty/` |
