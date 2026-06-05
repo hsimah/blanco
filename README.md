@@ -66,6 +66,38 @@ After stowing, live files are symlinks to the repo — edits are in-place.
 
 If a machine ever needs to diverge, add a separate tree (e.g. `home/`) and stow it with `--dir`.
 
+## Wipe & reinstall
+
+For migrating to a fresh CachyOS + niri install. `~/.config` is *not* backed up —
+it restores from this repo via stow. The path and package lists live in
+`migrate-manifest.sh`, sourced by both scripts.
+
+```bash
+# Before the wipe (from the repo): copy credentials, dotfiles, and data.
+# Run with sudo if the mount is root-owned (e.g. /mnt); it resolves your real
+# home via $SUDO_USER and chowns the result back.
+sudo ./backup.sh /mnt
+
+# ...wipe, reinstall CachyOS...
+
+# On the fresh box, run restore straight off the drive (no repo on disk yet).
+# Run as your normal user — paru prompts for sudo itself.
+/mnt/backup/restore.sh /mnt/backup
+```
+
+`backup.sh` covers credentials/dotfiles (`.ssh`, `.gnupg`, shell rc, etc.) and
+personal data dirs (`Documents`, `Pictures`, `Music`, …), snapshots
+`pacman -Qqe`, and copies the three migration scripts onto the drive so it is
+self-contained. It uses FAT-safe rsync (no owner/group/special files), so it
+works on a plain thumb drive and skips the live ssh-agent socket. It skips
+`Downloads`, `Games`, Wine prefixes, and `Projects` (re-clonable git repos).
+
+`restore.sh` installs the toolchain (swayidle, Code-OSS, ungoogled-chromium,
+noctalia-shell) with paru, restores the files, reasserts `.ssh`/`.gnupg` modes
+(lost on FAT), then clones the repo and stows it with `--adopt` + `git checkout`
+so blanco's config clobbers any files the fresh install already wrote. Both
+steps are idempotent.
+
 ## Packages
 
 All packages are shared — they live in `configs/` and are stowed on every machine:
