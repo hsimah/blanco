@@ -25,6 +25,7 @@ payloads under the same per-tool layout.
 configs/        # ~/.config payloads, stowed on every machine
   fish/.config/fish/
   fuzzel/.config/fuzzel/
+  gtk-3.0/.config/gtk-3.0/
   kitty/.config/kitty/
   micro/.config/micro/
   micro/.config/mimeapps.list   # MIME associations (text/* -> micro)
@@ -44,7 +45,7 @@ Stow from the repo root with `--dir`:
 
 ```bash
 # Deploy packages
-stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
+stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
 stow --dir=local --target=$HOME micro
 
 # Pull live config edits into the repo
@@ -106,6 +107,7 @@ All packages are shared — they live in `configs/` and are stowed on every mach
 |---------|-----------------|
 | fish | `~/.config/fish/` |
 | fuzzel | `~/.config/fuzzel/` |
+| gtk-3.0 | `~/.config/gtk-3.0/` |
 | kitty | `~/.config/kitty/` |
 | micro | `~/.config/micro/` |
 | niri | `~/.config/niri/` |
@@ -116,6 +118,6 @@ launcher (`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the
 `local/` tree, so file managers open `text/*` files in micro inside kitty.
 
 ```bash
-stow --dir=configs --target=$HOME fish fuzzel kitty micro niri noctalia
+stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
 stow --dir=local --target=$HOME micro
 ```
