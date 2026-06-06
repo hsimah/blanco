@@ -33,6 +33,7 @@ configs/        # ~/.config payloads, stowed on every machine
   noctalia/.config/noctalia/
 
 local/          # ~/.local payloads
+  fresh/.local/share/applications/fresh.desktop
   micro/.local/share/applications/micro.desktop
 ```
 
@@ -46,7 +47,7 @@ Stow from the repo root with `--dir`:
 ```bash
 # Deploy packages
 stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
-stow --dir=local --target=$HOME micro
+stow --dir=local --target=$HOME fresh micro
 
 # Pull live config edits into the repo
 stow --dir=configs --target=$HOME --adopt fish
@@ -117,7 +118,10 @@ micro also owns the MIME registry (`~/.config/mimeapps.list`) and a desktop
 launcher (`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the
 `local/` tree, so file managers open `text/*` files in micro inside kitty.
 
+`fresh` is a standalone `local/` package: a desktop launcher
+(`~/.local/share/applications/fresh.desktop`, `kitty fresh %F`).
+
 ```bash
 stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
-stow --dir=local --target=$HOME micro
+stow --dir=local --target=$HOME fresh micro
 ```
