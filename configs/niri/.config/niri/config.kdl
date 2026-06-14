@@ -369,8 +369,7 @@ binds {
 
 switch-events {
     lid-close {
-        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"
-        spawn "qs" "-c" "niri" "msg" "action" "power-off" "monitors"
+        spawn "sh" "-c 'qs -c noctalia-shell ipc call lockScreen lock; niri msg action power-off-monitors'"
     }
 }
 
