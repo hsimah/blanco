@@ -20,9 +20,12 @@ return {
   },
   -- Autocomplete
   { "saghen/blink.cmp", version = "*", opts = { keymap = { preset = "default" } } },
-  -- Treesitter highlighting
+  -- Treesitter highlighting.
+  -- Pinned to the stable `master` branch: the newer default `main` branch
+  -- dropped the `nvim-treesitter.configs` setup API used below.
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "master",
     build = ":TSUpdate",
     opts = { ensure_installed = { "rust", "javascript", "typescript", "php", "lua" }, highlight = { enable = true } },
     config = function(_, opts) require("nvim-treesitter.configs").setup(opts) end,

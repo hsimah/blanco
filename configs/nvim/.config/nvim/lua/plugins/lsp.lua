@@ -5,8 +5,12 @@ return {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "neovim/nvim-lspconfig" },
     opts = {
-      -- rust handled by rustaceanvim below, so not listed here
-      ensure_installed = { "ts_ls", "intelephense" },
+      -- rust handled by rustaceanvim below, so not listed here.
+      -- ts_ls (JS/TS) and intelephense (PHP) are npm packages and need
+      -- Node installed first. Add them back here once you're doing JS/PHP:
+      --   sudo pacman -S nodejs npm
+      --   ensure_installed = { "ts_ls", "intelephense" }
+      ensure_installed = {},
     },
   },
   {
