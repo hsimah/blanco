@@ -1,0 +1,5 @@
+.nautilus-window,
+.nautilus-window .view,
+.nautilus-window headerbar {
+    background-color: rgba(0, 0, 0, 0.55);
+}
