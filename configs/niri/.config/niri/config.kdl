@@ -53,13 +53,23 @@ hotkey-overlay {
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-// Allow kitty's background transparency to show through even when focused.
 window-rule {
-    match app-id="kitty"
     draw-border-with-background false
+    opacity 0.95
     background-effect {
         blur true
     }
+}
+
+window-rule {
+    match is-active=false
+    opacity 0.70
+}
+
+// Plexamp remains open in its own workspace and looks better with reduced transparency
+window-rule {
+    match is-active=false app-id="(plexamp|chrome-hfmgjhflhflcobjffcknlgaphippkmmd-Default)"
+    opacity 0.90
 }
 
 // Work around WezTerm's initial configure bug by setting an empty default-column-width.
@@ -75,48 +85,6 @@ window-rule {
     // - Flatpak Firefox (app-id is "org.mozilla.firefox")
     match app-id=r#"firefox$"# title="^Picture-in-Picture$"
     open-floating true
-}
-
-window-rule {
-    match app-id="^google-chrome$"
-    opacity 0.95
-    draw-border-with-background false
-    background-effect {
-        blur true
-    }
-}
-
-window-rule {
-    match app-id="^google-chrome$" is-active=false
-    opacity 0.70
-}
-
-window-rule {
-    match app-id="^code-fb$"
-    opacity 0.95
-    draw-border-with-background false
-    background-effect {
-        blur true
-    }
-}
-
-window-rule {
-    match app-id="^code-fb$" is-active=false
-    opacity 0.70
-}
-
-window-rule {
-    match app-id="^chrome-pommaclcbfghclhalboakcipcmmndhcj-Default$"
-    opacity 0.95
-    draw-border-with-background false
-    background-effect {
-        blur true
-    }
-}
-
-window-rule {
-    match app-id="^chrome-pommaclcbfghclhalboakcipcmmndhcj-Default$" is-active=false
-    opacity 0.70
 }
 
 gestures {
@@ -142,7 +110,7 @@ binds {
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+T hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
-    Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
+    Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
@@ -243,12 +211,12 @@ binds {
 
     Mod+Page_Down      { focus-workspace-down; }
     Mod+Page_Up        { focus-workspace-up; }
-    Mod+U              { focus-workspace-down; }
-    Mod+I              { focus-workspace-up; }
+    Mod+D              { focus-workspace-down; }
+    Mod+U              { focus-workspace-up; }
     Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
     Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
-    Mod+Ctrl+U         { move-column-to-workspace-down; }
-    Mod+Ctrl+I         { move-column-to-workspace-up; }
+    Mod+Ctrl+D         { move-column-to-workspace-down; }
+    Mod+Ctrl+U         { move-column-to-workspace-up; }
 
     // Alternatively, there are commands to move just a single window:
     // Mod+Ctrl+Page_Down { move-window-to-workspace-down; }
