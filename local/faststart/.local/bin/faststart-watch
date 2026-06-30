@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Watch a recording dir (default ~/Videos) and make each new recording
+# web-streamable (moov atom moved to front) as soon as it's written.
+#
+# Runs INSIDE the graphical session (via niri spawn-at-startup) on purpose:
+# ~/Videos is a tmpfs with *private* mount propagation, so it is only visible
+# in the session's mount namespace — a systemd --user service would watch the
+# wrong (underlying, on-disk) directory and never see the recordings.
+DIR="${1:-$HOME/Videos}"
+
+# Wait until DIR exists (and, if it's meant to be a mountpoint, is mounted).
+# Capped so we never block forever if the setup changes.
+for _ in $(seq 1 60); do
+    [ -d "$DIR" ] && break
+    sleep 1
+done
+mkdir -p "$DIR"
+
+# Fix anything already sitting in the dir at startup.
+"$HOME/.local/bin/faststart-dir" "$DIR"
+
+while true; do
+    # Block until a file is fully written+closed or moved into the dir.
+    # No -e create: that fires before the recorder finishes writing.
+    # If inotifywait exits for any reason, the loop re-arms it (self-heal).
+    inotifywait -q -e close_write -e moved_to "$DIR" >/dev/null 2>&1
+    "$HOME/.local/bin/faststart-dir" "$DIR"
+done
