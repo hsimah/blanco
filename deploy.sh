@@ -7,8 +7,7 @@ shopt -s nullglob
 # Shared packages (configs/, local/) are stowed on every machine. A per-machine
 # overlay (work/, blanco/) is selected by hostname and stowed on top. Idempotent
 # and non-destructive: existing symlinks are refreshed; real files that would
-# conflict are reported (SKIP), never clobbered. Resolve those by hand, or use
-# restore.sh for a fresh box where blanco's config should win.
+# conflict are reported (SKIP), never clobbered. Resolve those by hand.
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
 
