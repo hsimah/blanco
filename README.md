@@ -33,6 +33,8 @@ configs/        # ~/.config payloads, stowed on every machine
   noctalia/.config/noctalia/
 
 local/          # ~/.local payloads
+  dev-connect-www/.local/bin/dev-connect-www
+  dev-connect-www/.local/share/applications/dev-connect-www.desktop
   fresh/.local/share/applications/fresh.desktop
   micro/.local/share/applications/micro.desktop
 ```
@@ -47,7 +49,7 @@ Stow from the repo root with `--dir`:
 ```bash
 # Deploy packages
 stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
-stow --dir=local --target=$HOME fresh micro
+stow --dir=local --target=$HOME dev-connect-www fresh micro
 
 # Pull live config edits into the repo
 stow --dir=configs --target=$HOME --adopt fish
@@ -121,7 +123,12 @@ launcher (`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the
 `fresh` is a standalone `local/` package: a desktop launcher
 (`~/.local/share/applications/fresh.desktop`, `kitty fresh %F`).
 
+`dev-connect-www` is a `local/` package pairing a bin script
+(`~/.local/bin/dev-connect-www`, prompts for a YubiKey touch then runs
+`dev connect -t www`) with a desktop launcher
+(`~/.local/share/applications/dev-connect-www.desktop`, `kitty dev-connect-www`).
+
 ```bash
 stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
-stow --dir=local --target=$HOME fresh micro
+stow --dir=local --target=$HOME dev-connect-www fresh micro
 ```

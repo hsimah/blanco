@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=New OnDemand (www)
+Exec=kitty dev-connect-www
+Terminal=false
