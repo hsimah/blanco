@@ -362,7 +362,7 @@ binds {
     // Mod+Shift+Space { switch-layout "prev"; }
 
     Print { screenshot; }
-    Ctrl+Print { screenshot-screen; }
+    Ctrl+Print hotkey-overlay-title="Toggle Screen Recording: noctalia" { spawn-sh "qs -c noctalia-shell ipc call plugin:screen-recorder toggle"; }
     Alt+Print { screenshot-window; }
 
     // Applications such as remote-desktop clients and software KVM switches may
