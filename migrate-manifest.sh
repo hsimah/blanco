@@ -5,9 +5,10 @@
 REPO_URL="git@github.com:hsimah/blanco.git"
 REPO_DIR="$HOME/Projects/blanco"
 
-# Stow packages under configs/ and local/.
-STOW_CONFIGS=(fish fuzzel kitty micro niri noctalia)
-STOW_LOCAL=(micro)
+# Shared stow packages under configs/ and local/ (blanco is a personal box, so
+# the work/ overlay is intentionally excluded here).
+STOW_CONFIGS=(fish fuzzel gtk-3.0 gtk-4.0 kitty micro niri noctalia nvim)
+STOW_LOCAL=(micro nvim)
 
 # Packages to install on a fresh CachyOS box (paru handles repo + AUR).
 # ungoogled-chromium-bin is the prebuilt binary; swap to ungoogled-chromium
