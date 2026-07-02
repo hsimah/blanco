@@ -3,3 +3,6 @@ fish_variables
 
 # Noctalia config uses background colors
 configs/noctalia/.config/noctalia/colors.json
+
+# MIME defaults are per-machine and rewritten in place by desktop apps
+mimeapps.list

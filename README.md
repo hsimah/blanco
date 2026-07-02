@@ -29,7 +29,6 @@ configs/        # ~/.config payloads, stowed on every machine
   gtk-4.0/.config/gtk-4.0/
   kitty/.config/kitty/
   micro/.config/micro/
-  micro/.config/mimeapps.list   # MIME associations (text/* -> micro)
   niri/.config/niri/
   noctalia/.config/noctalia/
 
@@ -121,12 +120,19 @@ All packages are shared — they live in `configs/` and are stowed on every mach
 | noctalia | `~/.config/noctalia/` |
 | nvim | `~/.config/nvim/` |
 
-micro holds the MIME registry (`~/.config/mimeapps.list`) and a desktop launcher
-(`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the `local/`
-tree. nvim is the default `text/plain`/`text/markdown` handler via its own
-`local/` launcher (`~/.local/share/applications/nvim.desktop`, `kitty nvim %F`),
-with micro kept as a secondary association; file managers open text files in nvim
-inside kitty.
+micro and nvim ship desktop launchers via the `local/` tree
+(`~/.local/share/applications/{micro,nvim}.desktop`, `kitty {micro,nvim} %F`),
+each advertising `text/*` MIME types so file managers can open text files in
+kitty. nvim is the preferred editor.
+
+The actual default handlers live in `~/.config/mimeapps.list`, which is **not
+tracked** — it is per-machine (different browsers/apps) and gets rewritten in
+place by desktop apps whenever you pick "always open with…". Defaults are set
+declaratively in the bootstrap instead:
+
+```bash
+xdg-mime default nvim.desktop text/plain text/markdown
+```
 
 `dev-connect-www` is a `local/` package pairing a bin script
 (`~/.local/bin/dev-connect-www`, prompts for a YubiKey touch then runs
