@@ -184,6 +184,9 @@
                     ]
                 },
                 {
+                    "id": "plugin:c09595:screen-recorder"
+                },
+                {
                     "hideWhenZero": false,
                     "hideWhenZeroUnread": false,
                     "iconColor": "none",
@@ -406,7 +409,7 @@
                 "Up"
             ]
         },
-        "language": "en_US",
+        "language": "en-GB",
         "lockOnSuspend": true,
         "lockScreenAnimations": false,
         "lockScreenBlur": 0,
@@ -462,7 +465,7 @@
         "firstDayOfWeek": -1,
         "hideWeatherCityName": false,
         "hideWeatherTimezone": false,
-        "name": "",
+        "name": "seattle",
         "showCalendarEvents": true,
         "showCalendarWeather": true,
         "showWeekNumberInCalendar": false,
