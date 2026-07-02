@@ -4,9 +4,18 @@
             "enabled": true,
             "name": "Noctalia Plugins",
             "url": "https://github.com/noctalia-dev/noctalia-plugins"
+        },
+        {
+            "enabled": true,
+            "name": "hsimah Plugins",
+            "url": "https://github.com/hsimah/legacy-v4-plugins"
         }
     ],
     "states": {
+        "c09595:screen-recorder": {
+            "enabled": true,
+            "sourceUrl": "https://github.com/hsimah/legacy-v4-plugins"
+        }
     },
     "version": 2
 }
