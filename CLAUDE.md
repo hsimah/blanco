@@ -30,7 +30,7 @@ configs/[tool]/.config/[tool]/...           # ~/.config payloads
 local/[tool]/.local/share/applications/...   # ~/.local payloads (desktop launchers)
 ```
 
-Each tool is its own stow package. The directory tree inside mirrors `$HOME`. Most packages live in `configs/` (stowed with `--dir=configs`). The `local/` tree holds `~/.local` payloads — desktop launchers (`micro`) and connection scripts (`dev-connect-www`, `dev-connect-devserver`) — stowed with `--dir=local`.
+Each tool is its own stow package. The directory tree inside mirrors `$HOME`. Most packages live in `configs/` (stowed with `--dir=configs`). The `local/` tree holds `~/.local` payloads — desktop launchers (`micro`, `nvim`) and connection scripts (`dev-connect-www`, `dev-connect-devserver`) — stowed with `--dir=local`.
 
 ## Environment Differences
 

@@ -1,12 +1,12 @@
 [Added Associations]
-text/markdown=micro.desktop;org.kde.kate.desktop;org.kde.kwrite.desktop;vim.desktop;
-text/plain=micro.desktop;org.kde.kate.desktop;org.kde.kwrite.desktop;vim.desktop;
+text/markdown=nvim.desktop;micro.desktop;org.kde.kate.desktop;org.kde.kwrite.desktop;vim.desktop;
+text/plain=nvim.desktop;micro.desktop;org.kde.kate.desktop;org.kde.kwrite.desktop;vim.desktop;
 x-scheme-handler/http=chromium.desktop;
 x-scheme-handler/https=chromium.desktop;
 
 [Default Applications]
-text/markdown=micro.desktop;
-text/plain=micro.desktop;
+text/markdown=nvim.desktop;
+text/plain=nvim.desktop;
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 x-scheme-handler/http=chromium.desktop
 x-scheme-handler/https=chromium.desktop

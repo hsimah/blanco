@@ -39,6 +39,7 @@ local/          # ~/.local payloads
   dev-connect-www/.local/bin/dev-connect-www
   dev-connect-www/.local/share/applications/dev-connect-www.desktop
   micro/.local/share/applications/micro.desktop
+  nvim/.local/share/applications/nvim.desktop
 ```
 
 `fish/config.fish` is portable across machines: it sources the CachyOS base
@@ -51,7 +52,7 @@ Stow from the repo root with `--dir`:
 ```bash
 # Deploy packages
 stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 gtk-4.0 kitty micro niri noctalia
-stow --dir=local --target=$HOME dev-connect-devserver dev-connect-www micro
+stow --dir=local --target=$HOME dev-connect-devserver dev-connect-www micro nvim
 
 # Pull live config edits into the repo
 stow --dir=configs --target=$HOME --adopt fish
@@ -118,10 +119,14 @@ All packages are shared — they live in `configs/` and are stowed on every mach
 | micro | `~/.config/micro/` |
 | niri | `~/.config/niri/` |
 | noctalia | `~/.config/noctalia/` |
+| nvim | `~/.config/nvim/` |
 
-micro also owns the MIME registry (`~/.config/mimeapps.list`) and a desktop
-launcher (`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the
-`local/` tree, so file managers open `text/*` files in micro inside kitty.
+micro holds the MIME registry (`~/.config/mimeapps.list`) and a desktop launcher
+(`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the `local/`
+tree. nvim is the default `text/plain`/`text/markdown` handler via its own
+`local/` launcher (`~/.local/share/applications/nvim.desktop`, `kitty nvim %F`),
+with micro kept as a secondary association; file managers open text files in nvim
+inside kitty.
 
 `dev-connect-www` is a `local/` package pairing a bin script
 (`~/.local/bin/dev-connect-www`, prompts for a YubiKey touch then runs
@@ -135,5 +140,5 @@ launcher (`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the
 
 ```bash
 stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 gtk-4.0 kitty micro niri noctalia
-stow --dir=local --target=$HOME dev-connect-devserver dev-connect-www micro
+stow --dir=local --target=$HOME dev-connect-devserver dev-connect-www micro nvim
 ```
