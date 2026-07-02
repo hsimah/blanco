@@ -394,5 +394,3 @@ switch-events {
 spawn-at-startup "qs" "-c" "noctalia-shell"
 // [security] lock screen at 180s; power off monitors at 300s
 spawn-at-startup "sh" "-c" "swayidle -w timeout 600 'qs -c noctalia-shell ipc call lockScreen lock' timeout 900 'niri msg action power-off-monitors'"
-// [recordings] auto-faststart screen recordings so they stream in browsers after upload
-spawn-at-startup "sh" "-c" "exec ~/.local/bin/faststart-watch ~/Videos"
