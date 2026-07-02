@@ -26,6 +26,7 @@ configs/        # ~/.config payloads, stowed on every machine
   fish/.config/fish/
   fuzzel/.config/fuzzel/
   gtk-3.0/.config/gtk-3.0/
+  gtk-4.0/.config/gtk-4.0/
   kitty/.config/kitty/
   micro/.config/micro/
   micro/.config/mimeapps.list   # MIME associations (text/* -> micro)
@@ -50,7 +51,7 @@ Stow from the repo root with `--dir`:
 
 ```bash
 # Deploy packages
-stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
+stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 gtk-4.0 kitty micro niri noctalia
 stow --dir=local --target=$HOME dev-connect-devserver dev-connect-www fresh micro
 
 # Pull live config edits into the repo
@@ -113,6 +114,7 @@ All packages are shared — they live in `configs/` and are stowed on every mach
 | fish | `~/.config/fish/` |
 | fuzzel | `~/.config/fuzzel/` |
 | gtk-3.0 | `~/.config/gtk-3.0/` |
+| gtk-4.0 | `~/.config/gtk-4.0/` |
 | kitty | `~/.config/kitty/` |
 | micro | `~/.config/micro/` |
 | niri | `~/.config/niri/` |
@@ -136,6 +138,6 @@ launcher (`~/.local/share/applications/micro.desktop`, `kitty micro %F`) via the
 (`~/.local/share/applications/dev-connect-devserver.desktop`, `kitty dev-connect-devserver`).
 
 ```bash
-stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 kitty micro niri noctalia
+stow --dir=configs --target=$HOME fish fuzzel gtk-3.0 gtk-4.0 kitty micro niri noctalia
 stow --dir=local --target=$HOME dev-connect-devserver dev-connect-www fresh micro
 ```
