@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Connect to DevServer
+Exec=kitty dev-connect-devserver
+Terminal=false

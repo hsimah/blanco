@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo
+read -rsp "Touch YubiKey: " -N 32 y; echo
+exec dev connect -n devvm10852.eag0 -y "$y"
