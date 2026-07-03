@@ -1,5 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=Connect to DevServer
+Icon=kitty
 Exec=kitty dev-connect-devserver
 Terminal=false
