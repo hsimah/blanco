@@ -37,6 +37,7 @@ configs/        # ~/.config payloads, stowed everywhere
 local/          # ~/.local payloads, stowed everywhere
   micro/.local/share/applications/micro.desktop
   nvim/.local/share/applications/nvim.desktop
+  yazi/.local/share/applications/yazi.desktop
 
 work/           # overlay, stowed only on the work host
   configs/
@@ -108,10 +109,11 @@ Shared config packages live in `configs/` and are stowed on every machine:
 | noctalia | `~/.config/noctalia/` |
 | nvim | `~/.config/nvim/` |
 
-micro and nvim ship desktop launchers via the `local/` tree
-(`~/.local/share/applications/{micro,nvim}.desktop`, `kitty {micro,nvim} %F`),
-each advertising `text/*` MIME types so file managers can open text files in
-kitty. nvim is the preferred editor.
+micro, nvim, and yazi ship desktop launchers via the `local/` tree, each
+running in kitty (`Terminal=false`). micro and nvim (`kitty {micro,nvim} %F`)
+advertise `text/*` MIME types so file managers can open text files in kitty;
+nvim is the preferred editor. yazi (`kitty yazi %f`) is the terminal file
+manager and advertises `inode/directory` so it can also handle folders.
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
