@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+qs -c noctalia-shell ipc call lockScreen lock
+sleep 0.3
+exec systemctl suspend
