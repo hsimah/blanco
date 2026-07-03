@@ -38,6 +38,7 @@ local/          # ~/.local payloads, stowed everywhere
   micro/.local/share/applications/micro.desktop
   nvim/.local/share/applications/nvim.desktop
   yazi/.local/share/applications/yazi.desktop
+  yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
 
 work/           # overlay, stowed only on the work host
   configs/
@@ -113,7 +114,9 @@ micro, nvim, and yazi ship desktop launchers via the `local/` tree, each
 running in kitty (`Terminal=false`). micro and nvim (`kitty {micro,nvim} %F`)
 advertise `text/*` MIME types so file managers can open text files in kitty;
 nvim is the preferred editor. yazi (`kitty yazi %f`) is the terminal file
-manager and advertises `inode/directory` so it can also handle folders.
+manager and advertises `inode/directory` so it can also handle folders; it
+ships its own PNG app icon under the hicolor theme (`Icon=yazi`), since fuzzel
+is built with png/svg support only — no webp.
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
