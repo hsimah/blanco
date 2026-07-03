@@ -386,7 +386,7 @@ binds {
 
 switch-events {
     lid-close {
-        spawn "sh" "-c" "qs -c noctalia-shell ipc call lockScreen lock; niri msg action power-off-monitors"
+      spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"
     }
 }
 
@@ -396,4 +396,4 @@ include "local.kdl"
 // [shell] start noctalia shell
 spawn-at-startup "qs" "-c" "noctalia-shell"
 // [security] lock screen at 180s; power off monitors at 300s
-spawn-at-startup "sh" "-c" "swayidle -w timeout 600 'qs -c noctalia-shell ipc call lockScreen lock' timeout 900 'niri msg action power-off-monitors'"
+// spawn-at-startup "sh" "-c" "swayidle -w timeout 600 'qs -c noctalia-shell ipc call lockScreen lock' timeout 900 'niri msg action power-off-monitors'"
