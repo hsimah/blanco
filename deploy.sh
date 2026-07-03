@@ -13,9 +13,11 @@ REPO="$(cd "$(dirname "$0")" && pwd)"
 
 # Map hostname -> overlay dir. Add machines here as they diverge.
 WORK_HOST="hblake-fedora-PF627G59"
+BLANCO_HOST="blanco"
 case "$(hostname)" in
-    "$WORK_HOST") OVERLAY="work" ;;
-    *)            OVERLAY="" ;;
+    "$WORK_HOST")   OVERLAY="work" ;;
+    "$BLANCO_HOST") OVERLAY="blanco" ;;
+    *)              OVERLAY="" ;;
 esac
 
 fail=0

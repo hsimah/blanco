@@ -390,6 +390,9 @@ switch-events {
     }
 }
 
+// [machine] per-host overlay: named workspaces + startup apps
+include "local.kdl"
+
 // [shell] start noctalia shell
 spawn-at-startup "qs" "-c" "noctalia-shell"
 // [security] lock screen at 180s; power off monitors at 300s

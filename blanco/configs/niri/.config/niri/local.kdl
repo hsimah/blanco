@@ -1,0 +1,10 @@
+workspace "personal"
+workspace "work"
+workspace "coding"
+
+spawn-at-startup "flatpak" "run" "com.plexamp.Plexamp"
+
+window-rule {
+    match app-id="plexamp"
+    open-on-workspace "personal"
+}

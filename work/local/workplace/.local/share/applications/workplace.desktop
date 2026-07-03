@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=Workplace
-Exec=google-chrome-stable https://fb.workplace.com
+Exec=google-chrome-stable --app=https://fb.workplace.com
 Icon=chrome-hondjlkedhnofcgbhifciodpdjfnonjm-Default
 Terminal=false

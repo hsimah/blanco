@@ -1,0 +1,29 @@
+workspace "personal"
+workspace "work" {
+    open-on-output "Dell Inc. DELL P3222QE D135T83"
+}
+workspace "coding" {
+    open-on-output "Dell Inc. DELL P3222QE D135T83"
+}
+
+spawn-at-startup "flatpak" "run" "com.plexamp.Plexamp"
+spawn-at-startup "google-chrome-stable" "--app=https://fb.workplace.com"
+spawn-at-startup "google-chrome-stable" "--profile-directory=Default" "--app-id=gihbagcjamhppndmlkgmccomodfodggj"
+spawn-at-startup "code-fb"
+
+window-rule {
+    match app-id="plexamp"
+    open-on-workspace "personal"
+}
+window-rule {
+    match app-id="chrome-fb.workplace.com__-Default"
+    open-on-workspace "work"
+}
+window-rule {
+    match app-id="chrome-gihbagcjamhppndmlkgmccomodfodggj-Default"
+    open-on-workspace "work"
+}
+window-rule {
+    match app-id="code-fb"
+    open-on-workspace "coding"
+}

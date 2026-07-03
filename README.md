@@ -4,7 +4,7 @@ A repository of configuration for my daily drivers, managed with [GNU Stow](http
 
 ## Machines
 
-Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland compositor and share the `configs/` and `local/` packages. Work-only packages live in the `work/` overlay.
+Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland compositor and share the `configs/` and `local/` packages. Machine-specific packages live in a per-machine overlay (`work/`, `blanco/`) selected by hostname.
 
 | | Personal | Work |
 |---|---|---|
@@ -19,8 +19,8 @@ Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland composito
 Each tool is its own stow package mirroring `$HOME`. Shared packages live in
 `configs/` (`~/.config` payloads) and `local/` (`~/.local` payloads) and are
 stowed on every machine. Machine-specific packages live in a per-machine
-**overlay** (`work/`, mirroring the `configs/`+`local/` layout) that is stowed on
-top only on that host. `deploy.sh` selects the overlay by hostname.
+**overlay** (`work/`, `blanco/`, mirroring the `configs/`+`local/` layout) that
+is stowed on top only on that host. `deploy.sh` selects the overlay by hostname.
 
 ```
 configs/        # ~/.config payloads, stowed everywhere
@@ -39,11 +39,18 @@ local/          # ~/.local payloads, stowed everywhere
   nvim/.local/share/applications/nvim.desktop
 
 work/           # overlay, stowed only on the work host
+  configs/
+    niri/.config/niri/local.kdl
   local/
     dev-connect-devserver/.local/bin/dev-connect-devserver
     dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
     dev-connect-www/.local/bin/dev-connect-www
     dev-connect-www/.local/share/applications/dev-connect-www.desktop
+    workplace/.local/share/applications/workplace.desktop
+
+blanco/         # overlay, stowed only on the personal host
+  configs/
+    niri/.config/niri/local.kdl
 ```
 
 `fish/config.fish` is portable across machines: it sources the CachyOS base
@@ -81,9 +88,9 @@ After stowing, live files are symlinks to the repo — edits are in-place.
 ```
 
 For a machine-specific package, put it in that host's overlay instead
-(`work/configs/…` or `work/local/…`), and add a `blanco/` overlay symmetrically
-when the personal laptop first needs one. `deploy.sh` picks the overlay by
-hostname (`WORK_HOST` near the top of the script).
+(`work/configs/…`, `work/local/…`, or the matching `blanco/` path). `deploy.sh`
+picks the overlay by hostname (`WORK_HOST`/`BLANCO_HOST` near the top of the
+script).
 
 ## Packages
 
@@ -115,8 +122,21 @@ declaratively in the bootstrap instead:
 xdg-mime default nvim.desktop text/plain text/markdown
 ```
 
-The `work/` overlay (stowed only on the work host) holds the dev-connect
-launchers:
+The per-machine overlays hold each host's niri divergence and work-only
+launchers. `niri` appears in both `work/configs/` and `blanco/configs/` as a
+`local.kdl` that the shared `config.kdl` pulls in via `include "local.kdl"`; it
+declares the named workspaces (`personal`, `work`, `coding`) and their
+`spawn-at-startup` apps and `open-on-workspace` rules. On work, `work` and
+`coding` are pinned to the external Dell via `open-on-output`, and the apps are
+Plexamp, Workplace (Chrome `--app`), the Calendar PWA, and VS Code @ Meta; on
+`blanco` only Plexamp starts, on `personal`.
+
+`workplace` is a `work/local/` package: a desktop launcher
+(`~/.local/share/applications/workplace.desktop`) that opens Workplace as a
+Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`), giving
+it the stable `chrome-fb.workplace.com__-Default` app-id the niri rule matches.
+
+The `work/` overlay also holds the dev-connect launchers:
 
 `dev-connect-www` is a `work/local/` package pairing a bin script
 (`~/.local/bin/dev-connect-www`, prompts for a YubiKey touch then runs
