@@ -7,4 +7,5 @@ spawn-at-startup "flatpak" "run" "com.plexamp.Plexamp"
 window-rule {
     match app-id="plexamp"
     open-on-workspace "personal"
+    default-column-width { proportion 1.0; }
 }

@@ -17,6 +17,12 @@ spawn-at-startup "code-fb"
 window-rule {
     match app-id="plexamp"
     open-on-workspace "personal"
+    default-column-width { proportion 1.0; }
+}
+window-rule {
+    match app-id="chrome-hfmgjhflhflcobjffcknlgaphippkmmd-Default"
+    open-on-workspace "personal"
+    default-column-width { proportion 1.0; }
 }
 window-rule {
     match app-id="chrome-fb.workplace.com__-Default"
