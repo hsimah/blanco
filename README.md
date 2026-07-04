@@ -24,6 +24,7 @@ is stowed on top only on that host. `deploy.sh` selects the overlay by hostname.
 
 ```
 configs/        # ~/.config payloads, stowed everywhere
+  doom/.config/doom/
   fish/.config/fish/
   fuzzel/.config/fuzzel/
   gtk-3.0/.config/gtk-3.0/
@@ -100,6 +101,7 @@ Shared config packages live in `configs/` and are stowed on every machine:
 
 | Package | Config location |
 |---------|-----------------|
+| doom | `~/.config/doom/` |
 | fish | `~/.config/fish/` |
 | fuzzel | `~/.config/fuzzel/` |
 | gtk-3.0 | `~/.config/gtk-3.0/` |
@@ -117,6 +119,14 @@ nvim is the preferred editor. yazi (`kitty yazi %f`) is the terminal file
 manager and advertises `inode/directory` so it can also handle folders; it
 ships its own PNG app icon under the hicolor theme (`Icon=yazi`), since fuzzel
 is built with png/svg support only — no webp.
+
+`doom` tracks only the config layer — `init.el` (enabled modules), `config.el`
+(personal settings), and `packages.el`. The Doom framework itself lives in
+`~/.config/emacs` as its own git checkout and is **not tracked** here; it is
+managed with `doom sync`/`doom upgrade`. On a fresh machine, clone Doom to
+`~/.config/emacs`, `stow` this package, then run `doom sync`. Fedora's `emacs`
+package (30.x) already ships with pgtk + native-comp, which niri (Wayland)
+wants.
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
