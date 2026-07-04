@@ -386,7 +386,7 @@ binds {
 
 switch-events {
     lid-close {
-      spawn "lock-suspend"
+      spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"
     }
 }
 
