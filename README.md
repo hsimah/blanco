@@ -51,6 +51,7 @@ work/           # overlay, stowed only on the work host
     dev-connect-www/.local/share/applications/dev-connect-www.desktop
     dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator
     dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
+    niri-work-layout/.local/bin/niri-work-layout
     workplace/.local/share/applications/workplace.desktop
 
 blanco/         # overlay, stowed only on the personal host
@@ -171,3 +172,10 @@ desktop launcher
 (`~/.local/bin/dev-connect-devserver`, prompts for a YubiKey touch then runs
 `dev connect -n devvm10852.eag0`) with a desktop launcher
 (`~/.local/share/applications/dev-connect-devserver.desktop`, `kitty dev-connect-devserver`).
+
+`niri-work-layout` is a `work/local/` package: a bin script
+(`~/.local/bin/niri-work-layout`) spawned at startup by `work`'s `local.kdl`. It
+waits for the three `work`-workspace PWAs, then drives `niri msg action` to build
+the layout — Workplace (top) and Calendar (bottom) stacked 50/50 in the left
+column, Google Chat full-height in the right — resolving windows by app-id and
+leaving any other windows on the workspace untouched.

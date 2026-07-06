@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -u
+
+WP_APP="chrome-fb.workplace.com__-Default"
+CAL_APP="chrome-gihbagcjamhppndmlkgmccomodfodggj-Default"
+CHAT_APP="chrome-pommaclcbfghclhalboakcipcmmndhcj-Default"
+
+id_for() { niri msg -j windows | jq -r --arg a "$1" 'first(.[] | select(.app_id == $a) | .id) // empty'; }
+
+for _ in $(seq 1 120); do
+    wp=$(id_for "$WP_APP"); cal=$(id_for "$CAL_APP"); chat=$(id_for "$CHAT_APP")
+    [ -n "$wp" ] && [ -n "$cal" ] && [ -n "$chat" ] && break
+    sleep 0.5
+done
+[ -n "${wp:-}" ] && [ -n "${cal:-}" ] && [ -n "${chat:-}" ] || exit 0
+
+act() { niri msg action "$@" >/dev/null 2>&1; }
+
+act focus-window --id "$cal";  act move-column-to-first
+act focus-window --id "$wp";   act move-column-to-first
+act focus-window --id "$wp";   act consume-window-into-column
+act focus-window --id "$chat"; act move-column-to-first
+act focus-window --id "$wp";   act move-column-to-first
+act set-window-height --id "$wp"  "50%"
+act set-window-height --id "$cal" "50%"
+act focus-window --id "$wp";   act set-column-width "50%"
+act focus-window --id "$chat"; act set-column-width "50%"
+act focus-window --id "$wp"
