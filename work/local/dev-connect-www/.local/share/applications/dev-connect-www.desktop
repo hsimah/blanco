@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=New OnDemand (www)
+Name=New OnDemand (WWW)
 Icon=kitty
 Exec=kitty dev-connect-www
 Terminal=false
