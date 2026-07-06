@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=New OnDemand (WWW+FBSource+Configerator)
+Icon=kitty
+Exec=kitty dev-connect-www_fbsource_configerator
+Terminal=false

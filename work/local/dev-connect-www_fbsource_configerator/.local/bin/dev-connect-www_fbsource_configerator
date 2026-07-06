@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo
+read -rsp "Touch YubiKey: " -N 32 y; echo
+exec dev connect -t www_fbsource_configerator -y "$y"

@@ -49,6 +49,8 @@ work/           # overlay, stowed only on the work host
     dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
     dev-connect-www/.local/bin/dev-connect-www
     dev-connect-www/.local/share/applications/dev-connect-www.desktop
+    dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator
+    dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
     workplace/.local/share/applications/workplace.desktop
 
 blanco/         # overlay, stowed only on the personal host
@@ -157,6 +159,13 @@ The `work/` overlay also holds the dev-connect launchers:
 (`~/.local/bin/dev-connect-www`, prompts for a YubiKey touch then runs
 `dev connect -t www`) with a desktop launcher
 (`~/.local/share/applications/dev-connect-www.desktop`, `kitty dev-connect-www`).
+
+`dev-connect-www_fbsource_configerator` is a `work/local/` package pairing a bin
+script (`~/.local/bin/dev-connect-www_fbsource_configerator`, prompts for a
+YubiKey touch then runs `dev connect -t www_fbsource_configerator`) with a
+desktop launcher
+(`~/.local/share/applications/dev-connect-www_fbsource_configerator.desktop`,
+`kitty dev-connect-www_fbsource_configerator`).
 
 `dev-connect-devserver` is a `work/local/` package pairing a bin script
 (`~/.local/bin/dev-connect-devserver`, prompts for a YubiKey touch then runs
