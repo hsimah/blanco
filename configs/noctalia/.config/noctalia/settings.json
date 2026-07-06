@@ -533,6 +533,7 @@
         "location": "top_right",
         "lowUrgencyDuration": 3,
         "monitors": [
+            "DP-1"
         ],
         "normalUrgencyDuration": 5,
         "overlayLayer": true,
