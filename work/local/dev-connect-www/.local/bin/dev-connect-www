@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
 echo
-read -rsp "Touch YubiKey: " -N 32 y; echo
+printf "Touch YubiKey: "
+y=""
+for ((i=0; i<32; i++)); do
+    IFS= read -rsN1 c
+    y+="$c"
+    printf '*'
+done
+echo
 exec dev connect -t www -y "$y"
