@@ -161,6 +161,23 @@ The `work/` overlay also holds the dev-connect launchers:
 `dev connect -t www`) with a desktop launcher
 (`~/.local/share/applications/dev-connect-www.desktop`, `kitty dev-connect-www`).
 
+All three `dev-connect-*` bin scripts pass a bootstrap program to `dev connect`
+via its `[PROG]` argument (`-- bash -c '…'`) instead of letting it spawn the
+default login shell. `dev connect` delivers PROG by typing `exec <PROG>; exit`
+into the remote login shell. The bootstrap runs `dotsync2 pull` (a synchronous
+pull that blocks until the latest dotfiles snapshot is on the host, so the shell
+inside tmux is fully configured — this replaces the platform's flaky
+`/etc/shell-login.d/10-wait-for-dotfiles.sh` hook, which races the sync and often
+gives up), then `exec`s a persistent tmux session (`tmux new -A -D -s main`) so
+the first prompt is ready and survives ET disconnects.
+
+`TERM=xterm-256color` is pinned on the tmux exec because kitty sets
+`TERM=xterm-kitty`, and the OnDemand base image has no `xterm-kitty` terminfo
+entry — without the override tmux dies at startup with "missing or unsuitable
+terminal: xterm-kitty" before the dotfiles (which carry the kitty terminfo) are
+pulled. A universally-present TERM avoids the chicken-and-egg; tmux resets TERM
+for its own panes regardless.
+
 `dev-connect-www_fbsource_configerator` is a `work/local/` package pairing a bin
 script (`~/.local/bin/dev-connect-www_fbsource_configerator`, prompts for a
 YubiKey touch then runs `dev connect -t www_fbsource_configerator`) with a

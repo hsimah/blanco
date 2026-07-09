@@ -8,4 +8,4 @@ for ((i=0; i<32; i++)); do
     printf '*'
 done
 echo
-exec dev connect -t www -y "$y"
+exec dev connect -t www -y "$y" -- bash -c 'dotsync2 pull >/dev/null 2>&1; TERM=xterm-256color exec tmux new -A -D -s main'
