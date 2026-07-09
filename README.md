@@ -164,12 +164,36 @@ The `work/` overlay also holds the dev-connect launchers:
 All three `dev-connect-*` bin scripts pass a bootstrap program to `dev connect`
 via its `[PROG]` argument (`-- bash -c '…'`) instead of letting it spawn the
 default login shell. `dev connect` delivers PROG by typing `exec <PROG>; exit`
-into the remote login shell. The bootstrap runs `dotsync2 pull` (a synchronous
-pull that blocks until the latest dotfiles snapshot is on the host, so the shell
-inside tmux is fully configured — this replaces the platform's flaky
-`/etc/shell-login.d/10-wait-for-dotfiles.sh` hook, which races the sync and often
-gives up), then `exec`s a persistent tmux session (`tmux new -A -D -s main`) so
-the first prompt is ready and survives ET disconnects.
+into the remote login shell. The bootstrap first **waits for the host to finish
+initialising** — a fresh OD runs two independent init systems and the shell
+environment is broken until both complete: `systemctl --user start
+dotfiles.target` blocks on the dotsync pull, and a poll loop waits for
+`devfeature status` to report `Initial sync: successful` (devfeature installs
+tools and shell setup). Both run in parallel (backgrounded, then `wait`) so the
+barrier costs the slower of the two, not their sum. `dotsync2 pull` alone is not
+enough — it returns early, so shells spawn before the environment lands and come
+up without aliases/doom.
+Only after the barrier does it build/attach a persistent tmux session (`main`),
+so the first prompt is ready and survives ET disconnects. (Barrier approach
+cribbed from Josh Kehn's `od-wait-for-init.sh`.)
+
+On first connect (guarded by `tmux has-session`) the bootstrap builds a
+`main-vertical` layout — a full-height left pane running doom (`send-keys "doom"`,
+the bashrc alias for `emacs --init-directory=~/.config/emacs -nw`) at
+`main-pane-width 62%`, with two stacked shells in the right column — then
+`exec`s `tmux attach`. Reconnects skip the build and re-attach to the running
+session untouched, so any in-flight work is preserved. The tmux command chain is
+delivered inside the same `bash -c '…'` PROG using `\;` command separators and
+double-quoted args (no single quotes, since `dev connect` wraps PROG in single
+quotes).
+
+`set-option -g default-command "exec bash -l"` (set via a `start-server` chain,
+since `set-option -g` errors with no server running) makes every pane a **login**
+shell. Without it tmux spawns non-login shells that skip the `/etc/profile` →
+`/etc/shell-login.d/*` → `~/.bash_profile` → `~/.bashrc` chain, so custom aliases
+(including `doom`) and the doom environment never load — the symptom being a
+prompt that needs a manual `source ~/.bashrc`. Login shells reproduce exactly
+what a normal `dev connect` shell gets.
 
 `TERM=xterm-256color` is pinned on the tmux exec because kitty sets
 `TERM=xterm-kitty`, and the OnDemand base image has no `xterm-kitty` terminfo
