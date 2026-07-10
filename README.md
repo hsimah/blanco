@@ -182,7 +182,11 @@ On first connect (guarded by `tmux has-session`) the bootstrap builds a
 `main-vertical` layout — a full-height left pane running doom (`send-keys "doom"`,
 the bashrc alias for `emacs --init-directory=~/.config/emacs -nw`) at
 `main-pane-width 62%`, with two stacked shells in the right column — then
-`exec`s `tmux attach`. Reconnects skip the build and re-attach to the running
+`exec`s `tmux attach`. The `www` and `www_fbsource_configerator` launchers `cd`
+the doom pane and the top-right shell into the source checkout first (`www` uses
+`/data/sandcastle/boxes/fbsource/www`, configerator uses
+`/data/sandcastle/boxes/fbsource`) and run `claude` in that top-right shell; the
+bottom-right shell stays at `~`. `devserver` leaves all panes at `~`. Reconnects skip the build and re-attach to the running
 session untouched, so any in-flight work is preserved. The tmux command chain is
 delivered inside the same `bash -c '…'` PROG using `\;` command separators and
 double-quoted args (no single quotes, since `dev connect` wraps PROG in single
