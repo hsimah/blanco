@@ -169,10 +169,11 @@ initialising** — a fresh OD runs two independent init systems and the shell
 environment is broken until both complete: `systemctl --user start
 dotfiles.target` blocks on the dotsync pull, and a poll loop waits for
 `devfeature status` to report `Initial sync: successful` (devfeature installs
-tools and shell setup). Both run in parallel (backgrounded, then `wait`) so the
-barrier costs the slower of the two, not their sum. `dotsync2 pull` alone is not
-enough — it returns early, so shells spawn before the environment lands and come
-up without aliases/doom.
+tools and shell setup). Both run in parallel (backgrounded, then a spinner loop
+polls their PIDs) so the barrier costs the slower of the two, not their sum, and
+shows live `[|] dotfiles [|] devfeature` → `[ok]` progress instead of a frozen
+prompt. `dotsync2 pull` alone is not enough — it returns early, so shells spawn
+before the environment lands and come up without aliases/doom.
 Only after the barrier does it build/attach a persistent tmux session (`main`),
 so the first prompt is ready and survives ET disconnects. (Barrier approach
 cribbed from Josh Kehn's `od-wait-for-init.sh`.)
