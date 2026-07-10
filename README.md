@@ -45,6 +45,8 @@ work/           # overlay, stowed only on the work host
   configs/
     niri/.config/niri/local.kdl
   local/
+    od-connect/.local/bin/od-connect
+    od-connect/.local/share/od-connect/od-tmux-boot.sh
     dev-connect-devserver/.local/bin/dev-connect-devserver
     dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
     dev-connect-www/.local/bin/dev-connect-www
@@ -154,70 +156,63 @@ Plexamp, Workplace (Chrome `--app`), the Calendar PWA, and VS Code @ Meta; on
 Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`), giving
 it the stable `chrome-fb.workplace.com__-Default` app-id the niri rule matches.
 
-The `work/` overlay also holds the dev-connect launchers:
+The `work/` overlay also holds the OnDemand connection tooling. A shared
+launcher, `od-connect`, does the real work; the three `dev-connect-*` packages
+are just fuzzel entry points that call it with a target and a project dir.
 
-`dev-connect-www` is a `work/local/` package pairing a bin script
-(`~/.local/bin/dev-connect-www`, prompts for a YubiKey touch then runs
-`dev connect -t www`) with a desktop launcher
-(`~/.local/share/applications/dev-connect-www.desktop`, `kitty dev-connect-www`).
+`od-connect` (`~/.local/bin/od-connect`, `work/local/`) prompts for a YubiKey
+touch, then runs `dev connect <args> -- <bootstrap>`. Rather than let `dev
+connect` spawn the default (racy, non-login) shell, it hands over a bootstrap via
+the `[PROG]` argument. `dev connect` delivers PROG by **typing** `exec <PROG>;
+exit` into the remote shell, so the bootstrap can't be a normal multi-line
+script — it lives as a readable file (`od-tmux-boot.sh`, below) that `od-connect`
+gzip+base64-encodes into a single-line PROG (`base64 -d <<< … | gunzip >
+~/.od-boot.sh; exec bash ~/.od-boot.sh <dir>`). gzip keeps the typed line ~1.7 kB
+(plain base64 was ~3.3 kB, near the terminal's canonical-input limit), and the
+encoded blob is single-quote-free so `dev connect`'s own PROG quoting stays
+clean. Usage: `od-connect <project-dir|""> <dev connect args…>`.
 
-All three `dev-connect-*` bin scripts pass a bootstrap program to `dev connect`
-via its `[PROG]` argument (`-- bash -c '…'`) instead of letting it spawn the
-default login shell. `dev connect` delivers PROG by typing `exec <PROG>; exit`
-into the remote login shell. The bootstrap first **waits for the host to finish
-initialising** — a fresh OD runs two independent init systems and the shell
-environment is broken until both complete: `systemctl --user start
-dotfiles.target` blocks on the dotsync pull, and a poll loop waits for
-`devfeature status` to report `Initial sync: successful` (devfeature installs
-tools and shell setup). Both run in parallel (backgrounded, then a spinner loop
-polls their PIDs) so the barrier costs the slower of the two, not their sum, and
-shows live `[|] dotfiles [|] devfeature` → `[ok]` progress instead of a frozen
-prompt. `dotsync2 pull` alone is not enough — it returns early, so shells spawn
-before the environment lands and come up without aliases/doom.
-Only after the barrier does it build/attach a persistent tmux session (`main`),
-so the first prompt is ready and survives ET disconnects. (Barrier approach
-cribbed from Josh Kehn's `od-wait-for-init.sh`.)
+`od-tmux-boot.sh` (`~/.local/share/od-connect/`) is what runs on the OD:
 
-On first connect (guarded by `tmux has-session`) the bootstrap builds a
-`main-vertical` layout — a full-height left pane running doom (`send-keys "doom"`,
-the bashrc alias for `emacs --init-directory=~/.config/emacs -nw`) at
-`main-pane-width 62%`, with two stacked shells in the right column — then
-`exec`s `tmux attach`. The `www` and `www_fbsource_configerator` launchers `cd`
-the doom pane and the top-right shell into the source checkout first (`www` uses
-`/data/sandcastle/boxes/fbsource/www`, configerator uses
-`/data/sandcastle/boxes/fbsource`) and run `claude` in that top-right shell; the
-bottom-right shell stays at `~`. `devserver` leaves all panes at `~`. Reconnects skip the build and re-attach to the running
-session untouched, so any in-flight work is preserved. The tmux command chain is
-delivered inside the same `bash -c '…'` PROG using `\;` command separators and
-double-quoted args (no single quotes, since `dev connect` wraps PROG in single
-quotes).
+1. **Waits for host init.** A fresh OD runs two independent init systems and the
+   shell environment is broken until both finish: `systemctl --user start
+   dotfiles.target` blocks on the dotsync pull, and a poll loop waits for
+   `devfeature status` to report `Initial sync: successful` (devfeature installs
+   tools + shell setup). Both run in parallel (backgrounded, then a spinner loop
+   polls their PIDs), showing live `[|] dotfiles  [ok 5.6s] devfeature` progress
+   and costing the slower of the two, not their sum. `dotsync2 pull` alone is not
+   enough — it returns early, so shells would spawn before the environment lands
+   and come up without aliases/doom. (Barrier cribbed from Josh Kehn's
+   `od-wait-for-init.sh`.)
+2. **Builds/attaches tmux.** On first connect (guarded by `tmux has-session`) it
+   builds a `main-vertical` layout at `main-pane-width 62%`: doom in a
+   full-height left pane, two stacked shells on the right. Panes are addressed by
+   captured pane-id (robust to any `base-index`). Reconnects skip the build and
+   re-attach, preserving in-flight work.
 
-`set-option -g default-command "exec bash -l"` (set via a `start-server` chain,
-since `set-option -g` errors with no server running) makes every pane a **login**
-shell. Without it tmux spawns non-login shells that skip the `/etc/profile` →
-`/etc/shell-login.d/*` → `~/.bash_profile` → `~/.bashrc` chain, so custom aliases
-(including `doom`) and the doom environment never load — the symptom being a
-prompt that needs a manual `source ~/.bashrc`. Login shells reproduce exactly
-what a normal `dev connect` shell gets.
+Two details the bootstrap has to get right:
 
-`TERM=xterm-256color` is pinned on the tmux exec because kitty sets
-`TERM=xterm-kitty`, and the OnDemand base image has no `xterm-kitty` terminfo
-entry — without the override tmux dies at startup with "missing or unsuitable
-terminal: xterm-kitty" before the dotfiles (which carry the kitty terminfo) are
-pulled. A universally-present TERM avoids the chicken-and-egg; tmux resets TERM
-for its own panes regardless.
+- **Login shells.** `set-option -g default-command "exec bash -l"` (set after a
+  `start-server`, since `set-option -g` errors with no server) makes every pane a
+  login shell. Otherwise tmux spawns non-login shells that skip `/etc/profile` →
+  `/etc/shell-login.d/*` → `~/.bash_profile` → `~/.bashrc`, so aliases (including
+  `doom`) never load and the prompt needs a manual `source ~/.bashrc`.
+- **TERM.** `export TERM=xterm-256color` — kitty sets `TERM=xterm-kitty`, which
+  the OD base image has no terminfo for, so tmux otherwise dies at startup
+  ("missing or unsuitable terminal: xterm-kitty") before the dotfiles carrying
+  the kitty terminfo are pulled. tmux resets TERM for its own panes regardless.
 
-`dev-connect-www_fbsource_configerator` is a `work/local/` package pairing a bin
-script (`~/.local/bin/dev-connect-www_fbsource_configerator`, prompts for a
-YubiKey touch then runs `dev connect -t www_fbsource_configerator`) with a
-desktop launcher
-(`~/.local/share/applications/dev-connect-www_fbsource_configerator.desktop`,
-`kitty dev-connect-www_fbsource_configerator`).
+The three fuzzel launchers (each a `work/local/` bin + a
+`~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
+one line calling `od-connect`:
 
-`dev-connect-devserver` is a `work/local/` package pairing a bin script
-(`~/.local/bin/dev-connect-devserver`, prompts for a YubiKey touch then runs
-`dev connect -n devvm10852.eag0`) with a desktop launcher
-(`~/.local/share/applications/dev-connect-devserver.desktop`, `kitty dev-connect-devserver`).
+- `dev-connect-www` → `od-connect /data/sandcastle/boxes/fbsource/www -t www`
+- `dev-connect-www_fbsource_configerator` → `od-connect /data/sandcastle/boxes/fbsource -t www_fbsource_configerator:ent_framework`
+- `dev-connect-devserver` → `od-connect "" -n devvm10852.eag0`
+
+With a project dir set (`www`, configerator), doom and the top-right shell `cd`
+there and the top-right runs `claude`; the bottom-right shell stays at `~`.
+`devserver` passes an empty dir, so all panes stay at `~` and no `claude` runs.
 
 `niri-work-layout` is a `work/local/` package: a bin script
 (`~/.local/bin/niri-work-layout`) spawned at startup by `work`'s `local.kdl`. It
