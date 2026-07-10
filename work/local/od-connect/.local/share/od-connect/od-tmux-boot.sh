@@ -56,4 +56,7 @@ if ! tmux has-session -t "$SESSION" 2>/dev/null; then
     tmux send-keys -t "$p0" doom Enter
   fi
 fi
+# Set after the session (and any ~/.tmux.conf sourced at new-session) so it wins;
+# unconditional so it applies on reconnects too.
+tmux set-option -g mouse on
 exec tmux attach -d -t "$SESSION"
