@@ -682,8 +682,8 @@
         "translucentWidgets": false
     },
     "wallpaper": {
-        "automationEnabled": false,
-        "directory": "/home/hblake/Pictures",
+        "automationEnabled": true,
+        "directory": "/home/hsimah/Pictures/Wallpapers",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -717,7 +717,7 @@
         "useOriginalImages": false,
         "useSolidColor": false,
         "useWallhaven": false,
-        "viewMode": "single",
+        "viewMode": "browse",
         "wallhavenApiKey": "",
         "wallhavenCategories": "111",
         "wallhavenOrder": "desc",
