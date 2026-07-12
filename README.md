@@ -89,6 +89,9 @@ stow --dir=configs --target=$HOME --delete fish
 
 After stowing, live files are symlinks to the repo — edits are in-place.
 
+On a fresh Fedora install, `bootstrap.sh` runs first: it installs the package
+set, noctalia, and flatpaks, then calls `deploy.sh`. See [docs/fedora-setup.md](docs/fedora-setup.md).
+
 ## Adding a new package
 
 `add-package.sh` moves `~/.config/<package>` into `configs/` and stows it:

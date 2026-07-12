@@ -65,48 +65,25 @@ tar xzf /run/media/$USER/Ventoy/blanco-backup/pictures.tar.gz -C ~
 git clone git@github.com:hsimah/blanco.git ~/Projects/blanco
 ```
 
-## 5. Packages
+## 5. Bootstrap (packages + config, one script)
 
-Desktop + audio + login:
+`bootstrap.sh` does the rest: installs the curated package set, noctalia via the
+Terra repo (which pulls in **quickshell, brightnessctl, gpu-screen-recorder**),
+the flatpaks, sets fish as the shell, enables sddm, and runs `deploy.sh`. It's
+idempotent — safe to re-run.
 
 ```bash
-sudo dnf install niri sddm \
-    pipewire wireplumber pipewire-pulseaudio \
-    xdg-desktop-portal xdg-desktop-portal-gtk
-sudo systemctl enable sddm
+cd ~/Projects/blanco && ./bootstrap.sh
 ```
 
-noctalia via the Terra repo — this pulls in **quickshell, brightnessctl,
-gpu-screen-recorder** and the rest of its runtime deps automatically:
+Bar/prompt glyphs: if any are missing, install a JetBrainsMono Nerd Font from
+[Nerd Fonts](https://www.nerdfonts.com) (the packaged `jetbrains-mono-fonts`
+lacks the icon glyphs).
+
+## 6. Verify
 
 ```bash
-sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
-sudo dnf install noctalia-shell
-```
-
-Tools (all referenced by the configs):
-
-```bash
-sudo dnf install kitty fish fuzzel micro neovim yazi emacs fastfetch \
-    ripgrep fd-find wl-clipboard cliphist pwvucontrol \
-    jetbrains-mono-nl-fonts
-# a Nerd Font is needed for bar/prompt glyphs — install a JetBrainsMono Nerd Font
-# from Nerd Fonts if the packaged one lacks glyphs.
-```
-
-Shell + flatpaks:
-
-```bash
-chsh -s "$(command -v fish)"
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-flatpak install flathub com.plexamp.Plexamp io.github.ungoogled_software.ungoogled_chromium
-```
-
-## 6. Deploy config + verify
-
-```bash
-cd ~/Projects/blanco && ./deploy.sh   # stows shared + the `blanco` overlay
-niri validate                          # config is valid (incl. the local.kdl include)
+niri validate   # config is valid (incl. the local.kdl include)
 ```
 
 Then log out and pick niri at the SDDM session chooser. Checks:
