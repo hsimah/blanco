@@ -14,6 +14,8 @@ Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland composito
 | Memory | 32 GB | 32 GB |
 | Distro | CachyOS | Fedora |
 
+Rebuilding the personal machine from scratch (CachyOS → Fedora): see [docs/fedora-setup.md](docs/fedora-setup.md).
+
 ## Structure
 
 Each tool is its own stow package mirroring `$HOME`. Shared packages live in
