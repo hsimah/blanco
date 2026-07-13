@@ -1,5 +1,5 @@
-test -f /usr/share/cachyos-fish-config/cachyos-config.fish
-    and source /usr/share/cachyos-fish-config/cachyos-config.fish
+test -f ~/.config/fish/local.fish
+    and source ~/.config/fish/local.fish
 
 set -gx SSH_AUTH_SOCK "$XDG_RUNTIME_DIR/ssh-agent.socket"
 

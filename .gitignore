@@ -6,3 +6,6 @@ configs/noctalia/.config/noctalia/colors.json
 
 # MIME defaults are per-machine and rewritten in place by desktop apps
 mimeapps.list
+
+# Machine-local fish overrides (per-machine, untracked; sourced by config.fish)
+configs/fish/.config/fish/local.fish

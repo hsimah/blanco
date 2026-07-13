@@ -63,8 +63,9 @@ blanco/         # overlay, stowed only on the personal host
     niri/.config/niri/local.kdl
 ```
 
-`fish/config.fish` is portable across machines: it sources the CachyOS base
-config only when present (`test -f … and source …`).
+`fish/config.fish` sources an untracked `~/.config/fish/local.fish` when present
+(`test -f … and source …`) — the machine-local override seam for per-machine
+environment, secrets, or aliases without splitting the package.
 
 ## Usage
 

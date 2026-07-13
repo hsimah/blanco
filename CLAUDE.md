@@ -40,7 +40,7 @@ Each tool is its own stow package; the tree inside mirrors `$HOME`. Shared confi
 
 Shared `configs/` packages are stowed on every machine; work-only divergence lives in the `work/` overlay. Within-file portability is handled inside the configs rather than by splitting a package:
 
-- **fish**: `config.fish` sources the CachyOS base config only when present (`test -f … and source …`) and sets `SSH_AUTH_SOCK` for the systemd ssh-agent; custom prompt functions (calavera, fjord, space-needle, viking) ship in the package.
+- **fish**: `config.fish` sources an untracked `~/.config/fish/local.fish` when present (`test -f … and source …`) as the machine-local override seam, and sets `SSH_AUTH_SOCK` for the systemd ssh-agent; custom prompt functions (calavera, fjord, space-needle, viking) ship in the package.
 - **kitty**: Slate theme via `include current-theme.conf`.
 - **niri**: single `config.kdl`; the most likely candidate for future per-machine divergence (display outputs) via an `include "local.kdl"` split.
 
