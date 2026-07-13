@@ -52,7 +52,10 @@ case "$HOST" in
     *)              OVERLAY="" ;;
 esac
 
-STOW_FLAGS=(-R)
+# --no-folding: symlink each file individually rather than folding a whole
+# directory into one symlink, so apps that write new files into ~/.config/<tool>
+# write into the real dir, not into this repo.
+STOW_FLAGS=(-R --no-folding)
 [[ $DRY_RUN -eq 1 ]] && STOW_FLAGS+=(-n -v)
 
 fail=0

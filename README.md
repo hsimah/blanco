@@ -72,7 +72,10 @@ environment, secrets, or aliases without splitting the package.
 `deploy.sh` stows every shared package plus this host's overlay, and sets the
 MIME default. It is idempotent and non-destructive — existing symlinks are
 refreshed, and real files that would conflict are reported (`SKIP`), never
-clobbered. It exits non-zero if anything was skipped.
+clobbered. It exits non-zero if anything was skipped. Stow runs with
+`--no-folding`, so each file is symlinked individually (a package dir is a real
+directory, not one folded directory symlink) — new files an app writes into
+`~/.config/<tool>` land in the real dir, not in this repo.
 
 ```bash
 ./deploy.sh              # stow everything for this host
