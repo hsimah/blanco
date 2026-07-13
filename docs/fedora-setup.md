@@ -69,8 +69,9 @@ git clone git@github.com:hsimah/blanco.git ~/Projects/blanco
 
 `bootstrap.sh` does the rest: installs the curated package set, noctalia via the
 Terra repo (which pulls in **quickshell, brightnessctl, gpu-screen-recorder**),
-the flatpaks, sets fish as the shell, enables sddm, and runs `deploy.sh`. It's
-idempotent — safe to re-run.
+the flatpaks, sets fish as the shell, enables sddm, runs `deploy.sh`, then clones
+Doom to `~/.config/emacs` and runs `doom sync`. It's idempotent — safe to re-run.
+(It refuses to run on the work host unless `BOOTSTRAP_FORCE=1`.)
 
 ```bash
 cd ~/Projects/blanco && ./bootstrap.sh

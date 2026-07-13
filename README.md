@@ -71,10 +71,11 @@ config only when present (`test -f … and source …`).
 `deploy.sh` stows every shared package plus this host's overlay, and sets the
 MIME default. It is idempotent and non-destructive — existing symlinks are
 refreshed, and real files that would conflict are reported (`SKIP`), never
-clobbered.
+clobbered. It exits non-zero if anything was skipped.
 
 ```bash
-./deploy.sh
+./deploy.sh              # stow everything for this host
+./deploy.sh --dry-run    # show what stow would do, change nothing
 ```
 
 For one-off operations, stow directly with `--dir`:
@@ -90,7 +91,20 @@ stow --dir=configs --target=$HOME --delete fish
 After stowing, live files are symlinks to the repo — edits are in-place.
 
 On a fresh Fedora install, `bootstrap.sh` runs first: it installs the package
-set, noctalia, and flatpaks, then calls `deploy.sh`. See [docs/fedora-setup.md](docs/fedora-setup.md).
+set, noctalia, and flatpaks, calls `deploy.sh`, and sets up Doom Emacs. See
+[docs/fedora-setup.md](docs/fedora-setup.md).
+
+## Tests
+
+`test.sh` runs the suite in `tests/` (self-contained `tests/test_*.sh` scripts
+that deploy into a throwaway `$HOME` and assert on the result). GitHub Actions
+([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs it on every
+push and pull request. Requires `stow`.
+
+```bash
+./test.sh              # run all tests
+./test.sh dry_run      # only tests whose filename contains "dry_run"
+```
 
 ## Adding a new package
 
@@ -133,10 +147,10 @@ is built with png/svg support only — no webp.
 `doom` tracks only the config layer — `init.el` (enabled modules), `config.el`
 (personal settings), and `packages.el`. The Doom framework itself lives in
 `~/.config/emacs` as its own git checkout and is **not tracked** here; it is
-managed with `doom sync`/`doom upgrade`. On a fresh machine, clone Doom to
-`~/.config/emacs`, `stow` this package, then run `doom sync`. Fedora's `emacs`
-package (30.x) already ships with pgtk + native-comp, which niri (Wayland)
-wants.
+managed with `doom sync`/`doom upgrade`. On a fresh machine `bootstrap.sh`
+handles this: it clones Doom to `~/.config/emacs` (if missing) and runs `doom
+sync` after stowing this config package. Fedora's `emacs` package (30.x) already
+ships with pgtk + native-comp, which niri (Wayland) wants.
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
