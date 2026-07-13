@@ -6,9 +6,10 @@ set -euo pipefail
 #   git clone git@github.com:hsimah/blanco.git ~/Projects/blanco
 #   cd ~/Projects/blanco && ./bootstrap.sh
 #
-# Installs the curated package set, noctalia (via Terra), flatpaks, sets fish as
-# the shell, enables the login manager, stows configs via deploy.sh, and sets up
-# Doom Emacs (clone + doom sync).
+# Installs the curated package set, noctalia (via Terra), yazi (via cargo),
+# Claude Code (native installer), flatpaks, sets fish as the shell, enables the
+# login manager, stows configs via deploy.sh, and sets up Doom Emacs (clone +
+# doom sync).
 # Idempotent — safe to re-run. The optional NVIDIA dGPU is deliberately left out
 # (the AMD iGPU drives everything); see the README to enable it later.
 
@@ -31,8 +32,8 @@ DNF_PKGS=(
     niri sddm
     pipewire wireplumber pipewire-pulseaudio
     xdg-desktop-portal xdg-desktop-portal-gtk
-    kitty fish fuzzel micro neovim yazi emacs fastfetch
-    ripgrep fd-find wl-clipboard cliphist pwvucontrol
+    kitty fish fuzzel emacs fastfetch nano
+    ripgrep fd-find wl-clipboard cliphist cargo
     flatpak git stow jetbrains-mono-fonts
 )
 FLATPAKS=(
@@ -47,6 +48,20 @@ echo "==> noctalia via Terra (pulls quickshell, brightnessctl, gpu-screen-record
 sudo dnf install -y --nogpgcheck \
     --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
 sudo dnf install -y noctalia-shell
+
+echo "==> yazi (via cargo, not COPR — crates.io is the trusted source)"
+if [[ ! -x "$HOME/.cargo/bin/yazi" ]]; then
+    cargo install --locked yazi-fm yazi-cli
+else
+    echo "  already installed"
+fi
+
+echo "==> Claude Code (native installer, self-updating)"
+if [[ ! -x "$HOME/.local/bin/claude" ]]; then
+    curl -fsSL https://claude.ai/install.sh | bash
+else
+    echo "  already installed"
+fi
 
 echo "==> Login manager"
 sudo systemctl enable sddm

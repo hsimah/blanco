@@ -97,9 +97,9 @@ fi
 # mimeapps.list is per-machine and untracked; set the editor default explicitly.
 if command -v xdg-mime >/dev/null 2>&1; then
     if [[ $DRY_RUN -eq 1 ]]; then
-        echo "==> Would set MIME default: nvim.desktop for text/plain, text/markdown"
+        echo "==> Would set MIME default: emacs.desktop for text/plain, text/markdown"
     else
-        xdg-mime default nvim.desktop text/plain text/markdown || true
+        xdg-mime default emacs.desktop text/plain text/markdown || true
     fi
 fi
 

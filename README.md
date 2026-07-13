@@ -35,14 +35,10 @@ configs/        # ~/.config payloads, stowed everywhere
   gtk-3.0/.config/gtk-3.0/
   gtk-4.0/.config/gtk-4.0/
   kitty/.config/kitty/
-  micro/.config/micro/
   niri/.config/niri/
   noctalia/.config/noctalia/
-  nvim/.config/nvim/
 
 local/          # ~/.local payloads, stowed everywhere
-  micro/.local/share/applications/micro.desktop
-  nvim/.local/share/applications/nvim.desktop
   yazi/.local/share/applications/yazi.desktop
   yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
 
@@ -139,23 +135,24 @@ Shared config packages live in `configs/` and are stowed on every machine:
 | gtk-3.0 | `~/.config/gtk-3.0/` |
 | gtk-4.0 | `~/.config/gtk-4.0/` |
 | kitty | `~/.config/kitty/` |
-| micro | `~/.config/micro/` |
 | niri | `~/.config/niri/` |
 | noctalia | `~/.config/noctalia/` |
-| nvim | `~/.config/nvim/` |
 
-micro, nvim, and yazi ship desktop launchers via the `local/` tree, each
-running in kitty (`Terminal=false`). micro and nvim (`kitty {micro,nvim} %F`)
-advertise `text/*` MIME types so file managers can open text files in kitty;
-nvim is the preferred editor. yazi (`kitty yazi %f`) is the terminal file
-manager and advertises `inode/directory` so it can also handle folders; it
-ships its own PNG app icon under the hicolor theme (`Icon=yazi`), since fuzzel
-is built with png/svg support only — no webp.
+yazi ships a desktop launcher via the `local/` tree, running in kitty
+(`Terminal=false`, `kitty yazi %f`) and advertising `inode/directory` so it can
+handle folders as a terminal file manager; it ships its own PNG app icon under
+the hicolor theme (`Icon=yazi`), since fuzzel is built with png/svg support
+only — no webp. yazi itself is **not** a `dnf` package — it's not in Fedora's
+repos, and the only packaging available is a third-party COPR, which we don't
+want to trust. `bootstrap.sh` instead builds it from source via `cargo install
+--locked yazi-fm yazi-cli` (crates.io, the official Rust registry), which
+lands in `~/.cargo/bin` (on `PATH` via `fish/config.fish`).
 
 `doom` tracks only the config layer — `init.el` (enabled modules), `config.el`
 (personal settings), `packages.el`, and `work-cheatsheet.org` (a keybinding
 reference for the Meta OnDemand workflow). The Doom framework itself lives in
 `~/.config/emacs` as its own git checkout and is **not tracked** here; it is
+<<<<<<< HEAD
 managed with `doom sync`/`doom upgrade`. On a fresh machine `bootstrap.sh`
 handles this: it clones Doom to `~/.config/emacs` (if missing) and runs `doom
 sync` after stowing this config package. Fedora's `emacs` package (30.x) already
@@ -178,6 +175,14 @@ hook (other open Hack buffers) and on demand with `SPC c R`. Doom's `treemacs`,
 `workspaces`, and `lsp` modules are disabled — the project model doesn't fit a
 single giant monorepo — but hh's own lsp-mode is used deliberately for
 definitions.
+=======
+managed with `doom sync`/`doom upgrade`. On a fresh machine, clone Doom to
+`~/.config/emacs`, `stow` this package, then run `doom sync`. Fedora's `emacs`
+package (30.x) already ships with pgtk + native-comp, which niri (Wayland)
+wants. Emacs/Doom is the primary editor; `nano` (also in `DNF_PKGS`) is the
+plain terminal fallback and doesn't need a package here — no desktop launcher,
+no MIME association, just invoked directly when wanted.
+>>>>>>> 0f5fac0 ([dotfiles][fish] switch editor to emacs+nano, build yazi from cargo, add Claude Code install)
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
@@ -185,7 +190,7 @@ place by desktop apps whenever you pick "always open with…". Defaults are set
 declaratively in the bootstrap instead:
 
 ```bash
-xdg-mime default nvim.desktop text/plain text/markdown
+xdg-mime default emacs.desktop text/plain text/markdown
 ```
 
 The per-machine overlays hold each host's niri divergence and work-only

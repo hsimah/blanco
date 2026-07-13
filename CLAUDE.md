@@ -34,7 +34,7 @@ local/[tool]/.local/...                       # shared ~/.local payloads (launch
 work/{configs,local}/[tool]/...               # work-only overlay, same layout
 ```
 
-Each tool is its own stow package; the tree inside mirrors `$HOME`. Shared config packages live in `configs/`; shared `~/.local` payloads — desktop launchers (`micro`, `nvim`) — live in `local/`. Machine-specific packages live in an overlay: the work-only connection scripts (`dev-connect-www`, `dev-connect-devserver`) live in `work/local/`. Overlays mirror the `configs/`+`local/` split so `deploy.sh` can stow them the same way.
+Each tool is its own stow package; the tree inside mirrors `$HOME`. Shared config packages live in `configs/`; shared `~/.local` payloads — desktop launchers (`yazi`) — live in `local/`. Machine-specific packages live in an overlay: the work-only connection scripts (`dev-connect-www`, `dev-connect-devserver`) live in `work/local/`. Overlays mirror the `configs/`+`local/` split so `deploy.sh` can stow them the same way.
 
 ## Environment Differences
 
