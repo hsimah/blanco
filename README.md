@@ -12,9 +12,12 @@ Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland composito
 | CPU | AMD Ryzen 9 8945HS (8C/16T) | Intel Core Ultra 7 268V (8C/8T) |
 | GPU | Radeon 780M (iGPU) + NVIDIA RTX 4070 Mobile | Intel Arc Graphics 140V (iGPU) |
 | Memory | 32 GB | 32 GB |
-| Distro | CachyOS | Fedora |
+| Distro | Fedora | Fedora |
 
-Rebuilding the personal machine from scratch (CachyOS → Fedora): see [docs/fedora-setup.md](docs/fedora-setup.md).
+The personal laptop's desktop, external monitor, and gaming all run on the AMD
+iGPU; the discrete NVIDIA RTX 4070 is optional. To enable it later: install RPM
+Fusion, then `akmod-nvidia xorg-x11-drv-nvidia-cuda`, reboot, and run apps on the
+dGPU with `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia <app>`.
 
 ## Structure
 
@@ -95,8 +98,7 @@ stow --dir=configs --target=$HOME --delete fish
 After stowing, live files are symlinks to the repo — edits are in-place.
 
 On a fresh Fedora install, `bootstrap.sh` runs first: it installs the package
-set, noctalia, and flatpaks, calls `deploy.sh`, and sets up Doom Emacs. See
-[docs/fedora-setup.md](docs/fedora-setup.md).
+set, noctalia, and flatpaks, calls `deploy.sh`, and sets up Doom Emacs.
 
 ## Tests
 

@@ -9,7 +9,8 @@ set -euo pipefail
 # Installs the curated package set, noctalia (via Terra), flatpaks, sets fish as
 # the shell, enables the login manager, stows configs via deploy.sh, and sets up
 # Doom Emacs (clone + doom sync).
-# Idempotent — safe to re-run. NVIDIA is deliberately left out (see docs/fedora-setup.md).
+# Idempotent — safe to re-run. The optional NVIDIA dGPU is deliberately left out
+# (the AMD iGPU drives everything); see the README to enable it later.
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
 
@@ -88,5 +89,5 @@ cat <<'EOF'
 Bootstrap done. Still manual (by design):
   - Restore SSH keys from the USB backup (encrypted; needs your passphrase).
   - Reboot, then pick niri at the SDDM session chooser.
-  - Optional NVIDIA: see docs/fedora-setup.md.
+  - Optional NVIDIA dGPU: see the README.
 EOF
