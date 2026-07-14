@@ -151,12 +151,23 @@ ships its own PNG app icon under the hicolor theme (`Icon=yazi`), since fuzzel
 is built with png/svg support only — no webp.
 
 `doom` tracks only the config layer — `init.el` (enabled modules), `config.el`
-(personal settings), and `packages.el`. The Doom framework itself lives in
+(personal settings), `packages.el`, and `work-cheatsheet.org` (a keybinding
+reference for the Meta OnDemand workflow). The Doom framework itself lives in
 `~/.config/emacs` as its own git checkout and is **not tracked** here; it is
 managed with `doom sync`/`doom upgrade`. On a fresh machine `bootstrap.sh`
 handles this: it clones Doom to `~/.config/emacs` (if missing) and runs `doom
 sync` after stowing this config package. Fedora's `emacs` package (30.x) already
 ships with pgtk + native-comp, which niri (Wayland) wants.
+
+`config.el` also carries the Meta OnDemand monorepo setup (gated on the Meta
+`emacs-packages` dir, so it's inert off-OD): **myles** live fuzzy file-find on
+`SPC SPC` (replacing projectile's O(repo) find-file, which locks the UI on
+fbsource), **BigGrep** content search on `SPC s p`/`SPC s P`, and a live Sapling
+smartlog on `SPC g S`. Projectile is kept for Doom's plumbing but barred from
+indexing the checkouts, and `fb-master`'s lsp-mode auto-start is neutered (it
+prompts to import a project root on every hack file). The `treemacs`,
+`workspaces`, and `lsp` modules are disabled — the project model doesn't fit a
+single giant monorepo.
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in

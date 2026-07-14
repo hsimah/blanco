@@ -1,0 +1,89 @@
+#+TITLE: Doom Emacs — Work (Meta OnDemand) Cheat Sheet
+#+STARTUP: showall
+
+Leader is =SPC= (normal state). "=C-w=" chords are evil window commands.
+These features are OnDemand-only (gated on the Meta emacs-packages dir).
+
+* Sapling smartlog
+| Key       | Command          | What it does                                  |
+|-----------+------------------+-----------------------------------------------|
+| =SPC g S= | ~my/sl-smartlog~ | Live =sl ssl= in a read-only buffer, refreshed |
+|           |                  | every 5s, ANSI-colored. Pure elisp (no vterm). |
+| =q=       | ~quit-window~    | Close the smartlog window                      |
+
+The timer only refreshes while the buffer is visible, and cancels itself
+when the buffer is killed.
+
+* BigGrep (content search)
+Results land in a grep buffer: a list of =path:line: match= lines.
+
+| Key       | Command | Searches                          |
+|-----------+---------+-----------------------------------|
+| =SPC s p= | ~xbgs~  | fbsource (fbcode+fbobjc+…+xplat)  |
+| =SPC s P= | ~tbgs~  | www                               |
+
+Other repos via =M-x= (pattern =<repo>bg<type>=): =fbgs= fbcode, =zbgs= all repos.
+Type suffixes: =s= string, =r= regexp (RE2), =f= filename.
+(=xbgs= needs =(xbgx-enable-repo "x")= — done in config.el.)
+
+** Working the results buffer
+| Key         | Does                                            |
+|-------------+-------------------------------------------------|
+| =C-w j=     | Focus the results window (it opens below)        |
+| =j= / =k=   | Move line to line                                |
+| =RET=       | Open the file at that match (in adjacent window) |
+| =M-g n/p=   | Next / previous match (~next-error~)             |
+| =q=         | Close the results window                         |
+
+* myles (fuzzy filename find)
+| Key         | Command        | What                                   |
+|-------------+----------------+----------------------------------------|
+| =SPC SPC=   | ~myles-consult~ | Fuzzy-find a file across ~myles-roots~ |
+|             |                | (=~/fbsource=, =~/www=). Type to narrow, |
+|             |                | =RET= opens the highlighted candidate.  |
+
+Unlike BigGrep (a results buffer), myles is a minibuffer prompt — pick and
+=RET= opens directly, no intermediate buffer.
+
+* Moving panes
+** Emacs windows (inside Doom)
+| Key             | Does                                    |
+|-----------------+-----------------------------------------|
+| =C-w h/j/k/l=   | Move focus left/down/up/right           |
+| =C-w w=         | Cycle to next window                     |
+| =C-w s= / =C-w v= | Split horizontal / vertical           |
+| =C-w c=         | Close focused window (=SPC w d= too)     |
+| =C-w o=         | Close all *other* windows (maximize)     |
+| =C-w =          | Balance window sizes                     |
+| =SPC w=         | Full window leader map (which-key lists) |
+
+** tmux panes (the OD session: doom left, 2 shells right)
+Prefix is =C-b=.
+| Key                | Does                          |
+|--------------------+-------------------------------|
+| =C-b= then arrow   | Move between panes            |
+| =C-b o=            | Cycle panes                   |
+| =C-b z=            | Zoom (toggle fullscreen) pane |
+| =C-b d=            | Detach (session survives)     |
+
+* Saving & quitting
+"Modified buffers exist" = open file buffers with unsaved edits.
+| Key         | Does                                              |
+|-------------+---------------------------------------------------|
+| =SPC f s=   | Save current buffer (=C-x C-s=)                    |
+| =C-x s=     | Save-some-buffers: step through each dirty file    |
+|             | (=y= save, =n= skip, =!= save all)                |
+| =SPC b b=   | List buffers (=*= marks modified)                 |
+| =SPC b k=   | Kill buffer (discards its unsaved changes)        |
+| =M-x revert-buffer= | Reload current file from disk, dropping edits |
+| =SPC q q=   | Quit Emacs (=C-x C-c=; prompts if buffers dirty)  |
+
+Smartlog / grep-results buffers don't visit files, so they never trigger
+the "modified buffers" prompt even when technically modified.
+
+* Misc
+| Key         | Does                                       |
+|-------------+--------------------------------------------|
+| =SPC h r r= | Reload Doom config (config.el changes)     |
+| =SPC h k=   | Describe key (what is X bound to, and where) |
+| =C-g=       | Cancel / abort (interrupts a stuck command) |
