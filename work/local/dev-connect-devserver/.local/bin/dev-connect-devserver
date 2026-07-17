@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-exec od-connect "" -n devvm10852.eag0
+set -euo pipefail
+env_file="${DOTFILES:-$HOME/.dotfiles}/.env"
+[[ -f $env_file ]] && source "$env_file"
+: "${DEVSERVER_HOST:?set DEVSERVER_HOST in $env_file}"
+exec od-connect "" -n "$DEVSERVER_HOST"

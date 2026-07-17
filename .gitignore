@@ -9,3 +9,6 @@ mimeapps.list
 
 # Machine-local fish overrides (per-machine, untracked; sourced by config.fish)
 configs/fish/.config/fish/local.fish
+
+# Machine-local hostnames/secrets (untracked; sourced by launchers, e.g. DEVSERVER_HOST)
+.env
