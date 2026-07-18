@@ -50,6 +50,8 @@ work/           # overlay, stowed only on the work host
   configs/
     niri/.config/niri/local.kdl
   local/
+    claude-code-work/.local/share/applications/claude-code-work.desktop
+    claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
     od-connect/.local/bin/od-connect
     od-connect/.local/share/od-connect/od-tmux-boot.sh
     dev-connect-devserver/.local/bin/dev-connect-devserver
@@ -191,6 +193,12 @@ Plexamp, Workplace (Chrome `--app`), the Calendar PWA, and VS Code @ Meta; on
 (`~/.local/share/applications/workplace.desktop`) that opens Workplace as a
 Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`), giving
 it the stable `chrome-fb.workplace.com__-Default` app-id the niri rule matches.
+
+`claude-code-work` is a `work/local/` package: a fuzzel launcher
+(`~/.local/share/applications/claude-code-work.desktop`, "Claude Code @ Work")
+that opens `~/work` in kitty and runs `claude`. It ships its own icon
+(`claude-code.svg`, the Claude sunburst) into the hicolor theme so fuzzel
+resolves `Icon=claude-code`.
 
 The `work/` overlay also holds the OnDemand connection tooling. A shared
 launcher, `od-connect`, does the real work; the three `dev-connect-*` packages

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Claude Code @ Work
+GenericName=AI Coding Agent
+Comment=Open ~/work and run Claude Code
+Icon=claude-code
+Type=Application
+Categories=Development;Utility;
+Keywords=claude;ai;agent;code;terminal;
+Exec=kitty sh -c "cd ~/work && exec claude"
+StartupNotify=false
+Terminal=false
