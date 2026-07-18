@@ -267,16 +267,29 @@ CMD is the BigGrep CLI name, e.g. \"xbgs\" (fbsource) or \"tbgs\" (www)."
 ;; `revert-buffer' does for diagnostics, minus the disk read, without discarding
 ;; unsaved edits (didOpen re-sends live buffer text), and without a session
 ;; restart. Cheap: 2 notifications per buffer against an already-current daemon.
+;; NOTE: relies on lsp-mode PRIVATE API — the `lsp--'-prefixed internal
+;; functions `lsp--text-document-did-close' / `lsp--text-document-did-open'.
+;; Fine while fb-master pins lsp-mode 10.0.0; revisit on any lsp-mode bump.
+;; The `t' passed to did-close is `keep-workspace-alive' (verified against the
+;; pinned 10.0.0 signature): it suppresses `lsp--shutdown-workspace' so the hh
+;; daemon connection survives the replay and diagnostics are not torn down.
+(defun my/lsp--refresh-current-buffer ()
+  "Replay didClose(keep-alive)+didOpen so hh recomputes+republishes diagnostics
+for the live buffer.  Guarded so one bad buffer can't break `after-save-hook'.
+Returns non-nil when a refresh was actually issued."
+  (when (and (bound-and-true-p lsp-mode) buffer-file-name (lsp-workspaces))
+    (with-demoted-errors "my/lsp refresh: %S"
+      (lsp--text-document-did-close t)
+      (lsp--text-document-did-open)
+      t)))
+
 (defun my/lsp-refresh-diagnostics (&optional all)
-  "Re-request diagnostics for the current lsp buffer (or ALL with a prefix arg)."
+  "Refresh diagnostics for the current lsp buffer (or ALL with a prefix arg)."
   (interactive "P")
   (let ((bufs (if all (buffer-list) (list (current-buffer)))) (n 0))
     (dolist (buf bufs)
       (with-current-buffer buf
-        (when (and (bound-and-true-p lsp-mode) buffer-file-name (lsp-workspaces))
-          (lsp--text-document-did-close t)
-          (lsp--text-document-did-open)
-          (setq n (1+ n)))))
+        (when (my/lsp--refresh-current-buffer) (setq n (1+ n)))))
     (when (called-interactively-p 'any)
       (message "lsp: refreshed diagnostics for %d buffer(s)" n))))
 
@@ -289,9 +302,8 @@ keybinding for out-of-band changes (rebase, sl, another editor)."
       (dolist (buf (buffer-list))
         (unless (eq buf this)
           (with-current-buffer buf
-            (when (and (bound-and-true-p lsp-mode) buffer-file-name (lsp-workspaces))
-              (lsp--text-document-did-close t)
-              (lsp--text-document-did-open))))))))
+            (when (derived-mode-p 'hack-mode)
+              (my/lsp--refresh-current-buffer))))))))
 
 ;; SPC c R = refresh this buffer; SPC u SPC c R = refresh all open buffers.
 (map! :leader :desc "LSP refresh diagnostics" "c R" #'my/lsp-refresh-diagnostics)

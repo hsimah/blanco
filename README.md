@@ -164,12 +164,20 @@ ships with pgtk + native-comp, which niri (Wayland) wants.
 `config.el` also carries the Meta OnDemand monorepo setup (gated on the Meta
 `emacs-packages` dir, so it's inert off-OD): **myles** live fuzzy file-find on
 `SPC SPC` (replacing projectile's O(repo) find-file, which locks the UI on
-fbsource), **BigGrep** content search on `SPC s p`/`SPC s P`, and a live Sapling
-smartlog on `SPC g S`. Projectile is kept for Doom's plumbing but barred from
-indexing the checkouts, and `fb-master`'s lsp-mode auto-start is neutered (it
-prompts to import a project root on every hack file). The `treemacs`,
+fbsource), **BigGrep** content search — live/incremental on `SPC s p`/`SPC s P`,
+static grep-buffer versions on `SPC s x`/`SPC s X` — and **Sapling** on `SPC g`:
+a live smartlog (`SPC g S`), a unified diff (`SPC g D`), and a side-by-side ediff
+of a changed file (`SPC g d`). Projectile is kept for Doom's plumbing but barred
+from indexing the checkouts (`.hhconfig` marks the fbsource/www root so lsp
+adopts it silently). Go-to-definition comes from **hh_client's LSP** (loaded by
+`fb-master`, daemon-backed by `hh_server`, so no local indexing): `gd`/`gD` reach
+it through Doom's xref fallback even with Doom's own `lsp` module left disabled.
+lsp file-watchers stay off — their workspace walk hangs enumerating the EdenFS
+source trees — so cross-file diagnostics are refreshed instead by an `after-save`
+hook (other open Hack buffers) and on demand with `SPC c R`. Doom's `treemacs`,
 `workspaces`, and `lsp` modules are disabled — the project model doesn't fit a
-single giant monorepo.
+single giant monorepo — but hh's own lsp-mode is used deliberately for
+definitions.
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
