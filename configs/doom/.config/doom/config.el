@@ -255,6 +255,48 @@ CMD is the BigGrep CLI name, e.g. \"xbgs\" (fbsource) or \"tbgs\" (www)."
                                       ; are pathologically slow on the monorepo
         lsp-restart 'auto-restart))
 
+;; Cross-file diagnostic refresh WITHOUT file watchers. lsp-enable-file-watchers
+;; stays nil (its workspace walk hangs on EdenFS: lsp-watch-root-folder enumerates
+;; every non-ignored directory under the www root synchronously at session init,
+;; and the only dirs heavy enough to matter ARE the source trees — flib alone is
+;; 6 figures of dirs — so there is no prune that is both bounded and useful).
+;;
+;; Instead: when a Hack buffer's diagnostics go stale because a symbol changed in
+;; another file, replay textDocument/didClose(keep-workspace-alive)+didOpen so hh
+;; recomputes and re-publishes for the current buffer contents. This is what
+;; `revert-buffer' does for diagnostics, minus the disk read, without discarding
+;; unsaved edits (didOpen re-sends live buffer text), and without a session
+;; restart. Cheap: 2 notifications per buffer against an already-current daemon.
+(defun my/lsp-refresh-diagnostics (&optional all)
+  "Re-request diagnostics for the current lsp buffer (or ALL with a prefix arg)."
+  (interactive "P")
+  (let ((bufs (if all (buffer-list) (list (current-buffer)))) (n 0))
+    (dolist (buf bufs)
+      (with-current-buffer buf
+        (when (and (bound-and-true-p lsp-mode) buffer-file-name (lsp-workspaces))
+          (lsp--text-document-did-close t)
+          (lsp--text-document-did-open)
+          (setq n (1+ n)))))
+    (when (called-interactively-p 'any)
+      (message "lsp: refreshed diagnostics for %d buffer(s)" n))))
+
+(defun my/lsp-refresh-others-after-save ()
+  "After saving a Hack file, refresh every OTHER open Hack buffer so cross-file
+diagnostics settle on their own. Only catches saves made in Emacs; use the
+keybinding for out-of-band changes (rebase, sl, another editor)."
+  (when (and (bound-and-true-p lsp-mode) (derived-mode-p 'hack-mode))
+    (let ((this (current-buffer)))
+      (dolist (buf (buffer-list))
+        (unless (eq buf this)
+          (with-current-buffer buf
+            (when (and (bound-and-true-p lsp-mode) buffer-file-name (lsp-workspaces))
+              (lsp--text-document-did-close t)
+              (lsp--text-document-did-open))))))))
+
+;; SPC c R = refresh this buffer; SPC u SPC c R = refresh all open buffers.
+(map! :leader :desc "LSP refresh diagnostics" "c R" #'my/lsp-refresh-diagnostics)
+(add-hook 'after-save-hook #'my/lsp-refresh-others-after-save)
+
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `with-eval-after-load' block, otherwise Doom's defaults may override your
