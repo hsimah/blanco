@@ -59,6 +59,16 @@
 ;; refreshed on a timer. Pure elisp, no vterm/native build needed (SPC g S).
 (require 'ansi-color)
 
+(defun my/sl-root (&optional dir)
+  "Return the Sapling repo root for DIR (default `default-directory'), or nil.
+On EdenFS the dotdir is `.hg' (not `.sl'), so we check both, then fall back to
+asking `sl root' directly."
+  (let ((default-directory (or dir default-directory)))
+    (or (locate-dominating-file default-directory ".hg")
+        (locate-dominating-file default-directory ".sl")
+        (let ((r (string-trim (shell-command-to-string "sl root 2>/dev/null"))))
+          (and (not (string-empty-p r)) (file-name-as-directory r))))))
+
 (defvar my/sl-smartlog-timer nil)
 
 (defun my/sl-smartlog-refresh ()
@@ -80,8 +90,7 @@
 (defun my/sl-smartlog ()
   "Show a live Sapling super-smartlog for the current repo (no vterm needed)."
   (interactive)
-  (let* ((root (or (locate-dominating-file default-directory ".sl")
-                   default-directory))
+  (let* ((root (or (my/sl-root) default-directory))
          (buf (get-buffer-create "*sl-smartlog*")))
     (with-current-buffer buf
       (setq default-directory root)
@@ -92,6 +101,59 @@
     (my/sl-smartlog-refresh)))
 
 (map! :leader :desc "Sapling smartlog" "g S" #'my/sl-smartlog)
+
+;; Sapling diff of uncommitted changes. Sapling isn't git, so magit/vc are out;
+;; we shell out to `sl' like the smartlog does. `sl status'/`sl cat' resolve paths
+;; relative to CWD, so both run from the repo root to keep paths aligned.
+(defun my/sl--changed-files ()
+  "Return an alist of (LABEL . REPO-RELATIVE-PATH) for uncommitted changes."
+  (let* ((default-directory (my/sl-root))
+         (lines (split-string (shell-command-to-string "sl status") "\n" t)))
+    (delq nil
+          (mapcar (lambda (l)
+                    (when (string-match "\\`\\(.\\) \\(.+\\)\\'" l)
+                      (cons l (match-string 2 l))))
+                  lines))))
+
+(defun my/sl-diff ()
+  "Show a unified diff of uncommitted changes in a read-only `diff-mode' buffer."
+  (interactive)
+  (let* ((root (my/sl-root))
+         (buf (get-buffer-create "*sl-diff*")))
+    (with-current-buffer buf
+      (setq buffer-read-only nil
+            default-directory root)
+      (erase-buffer)
+      (call-process "sl" nil t nil "diff")
+      (when (zerop (buffer-size)) (insert "No uncommitted changes.\n"))
+      (goto-char (point-min))
+      (diff-mode)
+      (setq buffer-read-only t))
+    (pop-to-buffer buf)))
+
+(defun my/sl-ediff-file (file)
+  "Side-by-side ediff of FILE's uncommitted changes (base = current commit `.').
+Interactively, live-filter the changed files and pick one (RET)."
+  (interactive
+   (let ((files (my/sl--changed-files)))
+     (unless files (user-error "No uncommitted changes"))
+     (list (cdr (assoc (completing-read "sl ediff: " files nil t) files)))))
+  (let* ((root (my/sl-root))
+         (default-directory root)
+         (abs (expand-file-name file root))
+         (base (get-buffer-create (format "*sl base: %s*" (file-name-nondirectory file)))))
+    (with-current-buffer base
+      (setq buffer-read-only nil
+            default-directory root)
+      (erase-buffer)
+      (call-process "sl" nil t nil "cat" "-r" "." file)
+      (let ((buffer-file-name abs)) (set-auto-mode))  ; syntax-highlight base like the file
+      (setq buffer-read-only t))
+    (ediff-buffers base (find-file-noselect abs))))
+
+(map! :leader
+      :desc "Sapling ediff file (split)" "g d" #'my/sl-ediff-file
+      :desc "Sapling diff (unified)"     "g D" #'my/sl-diff)
 
 ;; Meta monorepo nav (OnDemand only): myles = fuzzy filename, tbgX = BigGrep content.
 ;; Never gate the myles keybind on fb-master: if it fails to load, SPC SPC falls
@@ -107,9 +169,54 @@
       (map! :leader :desc "Find file (myles)" "SPC" #'myles-consult))
     (when (require 'tbgX nil t)
       (xbgx-enable-repo "x")
+      ;; Static grep-buffer search stays available on s x / s X; the live
+      ;; consult versions (below) take the primary s p / s P bindings.
       (map! :leader
-            :desc "BigGrep fbsource" "s p" #'xbgs
-            :desc "BigGrep www"      "s P" #'tbgs))))
+            :desc "BigGrep fbsource (static)" "s x" #'xbgs
+            :desc "BigGrep www (static)"      "s X" #'tbgs))))
+
+;; Live BigGrep content search (VS Code-style): type text, see file:line:match
+;; filter live as you type, RET opens at the matching line (with preview). Reuses
+;; consult's grep machinery — the builder shells out to xbgs (fbsource) / tbgs
+;; (www) per keystroke. Those print `file:line:col:text' relative to ~, but
+;; consult expects ripgrep's `file\0line:text' (NUL after the filename, no
+;; column), so a tiny perl step rewrites each line before consult parses it.
+(defvar my/biggrep-limit 500
+  "Max results per BigGrep query (passed as -n).")
+(defvar my/biggrep-min-input 3
+  "Minimum query length before BigGrep runs (content search is heavier than
+filename search, so this is stricter than `consult-async-min-input').")
+
+(defun my/biggrep--make-builder (cmd)
+  "Return a `consult--grep' builder that live-searches with BigGrep CMD.
+CMD is the BigGrep CLI name, e.g. \"xbgs\" (fbsource) or \"tbgs\" (www)."
+  (lambda (_paths)  ; BigGrep queries its own indexed corpus; local paths unused
+    (lambda (input)
+      (pcase-let ((`(,arg . ,opts) (consult--command-split input)))
+        (when (>= (length (string-trim arg)) my/biggrep-min-input)
+          (cons (list "sh" "-c"
+                      (format "%s -i -n %d %s -- %s 2>/dev/null | perl -pe 's/^([^:]+):([0-9]+):[0-9]+:/$1\\x00$2:/'"
+                              cmd my/biggrep-limit
+                              (mapconcat #'shell-quote-argument opts " ")
+                              (shell-quote-argument arg)))
+                (apply-partially #'consult--highlight-literals arg t)))))))
+
+(defun my/biggrep-consult (&optional initial)
+  "Live BigGrep content search over fbsource (xbgs)."
+  (interactive)
+  (consult--grep "BigGrep fbsource" (my/biggrep--make-builder "xbgs")
+                 (expand-file-name "~/") initial))
+
+(defun my/tbg-consult (&optional initial)
+  "Live BigGrep content search over www (tbgs)."
+  (interactive)
+  (consult--grep "BigGrep www" (my/biggrep--make-builder "tbgs")
+                 (expand-file-name "~/") initial))
+
+(when (and (fboundp 'consult--grep) (executable-find "xbgs"))
+  (map! :leader
+        :desc "BigGrep fbsource (live)" "s p" #'my/biggrep-consult
+        :desc "BigGrep www (live)"      "s P" #'my/tbg-consult))
 
 ;; Snappier live-refine for async consult sources (myles-consult, consult-grep/find):
 ;; query after 2 chars instead of 3, shorter debounce/throttle.
@@ -120,19 +227,33 @@
 
 ;; Doom needs projectile for plumbing (magit repo detection, modeline), but we
 ;; never navigate by project in the monorepo — myles/BigGrep do that. Stop it
-;; ever indexing the giant checkouts (O(repo) = UI freeze).
+;; ever indexing the giant checkouts (O(repo) = UI freeze). `.hhconfig' makes
+;; the www/fbsource root a bottom-up project marker so lsp adopts it silently.
 (after! projectile
   (setq projectile-enable-caching nil
         projectile-indexing-method 'alien)
+  (add-to-list 'projectile-project-root-files-bottom-up ".hhconfig")
   (setq projectile-ignored-project-function
         (lambda (root) (string-match-p "/fbsource\\|/www\\|/sandcastle/boxes/" root))))
 
-;; Meta's fb-master auto-starts lsp-mode on hack-mode (.php); over the monorepo it
-;; prompts to import a project root on every open, and we don't use LSP here.
-;; Neuter both entry points (reversible: remove this to restore LSP).
-(with-eval-after-load 'lsp-mode
-  (advice-add 'lsp-deferred :override #'ignore)
-  (advice-add 'lsp :override #'ignore))
+;; Go-to-definition via hh_client's LSP (daemon-backed by a running hh_server, so
+;; zero local indexing — safe/fast, NOT the projectile lockup). fb-master hooks
+;; lsp-mode onto hack-mode; lsp registers an xref backend, so Doom's gd / SPC c d
+;; (`+lookup/definition') reach it through the xref fallback even with Doom's own
+;; (lsp) module left disabled. gd/M-. def, gD refs, C-o/M-, jump back.
+(setq find-file-visit-truename t)  ; hh chokes on the ~/www -> /data/... symlink
+(after! lsp-mode
+  ;; fb-master loads this lsp-mode (elpa 10.0.0) via a raw `(require 'lsp)', so its
+  ;; package autoloads are never registered. That leaves optional feature libraries
+  ;; (lsp-lens, lsp-modeline, lsp-headerline, …) void when lsp configures a buffer,
+  ;; which aborts hack-mode setup mid-hook: no font-lock, and gd fails in that
+  ;; buffer. Loading the autoloads makes all of them resolve on demand.
+  (load "lsp-mode-autoloads" t t)
+  (setq lsp-auto-guess-root t         ; adopt the .hhconfig root silently, no prompt
+        lsp-enable-file-watchers nil  ; lsp's file-watching hangs on EdenFS
+        lsp-lens-enable nil           ; code lenses issue reference-count queries that
+                                      ; are pathologically slow on the monorepo
+        lsp-restart 'auto-restart))
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
