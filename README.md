@@ -36,6 +36,9 @@ configs/        # ~/.config payloads, stowed everywhere
   gtk-4.0/.config/gtk-4.0/
   kitty/.config/kitty/
   niri/.config/niri/
+  noctalia/.config/noctalia/
+  nvim/.config/nvim/
+  tmux/.config/tmux/
 
 local/          # ~/.local payloads, stowed everywhere
   yazi/.local/share/applications/yazi.desktop
@@ -146,6 +149,9 @@ Shared config packages live in `configs/` and are stowed on every machine:
 | gtk-4.0 | `~/.config/gtk-4.0/` |
 | kitty | `~/.config/kitty/` |
 | niri | `~/.config/niri/` |
+| noctalia | `~/.config/noctalia/` |
+| nvim | `~/.config/nvim/` |
+| tmux | `~/.config/tmux/` |
 
 yazi ships a desktop launcher via the `local/` tree, running in kitty
 (`Terminal=false`, `kitty yazi %f`) and advertising `inode/directory` so it can
@@ -186,6 +192,13 @@ hook (other open Hack buffers) and on demand with `SPC c R`. Doom's `treemacs`,
 `workspaces`, and `lsp` modules are disabled — the project model doesn't fit a
 single giant monorepo — but hh's own lsp-mode is used deliberately for
 definitions.
+
+`tmux` carries a single toggle: **collapse/expand a pane to a background
+window**. `Alt-c` (or `prefix + C`) runs `scripts/toggle-console.sh`, which
+stashes the active pane out to a hidden window named `_stash` (`break-pane -d`)
+and pulls it back in below the current pane on the next press (`join-pane`). It
+keys off whether the `_stash` window exists, so one binding does both
+directions; pressing it in a single-pane window is a no-op.
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
