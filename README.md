@@ -68,6 +68,11 @@ blanco/         # overlay, stowed only on the personal host
 (`test -f … and source …`) — the machine-local override seam for per-machine
 environment, secrets, or aliases without splitting the package.
 
+`system/` holds config for paths outside `$HOME` (`/etc`, `/usr/share`) that
+Stow can't manage since it only targets one tree at a time. It isn't stowed —
+`sddm-theme-install.sh` copies it into place by hand with `sudo`. See SDDM
+below.
+
 ## Usage
 
 `deploy.sh` stows every shared package plus this host's overlay, and sets the
@@ -96,7 +101,8 @@ stow --dir=configs --target=$HOME --delete fish
 After stowing, live files are symlinks to the repo — edits are in-place.
 
 On a fresh Fedora install, `bootstrap.sh` runs first: it installs the package
-set, noctalia, and flatpaks, calls `deploy.sh`, and sets up Doom Emacs.
+set, noctalia, and flatpaks, calls `deploy.sh`, sets up Doom Emacs, and installs
+the SDDM greeter theme via `sddm-theme-install.sh`.
 
 ## Tests
 
@@ -152,11 +158,13 @@ lands in `~/.cargo/bin` (on `PATH` via `fish/config.fish`).
 (personal settings), `packages.el`, and `work-cheatsheet.org` (a keybinding
 reference for the Meta OnDemand workflow). The Doom framework itself lives in
 `~/.config/emacs` as its own git checkout and is **not tracked** here; it is
-<<<<<<< HEAD
 managed with `doom sync`/`doom upgrade`. On a fresh machine `bootstrap.sh`
 handles this: it clones Doom to `~/.config/emacs` (if missing) and runs `doom
 sync` after stowing this config package. Fedora's `emacs` package (30.x) already
-ships with pgtk + native-comp, which niri (Wayland) wants.
+ships with pgtk + native-comp, which niri (Wayland) wants. Emacs/Doom is the
+primary editor; `nano` (also in `DNF_PKGS`) is the plain terminal fallback and
+doesn't need a package here — no desktop launcher, no MIME association, just
+invoked directly when wanted.
 
 `config.el` also carries the Meta OnDemand monorepo setup (gated on the Meta
 `emacs-packages` dir, so it's inert off-OD): **myles** live fuzzy file-find on
@@ -175,14 +183,6 @@ hook (other open Hack buffers) and on demand with `SPC c R`. Doom's `treemacs`,
 `workspaces`, and `lsp` modules are disabled — the project model doesn't fit a
 single giant monorepo — but hh's own lsp-mode is used deliberately for
 definitions.
-=======
-managed with `doom sync`/`doom upgrade`. On a fresh machine, clone Doom to
-`~/.config/emacs`, `stow` this package, then run `doom sync`. Fedora's `emacs`
-package (30.x) already ships with pgtk + native-comp, which niri (Wayland)
-wants. Emacs/Doom is the primary editor; `nano` (also in `DNF_PKGS`) is the
-plain terminal fallback and doesn't need a package here — no desktop launcher,
-no MIME association, just invoked directly when wanted.
->>>>>>> 0f5fac0 ([dotfiles][fish] switch editor to emacs+nano, build yazi from cargo, add Claude Code install)
 
 The actual default handlers live in `~/.config/mimeapps.list`, which is **not
 tracked** — it is per-machine (different browsers/apps) and gets rewritten in
@@ -277,3 +277,33 @@ waits for the three `work`-workspace PWAs, then drives `niri msg action` to buil
 the layout — Workplace (top) and Calendar (bottom) stacked 50/50 in the left
 column, Google Chat full-height in the right — resolving windows by app-id and
 leaving any other windows on the workspace untouched.
+
+## SDDM
+
+The greeter is [sddm-astronaut-theme](https://github.com/Keyitdev/sddm-astronaut-theme)
+(Qt6 QML, not packaged for Fedora) with a custom sub-theme, `blanco`, styled
+after noctalia's lock screen: dark warm-neutral palette, partial blur, dimmed
+background, login form on the left so it doesn't sit over the subject of the
+background photo.
+
+Like Doom Emacs above, the upstream theme is cloned fresh into
+`/usr/share/sddm/themes/sddm-astronaut-theme` and is **not tracked** here —
+only the config layer is: `system/sddm/blanco.conf` (the theme's
+`Themes/blanco.conf`) and `system/sddm/sddm.conf.d/blanco-theme.conf` (the
+`/etc/sddm.conf.d/` theme selection). Both target paths outside `$HOME`, so
+they aren't a stow package; `sddm-theme-install.sh` copies them into place by
+hand.
+
+```bash
+./sddm-theme-install.sh                    # default background
+./sddm-theme-install.sh ~/Pictures/foo.jpg # custom background
+```
+
+Idempotent: re-running only re-clones the theme if missing, but always
+re-copies `blanco.conf` and the background, so edits to
+`system/sddm/blanco.conf` take effect on the next run. Preview changes without
+logging out:
+
+```bash
+sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/sddm-astronaut-theme
+```

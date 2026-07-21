@@ -66,6 +66,9 @@ fi
 echo "==> Login manager"
 sudo systemctl enable sddm
 
+echo "==> SDDM theme (astronaut, custom background)"
+"$REPO/sddm-theme-install.sh"
+
 echo "==> Default shell -> fish"
 if [[ "$(getent passwd "$USER" | cut -d: -f7)" != "$(command -v fish)" ]]; then
     sudo chsh -s "$(command -v fish)" "$USER"
