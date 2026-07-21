@@ -36,7 +36,6 @@ configs/        # ~/.config payloads, stowed everywhere
   gtk-4.0/.config/gtk-4.0/
   kitty/.config/kitty/
   niri/.config/niri/
-  noctalia/.config/noctalia/
 
 local/          # ~/.local payloads, stowed everywhere
   yazi/.local/share/applications/yazi.desktop
@@ -45,6 +44,8 @@ local/          # ~/.local payloads, stowed everywhere
 work/           # overlay, stowed only on the work host
   configs/
     niri/.config/niri/local.kdl
+    noctalia/.config/noctalia/settings.json
+    noctalia/.config/noctalia/plugins.json
   local/
     claude-code-work/.local/share/applications/claude-code-work.desktop
     claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
@@ -62,6 +63,8 @@ work/           # overlay, stowed only on the work host
 blanco/         # overlay, stowed only on the personal host
   configs/
     niri/.config/niri/local.kdl
+    noctalia/.config/noctalia/settings.json
+    noctalia/.config/noctalia/plugins.json
 ```
 
 `fish/config.fish` sources an untracked `~/.config/fish/local.fish` when present
@@ -142,7 +145,6 @@ Shared config packages live in `configs/` and are stowed on every machine:
 | gtk-4.0 | `~/.config/gtk-4.0/` |
 | kitty | `~/.config/kitty/` |
 | niri | `~/.config/niri/` |
-| noctalia | `~/.config/noctalia/` |
 
 yazi ships a desktop launcher via the `local/` tree, running in kitty
 (`Terminal=false`, `kitty yazi %f`) and advertising `inode/directory` so it can
@@ -201,6 +203,22 @@ declares the named workspaces (`personal`, `work`, `coding`) and their
 `coding` are pinned to the external Dell via `open-on-output`, and the apps are
 Plexamp, Workplace (Chrome `--app`), the Calendar PWA, and VS Code @ Meta; on
 `blanco` only Plexamp starts, on `personal`.
+
+`noctalia` also appears in both overlays instead of `configs/` — unlike niri,
+noctalia's `settings.json` is a single app-managed blob with no include
+mechanism, so there's no shared base to diverge from; each overlay carries its
+own full copy. The two currently differ by one plugin: the screen-recorder bar
+widget is enabled (`plugins.json` state + a pinned bar widget entry in
+`settings.json`) on `work` only. `colors.json` (wallpaper-derived, regenerated
+per machine) is gitignored in both. The screen-recorder plugin's own code
+(`~/.config/noctalia/plugins/c09595:screen-recorder/`) is **not tracked** —
+noctalia's plugin manager downloads it from its source repo
+(`hsimah/legacy-v4-plugins`) when the plugin is enabled, the same
+framework-vs-config-layer split as Doom Emacs. Don't `stow --adopt` or
+otherwise point a stow package at that `plugins/` directory — it mixes
+app-managed real files with stowed symlinks in the same tree, which breaks
+`stow -D`/`-R` (a past incident deleted the live plugin bundle when unstowing
+a package that had adopted it).
 
 `workplace` is a `work/local/` package: a desktop launcher
 (`~/.local/share/applications/workplace.desktop`) that opens Workplace as a

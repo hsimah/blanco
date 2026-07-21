@@ -2,7 +2,13 @@ fish_variables
 
 
 # Noctalia config uses background colors
-configs/noctalia/.config/noctalia/colors.json
+blanco/configs/noctalia/.config/noctalia/colors.json
+work/configs/noctalia/.config/noctalia/colors.json
+
+# Noctalia plugin bundles (e.g. screen-recorder) are downloaded by noctalia's
+# own plugin manager from their source repo — not tracked, like Doom's
+# framework checkout. Only plugins.json (enable state) is tracked.
+*/configs/noctalia/.config/noctalia/plugins/
 
 # MIME defaults are per-machine and rewritten in place by desktop apps
 mimeapps.list

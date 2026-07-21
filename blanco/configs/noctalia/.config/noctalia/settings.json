@@ -184,39 +184,6 @@
                     ]
                 },
                 {
-                    "defaultSettings": {
-                        "audioCodec": "opus",
-                        "audioSource": "default_output",
-                        "colorRange": "limited",
-                        "container": "mp4",
-                        "copyToClipboard": false,
-                        "customReplayDuration": "30",
-                        "directory": "",
-                        "filenamePattern": "recording_yyyyMMdd_HHmmss",
-                        "frameRate": "60",
-                        "hideInactive": false,
-                        "iconColor": "none",
-                        "quality": "very_high",
-                        "replayDuration": "30",
-                        "replayEnabled": false,
-                        "replayStorage": "ram",
-                        "resolution": "original",
-                        "restorePortalSession": false,
-                        "showCursor": true,
-                        "videoCodec": "h264",
-                        "videoSource": "portal"
-                    },
-                    "id": "plugin:c09595:screen-recorder"
-                },
-                {
-                    "hideWhenZero": false,
-                    "hideWhenZeroUnread": false,
-                    "iconColor": "none",
-                    "id": "NotificationHistory",
-                    "showUnreadBadge": true,
-                    "unreadBadgeColor": "primary"
-                },
-                {
                     "deviceNativePath": "__default__",
                     "displayMode": "graphic-clean",
                     "hideIfIdle": false,
@@ -224,6 +191,12 @@
                     "id": "Battery",
                     "showNoctaliaPerformance": false,
                     "showPowerProfiles": false
+                },
+                {
+                    "displayMode": "onhover",
+                    "iconColor": "none",
+                    "id": "Network",
+                    "textColor": "none"
                 },
                 {
                     "displayMode": "onhover",
@@ -534,7 +507,8 @@
         "location": "top_right",
         "lowUrgencyDuration": 3,
         "monitors": [
-            "DP-1"
+            "DP-1",
+            "DP-6"
         ],
         "normalUrgencyDuration": 5,
         "overlayLayer": true,
