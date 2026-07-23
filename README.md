@@ -149,7 +149,7 @@ Shared config packages live in `configs/` and are stowed on every machine:
 | gtk-3.0 | `~/.config/gtk-3.0/` |
 | gtk-4.0 | `~/.config/gtk-4.0/` |
 | kitty | `~/.config/kitty/` |
-| niri | `~/.config/niri/` |
+| niri | `~/.config/niri/` (keybinding reference: [`niri.md`](niri.md)) |
 | noctalia | `~/.config/noctalia/` |
 | nvim | `~/.config/nvim/` |
 | tmux | `~/.config/tmux/` |
