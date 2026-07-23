@@ -36,7 +36,6 @@ configs/        # ~/.config payloads, stowed everywhere
   gtk-4.0/.config/gtk-4.0/
   kitty/.config/kitty/
   niri/.config/niri/
-  noctalia/.config/noctalia/
   nvim/.config/nvim/
   tmux/.config/tmux/
 
@@ -150,8 +149,7 @@ Shared config packages live in `configs/` and are stowed on every machine:
 | [gtk-4.0](https://github.com/hsimah/blanco/tree/main/configs/gtk-4.0) | `~/.config/gtk-4.0/` |
 | [kitty](https://github.com/hsimah/blanco/tree/main/configs/kitty) | `~/.config/kitty/` |
 | [niri](https://github.com/hsimah/blanco/tree/main/configs/niri) | `~/.config/niri/` (keybinding reference: [`niri.md`](https://github.com/hsimah/blanco/blob/main/niri.md)) |
-| noctalia | `~/.config/noctalia/` |
-| nvim | `~/.config/nvim/` |
+| [nvim](https://github.com/hsimah/blanco/tree/main/configs/nvim) | `~/.config/nvim/` |
 | [tmux](https://github.com/hsimah/blanco/tree/main/configs/tmux) | `~/.config/tmux/` |
 
 yazi ships a desktop launcher via the `local/` tree, running in kitty

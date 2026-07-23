@@ -1,0 +1,1 @@
+../../../../.dotfiles/configs/nvim/.config/nvim/lua/plugins/lsp.lua
