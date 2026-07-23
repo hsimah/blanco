@@ -165,7 +165,7 @@ want to trust. `bootstrap.sh` instead builds it from source via `cargo install
 lands in `~/.cargo/bin` (on `PATH` via `fish/config.fish`).
 
 `niri-gather-workspaces` ships a `~/.local/bin` script (shared, stowed
-everywhere) bound in niri to `Super+Shift+Ctrl+G`. After docking it moves every
+everywhere) bound in niri to `Super+Ctrl+Y`. After docking it moves every
 non-empty workspace off the laptop panel (`eDP-1`) onto whatever external output
 is connected, keeping the workspace named `personal` on the laptop — one keypress
 instead of dragging each workspace over by hand. It loops re-querying niri after
