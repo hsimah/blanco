@@ -203,6 +203,8 @@ binds {
     Super+Shift+Ctrl+End  { move-workspace-to-monitor-right; }
     Super+Shift+Ctrl+B  { move-workspace-to-monitor-left; }
     Super+Shift+Ctrl+N  { move-workspace-to-monitor-right; }
+
+    Super+Shift+Ctrl+G hotkey-overlay-title="Gather workspaces to external (keep personal on laptop)" { spawn "niri-gather-workspaces"; }
     // ...
 
     Mod+Page_Down      { focus-workspace-down; }

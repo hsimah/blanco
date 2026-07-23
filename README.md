@@ -43,6 +43,7 @@ configs/        # ~/.config payloads, stowed everywhere
 local/          # ~/.local payloads, stowed everywhere
   yazi/.local/share/applications/yazi.desktop
   yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
+  niri-gather-workspaces/.local/bin/niri-gather-workspaces
 
 work/           # overlay, stowed only on the work host
   configs/
@@ -162,6 +163,14 @@ repos, and the only packaging available is a third-party COPR, which we don't
 want to trust. `bootstrap.sh` instead builds it from source via `cargo install
 --locked yazi-fm yazi-cli` (crates.io, the official Rust registry), which
 lands in `~/.cargo/bin` (on `PATH` via `fish/config.fish`).
+
+`niri-gather-workspaces` ships a `~/.local/bin` script (shared, stowed
+everywhere) bound in niri to `Super+Shift+Ctrl+G`. After docking it moves every
+non-empty workspace off the laptop panel (`eDP-1`) onto whatever external output
+is connected, keeping the workspace named `personal` on the laptop — one keypress
+instead of dragging each workspace over by hand. It loops re-querying niri after
+each move because `move-workspace-to-monitor --reference` indexes are per-output
+and shift as workspaces leave; empty workspaces are skipped so it terminates.
 
 `doom` tracks only the config layer — `init.el` (enabled modules), `config.el`
 (personal settings), `packages.el`, and `work-cheatsheet.org` (a keybinding

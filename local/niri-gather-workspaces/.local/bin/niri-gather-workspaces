@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+LAPTOP=eDP-1
+KEEP=personal
+
+external=$(niri msg -j outputs | jq -r --arg lap "$LAPTOP" \
+    '[to_entries[] | .value | select(.name != $lap) | .name] | first // empty')
+
+[ -n "$external" ] || exit 0
+
+while :; do
+    niri msg action focus-monitor "$LAPTOP" >/dev/null 2>&1 || exit 0
+    idx=$(niri msg -j workspaces | jq -r --arg lap "$LAPTOP" --arg keep "$KEEP" \
+        '[.[] | select(.output == $lap) | select(.name != $keep) | select(.active_window_id != null)] | first | .idx // empty')
+    [ -n "$idx" ] || break
+    niri msg action move-workspace-to-monitor --reference "$idx" "$external"
+done
+
+niri msg action focus-monitor "$external" >/dev/null 2>&1 || true
