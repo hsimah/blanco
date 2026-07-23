@@ -49,6 +49,7 @@ Shared `configs/` packages are stowed on every machine; work-only divergence liv
 - **Commit messages**: Always prefix with `[tool-name]`, e.g. `[fish] add custom git prompt`. For multi-tool include all tools, e.g. `[niri][noctalia] add screen recorder`. For repo-wide changes use `[dotfiles]`.
 - **Comments in config files**: Keep to an absolute minimum. Communicate context in conversation and commit messages, not inline comments.
 - **README.md**: Review and update on every change — keep the package table and structure docs current.
+- **noctalia sync**: noctalia is overlay-only (`work/`, `blanco/`) and the two copies deliberately diverge, but some settings should stay identical across machines. When editing noctalia config, before committing, ask whether the change needs to be mirrored to the other machine's overlay.
 
 ## Adding a New Package
 
