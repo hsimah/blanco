@@ -1,7 +1,7 @@
 # niri keybindings
 
 Reference for the `binds { … }` block in
-`configs/niri/.config/niri/config.kdl`. Keep in sync when binds change.
+`dotfiles/config/niri/.config/niri/config.kdl`. Keep in sync when binds change.
 
 `Mod` = `Super` on a TTY session (what these machines run); all keys below use
 `Mod` for consistency even where the config writes `Super`. Press

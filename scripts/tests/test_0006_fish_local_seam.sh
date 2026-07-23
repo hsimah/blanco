@@ -8,7 +8,7 @@ if ! command -v fish >/dev/null 2>&1; then
     exit 0
 fi
 
-CONFIG_FISH="$REPO_ROOT/configs/fish/.config/fish/config.fish"
+CONFIG_FISH="$REPO_ROOT/dotfiles/config/fish/.config/fish/config.fish"
 
 # Present: local.fish is sourced, so a var it sets is visible afterwards.
 make_home

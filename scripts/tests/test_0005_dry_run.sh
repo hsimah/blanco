@@ -4,7 +4,7 @@
 
 make_home
 make_repo
-add_pkg configs faketool .config/faketool/conf
+add_pkg dotfiles/config faketool .config/faketool/conf
 
 run_deploy "unknown-host" --dry-run
 

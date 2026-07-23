@@ -10,7 +10,7 @@
 
 set -u
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # Host constants must match deploy.sh (the test contract).
 WORK_HOST="hblake-fedora-PF627G59"
@@ -39,15 +39,18 @@ make_home() {
     mkdir -p "$HOME_DIR/.config" "$HOME_DIR/.local/share" "$HOME_DIR/.local/bin"
 }
 
-# Scratch repo containing a real copy of deploy.sh. Sets REPO_DIR.
+# Scratch repo containing a real copy of deploy.sh (under scripts/, mirroring
+# the real layout so deploy.sh resolves REPO as its parent). Sets REPO_DIR.
 make_repo() {
     REPO_DIR="$(mktemp -d)"
     _TMPDIRS+=("$REPO_DIR")
-    cp "$REPO_ROOT/deploy.sh" "$REPO_DIR/deploy.sh"
+    mkdir -p "$REPO_DIR/scripts"
+    cp "$REPO_ROOT/scripts/deploy.sh" "$REPO_DIR/scripts/deploy.sh"
 }
 
 # add_pkg <tree> <pkg> <rel-path-under-$HOME> [content]
-#   e.g. add_pkg configs faketool .config/faketool/conf
+#   <tree> is a path under the scratch repo, e.g. dotfiles/config or
+#   dotfiles/hosts/work/config.
 add_pkg() {
     local tree="$1" pkg="$2" rel="$3" content="${4:-content}"
     local f="$REPO_DIR/$tree/$pkg/$rel"
@@ -58,7 +61,7 @@ add_pkg() {
 # run_deploy <host> [deploy args...]  -> sets OUT (combined stdout+stderr) and RC.
 run_deploy() {
     local host="$1"; shift
-    OUT="$(HOME="$HOME_DIR" DOTFILES_HOST="$host" bash "$REPO_DIR/deploy.sh" "$@" 2>&1)" \
+    OUT="$(HOME="$HOME_DIR" DOTFILES_HOST="$host" bash "$REPO_DIR/scripts/deploy.sh" "$@" 2>&1)" \
         && RC=0 || RC=$?
 }
 

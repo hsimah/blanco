@@ -5,7 +5,7 @@
 
 make_home
 make_repo
-add_pkg configs faketool .config/faketool/conf "from-repo"
+add_pkg dotfiles/config faketool .config/faketool/conf "from-repo"
 
 # Pre-existing real file (not a symlink) at the target.
 mkdir -p "$HOME_DIR/.config/faketool"

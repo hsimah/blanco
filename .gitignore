@@ -2,19 +2,19 @@ fish_variables
 
 
 # Noctalia config uses background colors
-blanco/configs/noctalia/.config/noctalia/colors.json
-work/configs/noctalia/.config/noctalia/colors.json
+dotfiles/hosts/blanco/config/noctalia/.config/noctalia/colors.json
+dotfiles/hosts/work/config/noctalia/.config/noctalia/colors.json
 
 # Noctalia plugin bundles (e.g. screen-recorder) are downloaded by noctalia's
 # own plugin manager from their source repo — not tracked, like Doom's
 # framework checkout. Only plugins.json (enable state) is tracked.
-*/configs/noctalia/.config/noctalia/plugins/
+dotfiles/hosts/*/config/noctalia/.config/noctalia/plugins/
 
 # MIME defaults are per-machine and rewritten in place by desktop apps
 mimeapps.list
 
 # Machine-local fish overrides (per-machine, untracked; sourced by config.fish)
-configs/fish/.config/fish/local.fish
+dotfiles/config/fish/.config/fish/local.fish
 
 # Machine-local hostnames/secrets (untracked; sourced by launchers, e.g. DEVSERVER_HOST)
 .env

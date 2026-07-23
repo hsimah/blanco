@@ -2,8 +2,8 @@
 # Run the dotfiles test suite. Each tests/test_*.sh is a standalone script
 # (exit 0 = pass). Prints a summary and exits non-zero if any test fails.
 #
-#   ./test.sh              run all tests
-#   ./test.sh <pattern>    only run tests whose filename contains <pattern>
+#   ./scripts/test.sh              run all tests
+#   ./scripts/test.sh <pattern>   only run tests whose filename contains <pattern>
 set -u
 cd "$(dirname "$0")"
 

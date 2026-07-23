@@ -4,7 +4,7 @@ set -euo pipefail
 # Post-install bootstrap for a fresh minimal Fedora on `blanco`.
 # Run once, as your normal user, from a cloned checkout:
 #   git clone git@github.com:hsimah/blanco.git ~/Projects/blanco
-#   cd ~/Projects/blanco && ./bootstrap.sh
+#   cd ~/Projects/blanco && ./scripts/bootstrap.sh
 #
 # Installs the curated package set, noctalia (via Terra), yazi (via cargo),
 # Claude Code (native installer), flatpaks, sets fish as the shell, enables
@@ -13,7 +13,7 @@ set -euo pipefail
 # Idempotent — safe to re-run. The optional NVIDIA dGPU is deliberately left out
 # (the AMD iGPU drives everything); see the README to enable it later.
 
-REPO="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
 
 [[ $EUID -ne 0 ]] || { echo "Run as your normal user, not root (it calls sudo itself)."; exit 1; }
 . /etc/os-release
@@ -86,7 +86,7 @@ flatpak install -y flathub "${FLATPAKS[@]}"
 echo "==> Stow configs (shared + blanco overlay)"
 # deploy.sh exits non-zero if it skipped a package on a conflict; surface that
 # but keep going so the closing notes still print.
-"$REPO/deploy.sh" || echo "  (deploy reported conflicts — resolve the SKIPped files above, then re-run ./deploy.sh)"
+"$REPO/scripts/deploy.sh" || echo "  (deploy reported conflicts — resolve the SKIPped files above, then re-run ./scripts/deploy.sh)"
 
 echo "==> Doom Emacs"
 # The Doom framework lives in ~/.config/emacs as its own checkout and is not

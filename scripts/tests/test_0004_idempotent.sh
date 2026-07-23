@@ -4,13 +4,13 @@
 
 make_home
 make_repo
-add_pkg configs faketool .config/faketool/conf
+add_pkg dotfiles/config faketool .config/faketool/conf
 
 run_deploy "unknown-host"
 assert_rc "first deploy exits 0" 0
 
 run_deploy "unknown-host"
 assert_rc "second deploy exits 0" 0
-assert_stowed "still symlinked after re-run" .config/faketool/conf configs/faketool/.config/faketool/conf
+assert_stowed "still symlinked after re-run" .config/faketool/conf dotfiles/config/faketool/.config/faketool/conf
 
 finish

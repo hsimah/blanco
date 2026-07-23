@@ -12,4 +12,4 @@ jobs:
       - name: Install deps
         run: sudo apt-get update && sudo apt-get install -y stow fish
       - name: Run tests
-        run: ./test.sh
+        run: ./scripts/test.sh

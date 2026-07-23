@@ -5,8 +5,8 @@
 
 make_home
 make_repo
-add_pkg configs newtool .config/newtool/a
-add_pkg configs newtool .config/newtool/b
+add_pkg dotfiles/config newtool .config/newtool/a
+add_pkg dotfiles/config newtool .config/newtool/b
 
 run_deploy "unknown-host"
 
@@ -16,7 +16,7 @@ if [[ -d "$HOME_DIR/.config/newtool" && ! -L "$HOME_DIR/.config/newtool" ]]; the
 else
     fail "newtool/ should be a real dir, not a folded symlink"
 fi
-assert_stowed "file a is individually symlinked" .config/newtool/a configs/newtool/.config/newtool/a
-assert_stowed "file b is individually symlinked" .config/newtool/b configs/newtool/.config/newtool/b
+assert_stowed "file a is individually symlinked" .config/newtool/a dotfiles/config/newtool/.config/newtool/a
+assert_stowed "file b is individually symlinked" .config/newtool/b dotfiles/config/newtool/.config/newtool/b
 
 finish

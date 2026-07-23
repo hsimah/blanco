@@ -4,10 +4,11 @@ shopt -s nullglob
 
 # Deploy this machine's dotfiles with GNU Stow.
 #
-# Shared packages (configs/, local/) are stowed on every machine. A per-machine
-# overlay (work/, blanco/) is selected by hostname and stowed on top. Idempotent
-# and non-destructive: existing symlinks are refreshed; real files that would
-# conflict are reported (SKIP), never clobbered. Resolve those by hand.
+# Shared packages (dotfiles/config, dotfiles/local) are stowed on every machine.
+# A per-machine overlay (dotfiles/hosts/{work,blanco}) is selected by hostname
+# and stowed on top. Idempotent and non-destructive: existing symlinks are
+# refreshed; real files that would conflict are reported (SKIP), never clobbered.
+# Resolve those by hand.
 #
 # Options:
 #   -n, --dry-run   Simulate: show what stow would do, change nothing.
@@ -23,10 +24,10 @@ for arg in "$@"; do
             cat <<'EOF'
 Usage: deploy.sh [-n|--dry-run]
 
-Stow shared packages (configs/, local/) plus this host's overlay (work/,
-blanco/, selected by hostname). Idempotent and non-destructive: existing
-symlinks are refreshed; real files that would conflict are reported (SKIP),
-never clobbered. Exits non-zero if any package was skipped.
+Stow shared packages (dotfiles/config, dotfiles/local) plus this host's overlay
+(dotfiles/hosts/{work,blanco}, selected by hostname). Idempotent and
+non-destructive: existing symlinks are refreshed; real files that would conflict
+are reported (SKIP), never clobbered. Exits non-zero if any package was skipped.
 
   -n, --dry-run   Simulate: show what stow would do, change nothing.
   -h, --help      Show this help.
@@ -39,7 +40,8 @@ EOF
     esac
 done
 
-REPO="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+DOTFILES="$REPO/dotfiles"
 
 # Map hostname -> overlay dir. Add machines here as they diverge.
 # DOTFILES_HOST overrides the detected hostname (used by the test suite).
@@ -81,15 +83,15 @@ stow_dir() {  # stow every package (top-level dir) inside $1
     done
 }
 
-echo "==> Shared: configs/"
-stow_dir "$REPO/configs"
-echo "==> Shared: local/"
-stow_dir "$REPO/local"
+echo "==> Shared: dotfiles/config"
+stow_dir "$DOTFILES/config"
+echo "==> Shared: dotfiles/local"
+stow_dir "$DOTFILES/local"
 
 if [[ -n "$OVERLAY" ]]; then
-    echo "==> Overlay: $OVERLAY/"
-    stow_dir "$REPO/$OVERLAY/configs"
-    stow_dir "$REPO/$OVERLAY/local"
+    echo "==> Overlay: hosts/$OVERLAY"
+    stow_dir "$DOTFILES/hosts/$OVERLAY/config"
+    stow_dir "$DOTFILES/hosts/$OVERLAY/local"
 else
     echo "==> No overlay for $HOST (shared only)"
 fi

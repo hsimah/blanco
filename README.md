@@ -4,7 +4,7 @@ A repository of configuration for my daily drivers, managed with [GNU Stow](http
 
 ## Machines
 
-Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland compositor and share the `configs/` and `local/` packages. Machine-specific packages live in a per-machine overlay (`work/`, `blanco/`) selected by hostname.
+Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland compositor and share the `dotfiles/config` and `dotfiles/local` packages. Machine-specific packages live in a per-machine overlay under `dotfiles/hosts/` (`work/`, `blanco/`) selected by hostname.
 
 | | Personal | Work |
 |---|---|---|
@@ -21,68 +21,76 @@ dGPU with `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia <app>`.
 
 ## Structure
 
-Each tool is its own stow package mirroring `$HOME`. Shared packages live in
-`configs/` (`~/.config` payloads) and `local/` (`~/.local` payloads) and are
-stowed on every machine. Machine-specific packages live in a per-machine
-**overlay** (`work/`, `blanco/`, mirroring the `configs/`+`local/` layout) that
-is stowed on top only on that host. [`deploy.sh`](https://github.com/hsimah/blanco/blob/main/deploy.sh) selects the overlay by hostname.
+Each tool is its own stow package mirroring `$HOME`. The stow trees live under
+`dotfiles/`: shared packages in `dotfiles/config` (`~/.config` payloads) and
+`dotfiles/local` (`~/.local` payloads), stowed on every machine. Machine-specific
+packages live in a per-machine **overlay** under `dotfiles/hosts/<host>/`
+(mirroring the `config`+`local` layout) that is stowed on top only on that host.
+`scripts/` holds the tooling, `docs/` the reference docs, and `system/` the
+non-`$HOME` payloads. [`scripts/deploy.sh`](https://github.com/hsimah/blanco/blob/main/scripts/deploy.sh) selects the overlay by hostname.
 
 ```
-configs/        # ~/.config payloads, stowed everywhere
-  doom/.config/doom/
-  fish/.config/fish/
-  fuzzel/.config/fuzzel/
-  gtk-3.0/.config/gtk-3.0/
-  gtk-4.0/.config/gtk-4.0/
-  kitty/.config/kitty/
-  niri/.config/niri/
-  nvim/.config/nvim/
-  tmux/.config/tmux/
+dotfiles/
+  config/       # ~/.config payloads, stowed everywhere
+    doom/.config/doom/
+    fish/.config/fish/
+    fuzzel/.config/fuzzel/
+    gtk-3.0/.config/gtk-3.0/
+    gtk-4.0/.config/gtk-4.0/
+    kitty/.config/kitty/
+    niri/.config/niri/
+    nvim/.config/nvim/
+    tmux/.config/tmux/
 
-local/          # ~/.local payloads, stowed everywhere
-  yazi/.local/share/applications/yazi.desktop
-  yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
-  niri-gather-workspaces/.local/bin/niri-gather-workspaces
+  local/        # ~/.local payloads, stowed everywhere
+    yazi/.local/share/applications/yazi.desktop
+    yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
+    niri-gather-workspaces/.local/bin/niri-gather-workspaces
 
-work/           # overlay, stowed only on the work host
-  configs/
-    niri/.config/niri/local.kdl
-    noctalia/.config/noctalia/settings.json
-    noctalia/.config/noctalia/plugins.json
-  local/
-    claude-code-work/.local/share/applications/claude-code-work.desktop
-    claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
-    od-connect/.local/bin/od-connect
-    od-connect/.local/share/od-connect/od-tmux-boot.sh
-    dev-connect-devserver/.local/bin/dev-connect-devserver
-    dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
-    dev-connect-www/.local/bin/dev-connect-www
-    dev-connect-www/.local/share/applications/dev-connect-www.desktop
-    dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator
-    dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
-    niri-work-layout/.local/bin/niri-work-layout
-    workplace/.local/share/applications/workplace.desktop
+  hosts/
+    work/       # overlay, stowed only on the work host
+      config/
+        niri/.config/niri/local.kdl
+        noctalia/.config/noctalia/settings.json
+        noctalia/.config/noctalia/plugins.json
+      local/
+        claude-code-work/.local/share/applications/claude-code-work.desktop
+        claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
+        od-connect/.local/bin/od-connect
+        od-connect/.local/share/od-connect/od-tmux-boot.sh
+        dev-connect-devserver/.local/bin/dev-connect-devserver
+        dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
+        dev-connect-www/.local/bin/dev-connect-www
+        dev-connect-www/.local/share/applications/dev-connect-www.desktop
+        dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator
+        dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
+        niri-work-layout/.local/bin/niri-work-layout
+        workplace/.local/share/applications/workplace.desktop
 
-blanco/         # overlay, stowed only on the personal host
-  configs/
-    fish/.config/fish/conf.d/autologin-niri.fish
-    niri/.config/niri/local.kdl
-    noctalia/.config/noctalia/settings.json
-    noctalia/.config/noctalia/plugins.json
+    blanco/     # overlay, stowed only on the personal host
+      config/
+        fish/.config/fish/conf.d/autologin-niri.fish
+        niri/.config/niri/local.kdl
+        noctalia/.config/noctalia/settings.json
+        noctalia/.config/noctalia/plugins.json
+
+scripts/        # deploy.sh bootstrap.sh add-package.sh test.sh tests/
+docs/           # niri.md (keybinding reference)
+system/         # payloads for paths outside $HOME (/etc, /usr/share); not stowed
 ```
 
-[`fish/config.fish`](https://github.com/hsimah/blanco/blob/main/configs/fish/.config/fish/config.fish) sources an untracked `~/.config/fish/local.fish` when present
+[`fish/config.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/config.fish) sources an untracked `~/.config/fish/local.fish` when present
 (`test -f … and source …`) — the machine-local override seam for per-machine
 environment, secrets, or aliases without splitting the package.
 
 [`system/`](https://github.com/hsimah/blanco/tree/main/system) holds config for paths outside `$HOME` (`/etc`, `/usr/share`) that
 Stow can't manage since it only targets one tree at a time. It isn't stowed —
-[`bootstrap.sh`](https://github.com/hsimah/blanco/blob/main/bootstrap.sh) copies it into place by hand with `sudo`: `getty-autologin/`
+[`bootstrap.sh`](https://github.com/hsimah/blanco/blob/main/scripts/bootstrap.sh) copies it into place by hand with `sudo`: `getty-autologin/`
 is the tty1 autologin drop-in for `blanco` (see Autologin below).
 
 ## Usage
 
-`deploy.sh` stows every shared package plus this host's overlay, and sets the
+`scripts/deploy.sh` stows every shared package plus this host's overlay, and sets the
 MIME default. It is idempotent and non-destructive — existing symlinks are
 refreshed, and real files that would conflict are reported (`SKIP`), never
 clobbered. It exits non-zero if anything was skipped. Stow runs with
@@ -91,68 +99,68 @@ directory, not one folded directory symlink) — new files an app writes into
 `~/.config/<tool>` land in the real dir, not in this repo.
 
 ```bash
-./deploy.sh              # stow everything for this host
-./deploy.sh --dry-run    # show what stow would do, change nothing
+./scripts/deploy.sh              # stow everything for this host
+./scripts/deploy.sh --dry-run    # show what stow would do, change nothing
 ```
 
 For one-off operations, stow directly with `--dir`:
 
 ```bash
 # Pull live config edits into the repo
-stow --dir=configs --target=$HOME --adopt fish
+stow --dir=dotfiles/config --target=$HOME --adopt fish
 
 # Remove symlinks
-stow --dir=configs --target=$HOME --delete fish
+stow --dir=dotfiles/config --target=$HOME --delete fish
 ```
 
 After stowing, live files are symlinks to the repo — edits are in-place.
 
 On a fresh Fedora install, `bootstrap.sh` runs first: it installs the package
-set, noctalia, and flatpaks, sets up tty1 autologin, calls `deploy.sh`, and
-sets up Doom Emacs.
+set, noctalia, and flatpaks, sets up tty1 autologin, calls `scripts/deploy.sh`,
+and sets up Doom Emacs.
 
 ## Tests
 
-[`test.sh`](https://github.com/hsimah/blanco/blob/main/test.sh) runs the suite in [`tests/`](https://github.com/hsimah/blanco/tree/main/tests) (self-contained `tests/test_*.sh` scripts
+[`test.sh`](https://github.com/hsimah/blanco/blob/main/scripts/test.sh) runs the suite in [`tests/`](https://github.com/hsimah/blanco/tree/main/scripts/tests) (self-contained `tests/test_*.sh` scripts
 that deploy into a throwaway `$HOME` and assert on the result). GitHub Actions
 ([`.github/workflows/test.yml`](https://github.com/hsimah/blanco/blob/main/.github/workflows/test.yml)) runs it on every
 push and pull request. Requires `stow`.
 
 ```bash
-./test.sh              # run all tests
-./test.sh dry_run      # only tests whose filename contains "dry_run"
+./scripts/test.sh              # run all tests
+./scripts/test.sh dry_run      # only tests whose filename contains "dry_run"
 ```
 
 ## Adding a new package
 
-[`add-package.sh`](https://github.com/hsimah/blanco/blob/main/add-package.sh) moves `~/.config/<package>` into `configs/` and stows it:
+[`add-package.sh`](https://github.com/hsimah/blanco/blob/main/scripts/add-package.sh) moves `~/.config/<package>` into `dotfiles/config` and stows it:
 
 ```bash
-./add-package.sh <package-name>
+./scripts/add-package.sh <package-name>
 ```
 
 For a machine-specific package, put it in that host's overlay instead
-(`work/configs/…`, `work/local/…`, or the matching `blanco/` path). `deploy.sh`
-picks the overlay by hostname (`WORK_HOST`/`BLANCO_HOST` near the top of the
-script).
+(`dotfiles/hosts/work/config/…`, `dotfiles/hosts/work/local/…`, or the matching
+`dotfiles/hosts/blanco/` path). `scripts/deploy.sh` picks the overlay by hostname
+(`WORK_HOST`/`BLANCO_HOST` near the top of the script).
 
 ## Packages
 
-Shared config packages live in `configs/` and are stowed on every machine:
+Shared config packages live in `dotfiles/config` and are stowed on every machine:
 
 | Package | Config location |
 |---------|-----------------|
-| [doom](https://github.com/hsimah/blanco/tree/main/configs/doom) | `~/.config/doom/` |
-| [fish](https://github.com/hsimah/blanco/tree/main/configs/fish) | `~/.config/fish/` |
-| [fuzzel](https://github.com/hsimah/blanco/tree/main/configs/fuzzel) | `~/.config/fuzzel/` |
-| [gtk-3.0](https://github.com/hsimah/blanco/tree/main/configs/gtk-3.0) | `~/.config/gtk-3.0/` |
-| [gtk-4.0](https://github.com/hsimah/blanco/tree/main/configs/gtk-4.0) | `~/.config/gtk-4.0/` |
-| [kitty](https://github.com/hsimah/blanco/tree/main/configs/kitty) | `~/.config/kitty/` |
-| [niri](https://github.com/hsimah/blanco/tree/main/configs/niri) | `~/.config/niri/` (keybinding reference: [`niri.md`](https://github.com/hsimah/blanco/blob/main/niri.md)) |
-| [nvim](https://github.com/hsimah/blanco/tree/main/configs/nvim) | `~/.config/nvim/` |
-| [tmux](https://github.com/hsimah/blanco/tree/main/configs/tmux) | `~/.config/tmux/` |
+| [doom](https://github.com/hsimah/blanco/tree/main/dotfiles/config/doom) | `~/.config/doom/` |
+| [fish](https://github.com/hsimah/blanco/tree/main/dotfiles/config/fish) | `~/.config/fish/` |
+| [fuzzel](https://github.com/hsimah/blanco/tree/main/dotfiles/config/fuzzel) | `~/.config/fuzzel/` |
+| [gtk-3.0](https://github.com/hsimah/blanco/tree/main/dotfiles/config/gtk-3.0) | `~/.config/gtk-3.0/` |
+| [gtk-4.0](https://github.com/hsimah/blanco/tree/main/dotfiles/config/gtk-4.0) | `~/.config/gtk-4.0/` |
+| [kitty](https://github.com/hsimah/blanco/tree/main/dotfiles/config/kitty) | `~/.config/kitty/` |
+| [niri](https://github.com/hsimah/blanco/tree/main/dotfiles/config/niri) | `~/.config/niri/` (keybinding reference: [`niri.md`](https://github.com/hsimah/blanco/blob/main/docs/niri.md)) |
+| [nvim](https://github.com/hsimah/blanco/tree/main/dotfiles/config/nvim) | `~/.config/nvim/` |
+| [tmux](https://github.com/hsimah/blanco/tree/main/dotfiles/config/tmux) | `~/.config/tmux/` |
 
-yazi ships a desktop launcher via the `local/` tree, running in kitty
+yazi ships a desktop launcher via the `dotfiles/local` tree, running in kitty
 (`Terminal=false`, `kitty yazi %f`) and advertising `inode/directory` so it can
 handle folders as a terminal file manager; it ships its own PNG app icon under
 the hicolor theme (`Icon=yazi`), since fuzzel is built with png/svg support
@@ -162,7 +170,7 @@ want to trust. `bootstrap.sh` instead builds it from source via `cargo install
 --locked yazi-fm yazi-cli` (crates.io, the official Rust registry), which
 lands in `~/.cargo/bin` (on `PATH` via `fish/config.fish`).
 
-[`niri-gather-workspaces`](https://github.com/hsimah/blanco/blob/main/local/niri-gather-workspaces/.local/bin/niri-gather-workspaces) ships a `~/.local/bin` script (shared, stowed
+[`niri-gather-workspaces`](https://github.com/hsimah/blanco/blob/main/dotfiles/local/niri-gather-workspaces/.local/bin/niri-gather-workspaces) ships a `~/.local/bin` script (shared, stowed
 everywhere) bound in niri to `Super+Ctrl+Y`. After docking it moves every
 non-empty workspace off the laptop panel (`eDP-1`) onto whatever external output
 is connected, keeping the workspace named `personal` on the laptop — one keypress
@@ -170,8 +178,8 @@ instead of dragging each workspace over by hand. It loops re-querying niri after
 each move because `move-workspace-to-monitor --reference` indexes are per-output
 and shift as workspaces leave; empty workspaces are skipped so it terminates.
 
-`doom` tracks only the config layer — [`init.el`](https://github.com/hsimah/blanco/blob/main/configs/doom/.config/doom/init.el) (enabled modules), [`config.el`](https://github.com/hsimah/blanco/blob/main/configs/doom/.config/doom/config.el)
-(personal settings), [`packages.el`](https://github.com/hsimah/blanco/blob/main/configs/doom/.config/doom/packages.el), and [`work-cheatsheet.org`](https://github.com/hsimah/blanco/blob/main/configs/doom/.config/doom/work-cheatsheet.org) (a keybinding
+`doom` tracks only the config layer — [`init.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/init.el) (enabled modules), [`config.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/config.el)
+(personal settings), [`packages.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/packages.el), and [`work-cheatsheet.org`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/work-cheatsheet.org) (a keybinding
 reference for the Meta OnDemand workflow). The Doom framework itself lives in
 `~/.config/emacs` as its own git checkout and is **not tracked** here; it is
 managed with `doom sync`/`doom upgrade`. On a fresh machine `bootstrap.sh`
@@ -201,7 +209,7 @@ single giant monorepo — but hh's own lsp-mode is used deliberately for
 definitions.
 
 `tmux` carries a single toggle: **collapse/expand a pane to a background
-window**. `Alt-c` (or `prefix + C`) runs [`scripts/toggle-console.sh`](https://github.com/hsimah/blanco/blob/main/configs/tmux/.config/tmux/scripts/toggle-console.sh), which
+window**. `Alt-c` (or `prefix + C`) runs [`scripts/toggle-console.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/tmux/.config/tmux/scripts/toggle-console.sh), which
 stashes the active pane out to a hidden window named `_stash` (`break-pane -d`)
 and pulls it back in below the current pane on the next press (`join-pane`). It
 keys off whether the `_stash` window exists, so one binding does both
@@ -217,15 +225,16 @@ xdg-mime default emacs.desktop text/plain text/markdown
 ```
 
 The per-machine overlays hold each host's niri divergence and work-only
-launchers. `niri` appears in both `work/configs/` and `blanco/configs/` as a
-`local.kdl` that the shared `config.kdl` pulls in via `include "local.kdl"`; it
+launchers. `niri` appears in both `dotfiles/hosts/work/config` and
+`dotfiles/hosts/blanco/config` as a `local.kdl` that the shared `config.kdl`
+pulls in via `include "local.kdl"`; it
 declares the named workspaces (`personal`, `work`, `coding`) and their
 `spawn-at-startup` apps and `open-on-workspace` rules. On work, `work` and
 `coding` are pinned to the external Dell via `open-on-output`, and the apps are
 Plexamp, Workplace (Chrome `--app`), the Calendar PWA, and VS Code @ Meta; on
 `blanco` only Plexamp starts, on `personal`.
 
-`noctalia` also appears in both overlays instead of `configs/` — unlike niri,
+`noctalia` also appears in both overlays instead of `dotfiles/config` — unlike niri,
 noctalia's `settings.json` is a single app-managed blob with no include
 mechanism, so there's no shared base to diverge from; each overlay carries its
 own full copy. The two currently differ by one plugin: the screen-recorder bar
@@ -241,22 +250,22 @@ app-managed real files with stowed symlinks in the same tree, which breaks
 `stow -D`/`-R` (a past incident deleted the live plugin bundle when unstowing
 a package that had adopted it).
 
-[`workplace`](https://github.com/hsimah/blanco/tree/main/work/local/workplace) is a `work/local/` package: a desktop launcher
+[`workplace`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/workplace) is a `dotfiles/hosts/work/local` package: a desktop launcher
 (`~/.local/share/applications/workplace.desktop`) that opens Workplace as a
 Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`), giving
 it the stable `chrome-fb.workplace.com__-Default` app-id the niri rule matches.
 
-[`claude-code-work`](https://github.com/hsimah/blanco/tree/main/work/local/claude-code-work) is a `work/local/` package: a fuzzel launcher
+[`claude-code-work`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/claude-code-work) is a `dotfiles/hosts/work/local` package: a fuzzel launcher
 (`~/.local/share/applications/claude-code-work.desktop`, "Claude Code @ Work")
 that opens `~/work` in kitty and runs `claude`. It ships its own icon
 (`claude-code.svg`, the Claude sunburst) into the hicolor theme so fuzzel
 resolves `Icon=claude-code`.
 
-The `work/` overlay also holds the OnDemand connection tooling. A shared
+The `dotfiles/hosts/work` overlay also holds the OnDemand connection tooling. A shared
 launcher, `od-connect`, does the real work; the three `dev-connect-*` packages
 are just fuzzel entry points that call it with a target and a project dir.
 
-[`od-connect`](https://github.com/hsimah/blanco/blob/main/work/local/od-connect/.local/bin/od-connect) (`~/.local/bin/od-connect`, `work/local/`) prompts for a YubiKey
+[`od-connect`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/bin/od-connect) (`~/.local/bin/od-connect`, `dotfiles/hosts/work/local`) prompts for a YubiKey
 touch, then runs `dev connect <args> -- <bootstrap>`. Rather than let `dev
 connect` spawn the default (racy, non-login) shell, it hands over a bootstrap via
 the `[PROG]` argument. `dev connect` delivers PROG by **typing** `exec <PROG>;
@@ -268,7 +277,7 @@ gzip+base64-encodes into a single-line PROG (`base64 -d <<< … | gunzip >
 encoded blob is single-quote-free so `dev connect`'s own PROG quoting stays
 clean. Usage: `od-connect <project-dir|""> <dev connect args…>`.
 
-[`od-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/work/local/od-connect/.local/share/od-connect/od-tmux-boot.sh) (`~/.local/share/od-connect/`) is what runs on the OD:
+[`od-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/od-tmux-boot.sh) (`~/.local/share/od-connect/`) is what runs on the OD:
 
 1. **Waits for host init.** A fresh OD runs two independent init systems and the
    shell environment is broken until both finish: `systemctl --user start
@@ -298,19 +307,19 @@ Two details the bootstrap has to get right:
   ("missing or unsuitable terminal: xterm-kitty") before the dotfiles carrying
   the kitty terminfo are pulled. tmux resets TERM for its own panes regardless.
 
-The three fuzzel launchers (each a `work/local/` bin + a
+The three fuzzel launchers (each a `dotfiles/hosts/work/local` bin + a
 `~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
 one line calling `od-connect`:
 
-- [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect /data/sandcastle/boxes/fbsource/www -t www`
-- [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect /data/sandcastle/boxes/fbsource -t www_fbsource_configerator:ent_framework`
-- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect "" -n devvm10852.eag0`
+- [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect /data/sandcastle/boxes/fbsource/www -t www`
+- [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect /data/sandcastle/boxes/fbsource -t www_fbsource_configerator:ent_framework`
+- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect "" -n devvm10852.eag0`
 
 With a project dir set (`www`, configerator), doom and the top-right shell `cd`
 there and the top-right runs `claude`; the bottom-right shell stays at `~`.
 `devserver` passes an empty dir, so all panes stay at `~` and no `claude` runs.
 
-[`niri-work-layout`](https://github.com/hsimah/blanco/blob/main/work/local/niri-work-layout/.local/bin/niri-work-layout) is a `work/local/` package: a bin script
+[`niri-work-layout`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/niri-work-layout/.local/bin/niri-work-layout) is a `dotfiles/hosts/work/local` package: a bin script
 (`~/.local/bin/niri-work-layout`) spawned at startup by `work`'s `local.kdl`. It
 waits for the three `work`-workspace PWAs, then drives `niri msg action` to build
 the layout — Workplace (top) and Calendar (bottom) stacked 50/50 in the left
@@ -322,7 +331,7 @@ leaving any other windows on the workspace untouched.
 `blanco` has no display manager. [`system/getty-autologin/autologin.conf`](https://github.com/hsimah/blanco/blob/main/system/getty-autologin/autologin.conf) is a
 systemd `getty@tty1.service.d` drop-in (`__USER__` templated to `$USER` by
 `bootstrap.sh`, copied to `/etc/systemd/system/getty@tty1.service.d/` with
-`sudo`) that autologins on tty1. [`blanco/configs/fish/.config/fish/conf.d/autologin-niri.fish`](https://github.com/hsimah/blanco/blob/main/blanco/configs/fish/.config/fish/conf.d/autologin-niri.fish) then `exec niri-session`s from that login shell — guarded
+`sudo`) that autologins on tty1. [`dotfiles/hosts/blanco/config/fish/.config/fish/conf.d/autologin-niri.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/blanco/config/fish/.config/fish/conf.d/autologin-niri.fish) then `exec niri-session`s from that login shell — guarded
 to tty1 only (`status is-login`, `tty` check) and to a shell not already
 inside a niri session (`NIRI_SOCKET`), so other tty logins and terminals
 inside niri are unaffected. The lock screen (noctalia, bound to lid-close and
