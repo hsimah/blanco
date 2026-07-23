@@ -82,6 +82,9 @@ system/         # payloads for paths outside $HOME (/etc, /usr/share); not stowe
 [`fish/config.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/config.fish) sources an untracked `~/.config/fish/local.fish` when present
 (`test -f … and source …`) — the machine-local override seam for per-machine
 environment, secrets, or aliases without splitting the package.
+[`fish/conf.d/dev-connect-history.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/conf.d/dev-connect-history.fish) is a `fish_postexec` hook that
+collapses `dev connect …` history down to just the most recent invocation, so the
+repeated `-y [yubi]` calls don't flood history.
 
 [`system/`](https://github.com/hsimah/blanco/tree/main/system) holds config for paths outside `$HOME` (`/etc`, `/usr/share`) that
 Stow can't manage since it only targets one tree at a time. It isn't stowed —
