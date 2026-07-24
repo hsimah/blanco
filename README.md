@@ -62,6 +62,7 @@ work/           # overlay, stowed only on the work host
 
 blanco/         # overlay, stowed only on the personal host
   configs/
+    fish/.config/fish/conf.d/autologin-niri.fish
     niri/.config/niri/local.kdl
     noctalia/.config/noctalia/settings.json
     noctalia/.config/noctalia/plugins.json
@@ -73,8 +74,8 @@ environment, secrets, or aliases without splitting the package.
 
 `system/` holds config for paths outside `$HOME` (`/etc`, `/usr/share`) that
 Stow can't manage since it only targets one tree at a time. It isn't stowed —
-`sddm-theme-install.sh` copies it into place by hand with `sudo`. See SDDM
-below.
+`bootstrap.sh` copies it into place by hand with `sudo`: `getty-autologin/`
+is the tty1 autologin drop-in for `blanco` (see Packages below).
 
 ## Usage
 
@@ -104,8 +105,8 @@ stow --dir=configs --target=$HOME --delete fish
 After stowing, live files are symlinks to the repo — edits are in-place.
 
 On a fresh Fedora install, `bootstrap.sh` runs first: it installs the package
-set, noctalia, and flatpaks, calls `deploy.sh`, sets up Doom Emacs, and installs
-the SDDM greeter theme via `sddm-theme-install.sh`.
+set, noctalia, and flatpaks, sets up tty1 autologin, calls `deploy.sh`, and
+sets up Doom Emacs.
 
 ## Tests
 
@@ -296,32 +297,15 @@ the layout — Workplace (top) and Calendar (bottom) stacked 50/50 in the left
 column, Google Chat full-height in the right — resolving windows by app-id and
 leaving any other windows on the workspace untouched.
 
-## SDDM
+## Autologin
 
-The greeter is [sddm-astronaut-theme](https://github.com/Keyitdev/sddm-astronaut-theme)
-(Qt6 QML, not packaged for Fedora) with a custom sub-theme, `blanco`, styled
-after noctalia's lock screen: dark warm-neutral palette, partial blur, dimmed
-background, login form on the left so it doesn't sit over the subject of the
-background photo.
-
-Like Doom Emacs above, the upstream theme is cloned fresh into
-`/usr/share/sddm/themes/sddm-astronaut-theme` and is **not tracked** here —
-only the config layer is: `system/sddm/blanco.conf` (the theme's
-`Themes/blanco.conf`) and `system/sddm/sddm.conf.d/blanco-theme.conf` (the
-`/etc/sddm.conf.d/` theme selection). Both target paths outside `$HOME`, so
-they aren't a stow package; `sddm-theme-install.sh` copies them into place by
-hand.
-
-```bash
-./sddm-theme-install.sh                    # default background
-./sddm-theme-install.sh ~/Pictures/foo.jpg # custom background
-```
-
-Idempotent: re-running only re-clones the theme if missing, but always
-re-copies `blanco.conf` and the background, so edits to
-`system/sddm/blanco.conf` take effect on the next run. Preview changes without
-logging out:
-
-```bash
-sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/sddm-astronaut-theme
-```
+`blanco` has no display manager. `system/getty-autologin/autologin.conf` is a
+systemd `getty@tty1.service.d` drop-in (`__USER__` templated to `$USER` by
+`bootstrap.sh`, copied to `/etc/systemd/system/getty@tty1.service.d/` with
+`sudo`) that autologins on tty1. `blanco/configs/fish/.config/fish/conf.d/
+autologin-niri.fish` then `exec niri-session`s from that login shell — guarded
+to tty1 only (`status is-login`, `tty` check) and to a shell not already
+inside a niri session (`NIRI_SOCKET`), so other tty logins and terminals
+inside niri are unaffected. The lock screen (noctalia, bound to lid-close and
+idle in `niri/config.kdl`) is what actually gates access, same threat model as
+the work laptop's FDE-then-straight-to-desktop flow.

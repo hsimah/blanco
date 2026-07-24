@@ -7,9 +7,9 @@ set -euo pipefail
 #   cd ~/Projects/blanco && ./bootstrap.sh
 #
 # Installs the curated package set, noctalia (via Terra), yazi (via cargo),
-# Claude Code (native installer), flatpaks, sets fish as the shell, enables the
-# login manager, stows configs via deploy.sh, and sets up Doom Emacs (clone +
-# doom sync).
+# Claude Code (native installer), flatpaks, sets fish as the shell, enables
+# tty1 autologin straight into niri, stows configs via deploy.sh, and sets up
+# Doom Emacs (clone + doom sync).
 # Idempotent — safe to re-run. The optional NVIDIA dGPU is deliberately left out
 # (the AMD iGPU drives everything); see the README to enable it later.
 
@@ -19,7 +19,7 @@ REPO="$(cd "$(dirname "$0")" && pwd)"
 . /etc/os-release
 [[ "${ID:-}" == "fedora" ]] || { echo "This targets Fedora (found: ${ID:-unknown})."; exit 1; }
 
-# This installs the personal (blanco) package set — niri, sddm, plexamp, etc.
+# This installs the personal (blanco) package set — niri, plexamp, etc.
 # Refuse to run it on the work laptop by mistake. Override with BOOTSTRAP_FORCE=1.
 WORK_HOST="hblake-fedora-PF627G59"
 if [[ "$(hostname)" == "$WORK_HOST" && "${BOOTSTRAP_FORCE:-0}" != "1" ]]; then
@@ -29,7 +29,7 @@ if [[ "$(hostname)" == "$WORK_HOST" && "${BOOTSTRAP_FORCE:-0}" != "1" ]]; then
 fi
 
 DNF_PKGS=(
-    niri sddm
+    niri
     pipewire wireplumber pipewire-pulseaudio
     xdg-desktop-portal xdg-desktop-portal-gtk
     kitty fish fuzzel emacs fastfetch nano
@@ -63,18 +63,21 @@ else
     echo "  already installed"
 fi
 
-echo "==> Login manager"
-sudo systemctl enable sddm
-
-echo "==> SDDM theme (astronaut, custom background)"
-"$REPO/sddm-theme-install.sh"
-
 echo "==> Default shell -> fish"
 if [[ "$(getent passwd "$USER" | cut -d: -f7)" != "$(command -v fish)" ]]; then
     sudo chsh -s "$(command -v fish)" "$USER"
 else
     echo "  already fish"
 fi
+
+echo "==> tty1 autologin -> niri"
+# No display manager: agetty logs $USER straight into a login shell on tty1,
+# and the blanco fish overlay (conf.d/autologin-niri.fish, stowed below) execs
+# niri-session from there. See README.
+sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
+sed "s/__USER__/$USER/" "$REPO/system/getty-autologin/autologin.conf" \
+    | sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf >/dev/null
+sudo systemctl daemon-reload
 
 echo "==> Flatpaks"
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -106,6 +109,6 @@ cat <<'EOF'
 
 Bootstrap done. Still manual (by design):
   - Restore SSH keys from the USB backup (encrypted; needs your passphrase).
-  - Reboot, then pick niri at the SDDM session chooser.
+  - Reboot: tty1 autologins and drops straight into niri.
   - Optional NVIDIA dGPU: see the README.
 EOF
