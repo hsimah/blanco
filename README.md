@@ -74,7 +74,7 @@ dotfiles/
         noctalia/.config/noctalia/settings.json
         noctalia/.config/noctalia/plugins.json
 
-scripts/        # deploy.sh bootstrap.sh add-package.sh test.sh tests/
+scripts/        # deploy.sh bootstrap.sh git-bootstrap.sh add-package.sh test.sh tests/
 docs/           # niri.md (keybinding reference)
 system/         # payloads for paths outside $HOME (/etc, /usr/share); not stowed
 ```

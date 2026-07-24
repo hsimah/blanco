@@ -8,8 +8,9 @@ set -euo pipefail
 #
 # Installs the curated package set, noctalia (via Terra), yazi (via cargo),
 # Claude Code (native installer), flatpaks, sets fish as the shell, enables
-# tty1 autologin straight into niri, stows configs via deploy.sh, and sets up
-# Doom Emacs (clone + doom sync).
+# tty1 autologin straight into niri, stows configs via deploy.sh, configures
+# global git (identity + mergetool) via git-bootstrap.sh, and sets up Doom
+# Emacs (clone + doom sync).
 # Idempotent — safe to re-run. The optional NVIDIA dGPU is deliberately left out
 # (the AMD iGPU drives everything); see the README to enable it later.
 
@@ -87,6 +88,11 @@ echo "==> Stow configs (shared + blanco overlay)"
 # deploy.sh exits non-zero if it skipped a package on a conflict; surface that
 # but keep going so the closing notes still print.
 "$REPO/scripts/deploy.sh" || echo "  (deploy reported conflicts — resolve the SKIPped files above, then re-run ./scripts/deploy.sh)"
+
+echo "==> Global git config (identity + mergetool)"
+# blanco only runs here (work host is refused above), so the personal identity
+# default is correct. Override with GIT_USER_EMAIL=… when running standalone.
+"$REPO/scripts/git-bootstrap.sh"
 
 echo "==> Doom Emacs"
 # The Doom framework lives in ~/.config/emacs as its own checkout and is not

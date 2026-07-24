@@ -32,7 +32,7 @@ After `--adopt` or initial `stow`, live files become symlinks to the repo — ed
 dotfiles/config/[tool]/.config/[tool]/...              # shared ~/.config payloads
 dotfiles/local/[tool]/.local/...                        # shared ~/.local payloads (launchers, scripts)
 dotfiles/hosts/<host>/{config,local}/[tool]/...         # per-host overlay, same layout
-scripts/                                                # deploy.sh, bootstrap.sh, add-package.sh, sddm-theme-install.sh, test.sh, tests/
+scripts/                                                # deploy.sh, bootstrap.sh, git-bootstrap.sh, add-package.sh, sddm-theme-install.sh, test.sh, tests/
 docs/                                                   # reference docs (e.g. niri.md keybindings)
 system/                                                 # payloads for paths outside $HOME (/etc, /usr/share); not stowed
 ```
