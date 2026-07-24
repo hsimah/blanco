@@ -105,6 +105,22 @@ if command -v xdg-mime >/dev/null 2>&1; then
     fi
 fi
 
+# ungoogled Chromium (flatpak) is only installed on blanco; gate the browser default to that host.
+if [[ "$OVERLAY" == "blanco" ]]; then
+    CHROMIUM_DESKTOP="io.github.ungoogled_software.ungoogled_chromium.desktop"
+    if [[ $DRY_RUN -eq 1 ]]; then
+        echo "==> Would set MIME default: $CHROMIUM_DESKTOP for http, https, text/html"
+        echo "==> Would set default web browser: $CHROMIUM_DESKTOP"
+    else
+        if command -v xdg-mime >/dev/null 2>&1; then
+            xdg-mime default "$CHROMIUM_DESKTOP" x-scheme-handler/http x-scheme-handler/https text/html || true
+        fi
+        if command -v xdg-settings >/dev/null 2>&1; then
+            xdg-settings set default-web-browser "$CHROMIUM_DESKTOP" || true
+        fi
+    fi
+fi
+
 if [[ $fail -ne 0 ]]; then
     echo "Some packages were skipped due to conflicts (see SKIP above)."
 fi

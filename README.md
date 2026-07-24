@@ -227,6 +227,9 @@ declaratively in the bootstrap instead:
 xdg-mime default emacs.desktop text/plain text/markdown
 ```
 
+On `blanco`, `deploy.sh` also sets ungoogled Chromium (flatpak) as the default
+web browser — gated to that host since the flatpak isn't installed on `work`.
+
 The per-machine overlays hold each host's niri divergence and work-only
 launchers. `niri` appears in both `dotfiles/hosts/work/config` and
 `dotfiles/hosts/blanco/config` as a `local.kdl` that the shared `config.kdl`
