@@ -70,7 +70,6 @@ dotfiles/
 
     blanco/     # overlay, stowed only on the personal host
       config/
-        fish/.config/fish/conf.d/autologin-niri.fish
         kitty/.config/kitty/local.conf
         niri/.config/niri/local.kdl
         noctalia/.config/noctalia/settings.json
@@ -78,7 +77,7 @@ dotfiles/
       local/
         chromium-newwindow/.local/share/applications/chromium-newwindow.desktop
 
-scripts/        # deploy.sh bootstrap.sh git-bootstrap.sh add-package.sh test.sh tests/
+scripts/        # deploy.sh bootstrap.sh setup-autologin.sh git-bootstrap.sh add-package.sh test.sh tests/
 docs/           # niri.md (keybinding reference)
 system/         # payloads for paths outside $HOME (/etc, /usr/share); not stowed
 ```
@@ -412,12 +411,20 @@ leaving any other windows on the workspace untouched.
 
 ## Autologin
 
-`blanco` has no display manager. [`system/getty-autologin/autologin.conf`](https://github.com/hsimah/blanco/blob/main/system/getty-autologin/autologin.conf) is a
-systemd `getty@tty1.service.d` drop-in (`__USER__` templated to `$USER` by
-`bootstrap.sh`, copied to `/etc/systemd/system/getty@tty1.service.d/` with
-`sudo`) that autologins on tty1. [`dotfiles/hosts/blanco/config/fish/.config/fish/conf.d/autologin-niri.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/blanco/config/fish/.config/fish/conf.d/autologin-niri.fish) then `exec niri-session`s from that login shell — guarded
-to tty1 only (`status is-login`, `tty` check) and to a shell not already
-inside a niri session (`NIRI_SOCKET`), so other tty logins and terminals
-inside niri are unaffected. The lock screen (noctalia, bound to lid-close and
-idle in `niri/config.kdl`) is what actually gates access, same threat model as
-the work laptop's FDE-then-straight-to-desktop flow.
+Both machines are display-manager-less: LUKS passphrase → agetty autologin →
+fish → niri, no GDM/greeter in between (getty pulls in nothing beyond the base
+system, unlike GDM which drags in the GNOME stack just to launch not-GNOME).
+
+[`scripts/setup-autologin.sh`](https://github.com/hsimah/blanco/blob/main/scripts/setup-autologin.sh) is the system side: it templates
+[`system/getty-autologin/autologin.conf`](https://github.com/hsimah/blanco/blob/main/system/getty-autologin/autologin.conf) (`__USER__` → `$USER`) into
+`/etc/systemd/system/getty@tty1.service.d/` and disables any display manager
+(GDM on the work laptop; no-op on `blanco`). `bootstrap.sh` runs it on `blanco`;
+run it by hand on the work laptop to switch it off GDM (rollback:
+`sudo systemctl enable gdm`). The session side is shared config
+[`dotfiles/config/fish/.config/fish/conf.d/autologin-niri.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/conf.d/autologin-niri.fish), which
+`exec niri-session`s from the login shell — guarded to tty1 only
+(`status is-login`, `tty` check) and to a shell not already inside a niri
+session (`NIRI_SOCKET`), so other tty logins and terminals inside niri are
+unaffected. The lock screen (noctalia, bound to lid-close and idle in
+`niri/config.kdl`) is what actually gates access — FDE-then-straight-to-desktop,
+same threat model on both machines.

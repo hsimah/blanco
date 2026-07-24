@@ -71,15 +71,6 @@ else
     echo "  already fish"
 fi
 
-echo "==> tty1 autologin -> niri"
-# No display manager: agetty logs $USER straight into a login shell on tty1,
-# and the blanco fish overlay (conf.d/autologin-niri.fish, stowed below) execs
-# niri-session from there. See README.
-sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
-sed "s/__USER__/$USER/" "$REPO/system/getty-autologin/autologin.conf" \
-    | sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf >/dev/null
-sudo systemctl daemon-reload
-
 echo "==> Flatpaks"
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub "${FLATPAKS[@]}"
@@ -88,6 +79,9 @@ echo "==> Stow configs (shared + blanco overlay)"
 # deploy.sh exits non-zero if it skipped a package on a conflict; surface that
 # but keep going so the closing notes still print.
 "$REPO/scripts/deploy.sh" || echo "  (deploy reported conflicts — resolve the SKIPped files above, then re-run ./scripts/deploy.sh)"
+
+echo "==> Autologin (getty@tty1 -> niri, DM-less)"
+"$REPO/scripts/setup-autologin.sh"
 
 echo "==> Global git config (identity + mergetool)"
 # blanco only runs here (work host is refused above), so the personal identity
