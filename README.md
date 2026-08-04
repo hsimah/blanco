@@ -41,6 +41,7 @@ dotfiles/
     niri/.config/niri/
     nvim/.config/nvim/
     tmux/.config/tmux/
+    xdg-desktop-portal/.config/xdg-desktop-portal/niri-portals.conf
 
   local/        # ~/.local payloads, stowed everywhere
     yazi/.local/share/applications/yazi.desktop
@@ -164,6 +165,7 @@ Shared config packages live in `dotfiles/config` and are stowed on every machine
 | [niri](https://github.com/hsimah/blanco/tree/main/dotfiles/config/niri) | `~/.config/niri/` (keybinding reference: [`niri.md`](https://github.com/hsimah/blanco/blob/main/docs/niri.md)) |
 | [nvim](https://github.com/hsimah/blanco/tree/main/dotfiles/config/nvim) | `~/.config/nvim/` |
 | [tmux](https://github.com/hsimah/blanco/tree/main/dotfiles/config/tmux) | `~/.config/tmux/` |
+| [xdg-desktop-portal](https://github.com/hsimah/blanco/tree/main/dotfiles/config/xdg-desktop-portal) | `~/.config/xdg-desktop-portal/` |
 
 yazi ships a desktop launcher via the `dotfiles/local` tree, running in kitty
 (`Terminal=false`, `kitty yazi %f`) and advertising `inode/directory` so it can
@@ -222,6 +224,20 @@ is passed, so hints falls back to `open_url_with`
 the browser command stays defined in exactly one place. Chromium does its own
 omnibox-style fixup on a scheme-less argument, so nothing needs to prepend
 `https://`.
+
+[`xdg-desktop-portal`](https://github.com/hsimah/blanco/tree/main/dotfiles/config/xdg-desktop-portal) ships `niri-portals.conf`, which picks the backend
+implementation behind each portal interface. Semicolon-separated values are
+fallback chains, tried left to right. It is the stock niri file from
+`/usr/share/xdg-desktop-portal/` plus one line:
+
+```conf
+org.freedesktop.impl.portal.FileChooser=gtk;
+```
+
+Without it no `FileChooser` backend is named, so the file picker fails to appear
+in Flatpak apps (ungoogled Chromium in particular). `gtk` is pinned alone rather
+than as `gtk;gnome;` — the GNOME backend expects a running GNOME session and the
+fallback is not wanted here.
 
 `doom` tracks only the config layer — [`init.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/init.el) (enabled modules), [`config.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/config.el)
 (personal settings), [`packages.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/packages.el), and [`work-cheatsheet.org`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/work-cheatsheet.org) (a keybinding
