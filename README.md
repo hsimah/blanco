@@ -70,6 +70,7 @@ dotfiles/
     blanco/     # overlay, stowed only on the personal host
       config/
         fish/.config/fish/conf.d/autologin-niri.fish
+        kitty/.config/kitty/local.conf
         niri/.config/niri/local.kdl
         noctalia/.config/noctalia/settings.json
         noctalia/.config/noctalia/plugins.json
@@ -181,6 +182,46 @@ is connected, keeping the workspace named `personal` on the laptop — one keypr
 instead of dragging each workspace over by hand. It loops re-querying niri after
 each move because `move-workspace-to-monitor --reference` indexes are per-output
 and shift as workspaces leave; empty workspaces are skipped so it terminates.
+
+Clicking a link in kitty had two separate problems on `blanco`, both fixed in
+config — no wrapper script.
+
+**Focus never followed the link.** On Wayland an already-running app can only
+raise itself if it is handed an xdg-activation token. kitty strips
+`XDG_ACTIVATION_TOKEN` from every child process it spawns (`kitty/child.py`,
+unconditional, no setting to disable), and `xdg-open`'s portal path calls
+`OpenURI` with empty options, so no token reaches Chromium either way. Chromium
+opened the tab in whichever window it last used — often on another workspace —
+and niri correctly ignored the tokenless raise request. The link worked; it just
+never surfaced. Since no token can be passed, the window has to be a *new* one:
+`dotfiles/hosts/blanco/config/kitty/.config/kitty/local.conf` sets
+
+```conf
+open_url_with flatpak run io.github.ungoogled_software.ungoogled_chromium --new-window
+```
+
+so niri places the window on the active workspace and focuses it. The shared
+`kitty.conf` ends with `globinclude local.conf`, the same per-host seam as
+`fish/local.fish` and `niri/local.kdl`; `work` has no `local.conf`, `globinclude`
+matches nothing without warning, and `open_url_with` stays at its `default`
+(`xdg-open`). Caveat: `open_url_with` applies to every scheme kitty linkifies, so
+on `blanco` a `mailto:` link now reaches Chromium rather than a mail client.
+
+**Scheme-less URLs.** kitty's `url_prefixes` only linkifies known schemes, so
+bare `www.google.com` is never clickable. `Ctrl+Shift+E` runs a `hints` kitten
+whose regex matches bare `www.` text as well as any scheme:
+
+```conf
+map ctrl+shift+e kitten hints --type regex --regex (?:[a-z][\w+.-]*://|www\.)\S*[\w/]
+```
+
+The trailing `[\w/]` keeps sentence punctuation out of the match. No `--program`
+is passed, so hints falls back to `open_url_with`
+([`kittens/hints/main.py`](https://github.com/kovidgoyal/kitty/blob/master/kittens/hints/main.py):
+`program = get_options().open_url_with if is_default_program else program`) and
+the browser command stays defined in exactly one place. Chromium does its own
+omnibox-style fixup on a scheme-less argument, so nothing needs to prepend
+`https://`.
 
 `doom` tracks only the config layer — [`init.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/init.el) (enabled modules), [`config.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/config.el)
 (personal settings), [`packages.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/packages.el), and [`work-cheatsheet.org`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/work-cheatsheet.org) (a keybinding
