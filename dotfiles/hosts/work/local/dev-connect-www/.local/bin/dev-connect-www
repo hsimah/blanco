@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec od-connect /data/sandcastle/boxes/fbsource/www -t www
+exec od-connect -t www

@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # Runs on a fresh OnDemand as the `dev connect` PROG (shipped by od-connect).
 # 1) waits for host init (dotfiles.target + devfeature) with a spinner
-# 2) builds/attaches the tmux session: doom in a full-height left pane, two
-#    stacked shells on the right. If $1 (project dir) is set, doom and the
-#    top-right shell cd there and the top-right runs claude.
+# 2) builds/attaches the tmux session: a single shell pane at ~
 set -u
-DIR="${1:-}"
 SESSION=main
 export TERM=xterm-256color
 
@@ -43,18 +40,7 @@ printf '\r\033[K  [%s] dotfiles   [%s] devfeature\n' "$(cell "$df_pid" "$DF")" "
 if ! tmux has-session -t "$SESSION" 2>/dev/null; then
   tmux start-server
   tmux set-option -g default-command "exec bash -l"
-  p0=$(tmux new-session -d -s "$SESSION" -PF '#{pane_id}')
-  tmux set-window-option -t "$SESSION" main-pane-width 62%
-  p1=$(tmux split-window -h -t "$p0" -PF '#{pane_id}')
-  tmux split-window -v -t "$p1" >/dev/null
-  tmux select-layout -t "$SESSION" main-vertical
-  tmux select-pane -t "$p0"
-  if [[ -n $DIR ]]; then
-    tmux send-keys -t "$p0" "cd $DIR && doom" Enter
-    tmux send-keys -t "$p1" "cd $DIR && claude" Enter
-  else
-    tmux send-keys -t "$p0" doom Enter
-  fi
+  tmux new-session -d -s "$SESSION"
 fi
 # Set after the session (and any ~/.tmux.conf sourced at new-session) so it wins;
 # unconditional so it applies on reconnects too.

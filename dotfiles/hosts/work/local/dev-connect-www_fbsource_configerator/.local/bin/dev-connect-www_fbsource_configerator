@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec od-connect /data/sandcastle/boxes/fbsource -t www_fbsource_configerator:ent_framework
+exec od-connect -t www_fbsource_configerator:ent_framework

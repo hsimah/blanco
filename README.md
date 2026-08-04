@@ -346,7 +346,7 @@ resolves `Icon=claude-code`.
 
 The `dotfiles/hosts/work` overlay also holds the OnDemand connection tooling. A shared
 launcher, `od-connect`, does the real work; the three `dev-connect-*` packages
-are just fuzzel entry points that call it with a target and a project dir.
+are just fuzzel entry points that call it with a target.
 
 [`od-connect`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/bin/od-connect) (`~/.local/bin/od-connect`, `dotfiles/hosts/work/local`) prompts for a YubiKey
 touch, then runs `dev connect <args> -- <bootstrap>`. Rather than let `dev
@@ -355,10 +355,10 @@ the `[PROG]` argument. `dev connect` delivers PROG by **typing** `exec <PROG>;
 exit` into the remote shell, so the bootstrap can't be a normal multi-line
 script — it lives as a readable file (`od-tmux-boot.sh`, below) that `od-connect`
 gzip+base64-encodes into a single-line PROG (`base64 -d <<< … | gunzip >
-~/.od-boot.sh; exec bash ~/.od-boot.sh <dir>`). gzip keeps the typed line ~1.7 kB
+~/.od-boot.sh; exec bash ~/.od-boot.sh`). gzip keeps the typed line ~1.7 kB
 (plain base64 was ~3.3 kB, near the terminal's canonical-input limit), and the
 encoded blob is single-quote-free so `dev connect`'s own PROG quoting stays
-clean. Usage: `od-connect <project-dir|""> <dev connect args…>`.
+clean. Usage: `od-connect <dev connect args…>`.
 
 [`od-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/od-tmux-boot.sh) (`~/.local/share/od-connect/`) is what runs on the OD:
 
@@ -373,10 +373,9 @@ clean. Usage: `od-connect <project-dir|""> <dev connect args…>`.
    and come up without aliases/doom. (Barrier cribbed from Josh Kehn's
    `od-wait-for-init.sh`.)
 2. **Builds/attaches tmux.** On first connect (guarded by `tmux has-session`) it
-   builds a `main-vertical` layout at `main-pane-width 62%`: doom in a
-   full-height left pane, two stacked shells on the right. Panes are addressed by
-   captured pane-id (robust to any `base-index`). Reconnects skip the build and
-   re-attach, preserving in-flight work.
+   creates session `main` with a single shell pane at `~` — nothing is launched
+   into it, so `doom`/`claude` and any extra panes are yours to open. Reconnects
+   skip the build and re-attach, preserving in-flight work.
 
 Two details the bootstrap has to get right:
 
@@ -394,13 +393,11 @@ The three fuzzel launchers (each a `dotfiles/hosts/work/local` bin + a
 `~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
 one line calling `od-connect`:
 
-- [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect /data/sandcastle/boxes/fbsource/www -t www`
-- [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect /data/sandcastle/boxes/fbsource -t www_fbsource_configerator:ent_framework`
-- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect "" -n devvm10852.eag0`
+- [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect -t www`
+- [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect -t www_fbsource_configerator:ent_framework`
+- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect -n "$DEVSERVER_HOST"` (host from `.env`)
 
-With a project dir set (`www`, configerator), doom and the top-right shell `cd`
-there and the top-right runs `claude`; the bottom-right shell stays at `~`.
-`devserver` passes an empty dir, so all panes stay at `~` and no `claude` runs.
+All three land the same way: one tmux pane at `~`.
 
 [`niri-work-layout`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/niri-work-layout/.local/bin/niri-work-layout) is a `dotfiles/hosts/work/local` package: a bin script
 (`~/.local/bin/niri-work-layout`) spawned at startup by `work`'s `local.kdl`. It
