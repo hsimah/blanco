@@ -75,6 +75,8 @@ dotfiles/
         niri/.config/niri/local.kdl
         noctalia/.config/noctalia/settings.json
         noctalia/.config/noctalia/plugins.json
+      local/
+        chromium-newwindow/.local/share/applications/chromium-newwindow.desktop
 
 scripts/        # deploy.sh bootstrap.sh git-bootstrap.sh add-package.sh test.sh tests/
 docs/           # niri.md (keybinding reference)
@@ -185,45 +187,63 @@ instead of dragging each workspace over by hand. It loops re-querying niri after
 each move because `move-workspace-to-monitor --reference` indexes are per-output
 and shift as workspaces leave; empty workspaces are skipped so it terminates.
 
-Clicking a link in kitty had two separate problems on `blanco`, both fixed in
-config — no wrapper script.
+Clicking a link opened nothing visible on `blanco`. The link did open — the tab
+just landed in a Chromium window on another workspace and never surfaced.
 
-**Focus never followed the link.** On Wayland an already-running app can only
-raise itself if it is handed an xdg-activation token. kitty strips
-`XDG_ACTIVATION_TOKEN` from every child process it spawns (`kitty/child.py`,
-unconditional, no setting to disable), and `xdg-open`'s portal path calls
-`OpenURI` with empty options, so no token reaches Chromium either way. Chromium
-opened the tab in whichever window it last used — often on another workspace —
-and niri correctly ignored the tokenless raise request. The link worked; it just
-never surfaced. Since no token can be passed, the window has to be a *new* one:
-`dotfiles/hosts/blanco/config/kitty/.config/kitty/local.conf` sets
+**Why.** On Wayland an already-running app can only raise itself if it is handed
+an xdg-activation token. No token reaches Chromium by any route here: kitty
+strips `XDG_ACTIVATION_TOKEN` from every child process it spawns
+(`kitty/child.py`, unconditional, no setting to disable), and `xdg-open`'s portal
+path calls `OpenURI` with empty options. niri then correctly ignores the
+tokenless raise request. Chromium itself has no setting for this — it has no
+concept of workspaces, and without `--new-window` it targets its last-active
+window wherever that is.
 
-```conf
-open_url_with flatpak run io.github.ungoogled_software.ungoogled_chromium --new-window
+Since no token can be passed, the window has to be a *new* one.
+[`chromium-newwindow.desktop`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/blanco/local/chromium-newwindow/.local/share/applications/chromium-newwindow.desktop) (blanco overlay) wraps the flatpak:
+
+```ini
+Exec=flatpak run io.github.ungoogled_software.ungoogled_chromium --new-window %U
 ```
 
-so niri places the window on the active workspace and focuses it. The shared
-`kitty.conf` ends with `globinclude local.conf`, the same per-host seam as
-`fish/local.fish` and `niri/local.kdl`; `work` has no `local.conf`, `globinclude`
-matches nothing without warning, and `open_url_with` stays at its `default`
-(`xdg-open`). Caveat: `open_url_with` applies to every scheme kitty linkifies, so
-on `blanco` a `mailto:` link now reaches Chromium rather than a mail client.
+`deploy.sh` registers it as the default browser, so **every** app's links behave
+the same way, not just kitty's — niri places the new window on the active
+workspace and focuses it. It is `NoDisplay=true` so it stays out of launchers,
+and claims only `http`/`https`/`text/html`, leaving `mailto:` with the mail
+handler. Trade-off: one new window per link, since a desktop entry has no way to
+ask niri whether a Chromium is already on the current workspace — that would need
+a wrapper script querying `niri msg`.
 
 **Scheme-less URLs.** kitty's `url_prefixes` only linkifies known schemes, so
 bare `www.google.com` is never clickable. `Ctrl+Shift+E` runs a `hints` kitten
 whose regex matches bare `www.` text as well as any scheme:
 
 ```conf
-map ctrl+shift+e kitten hints --type regex --regex (?:[a-z][\w+.-]*://|www\.)\S*[\w/]
+map ctrl+shift+e kitten hints --type regex --regex '(?:[a-z][\w+.-]*://|www\.)\S*[\w/]'
 ```
 
-The trailing `[\w/]` keeps sentence punctuation out of the match. No `--program`
-is passed, so hints falls back to `open_url_with`
+**The single quotes are load-bearing.** kitty splits a kitten definition with its
+own `shlex_split`, which eats unquoted backslashes — `\w` becomes `w`, `\S`
+becomes `S` — leaving a regex that silently matches nothing. Quote the pattern
+(or double every backslash) or the binding does nothing at all.
+
+The trailing `[\w/]` keeps sentence punctuation out of the match. `open_url_with`
+stays at its `default` (`xdg-open`) so links route through the desktop handler
+above, but `xdg-open` rejects a scheme-less argument as a missing file path, so
+on `blanco` the binding overrides `--program` to reach the flatpak directly and
+let Chromium's own omnibox fixup supply the scheme. That override lives in
+`dotfiles/hosts/blanco/config/kitty/.config/kitty/local.conf`, behind the
+`globinclude local.conf` seam at the end of the shared `kitty.conf` — the same
+per-host pattern as `fish/local.fish` and `niri/local.kdl`. `work` has no
+`local.conf`, `globinclude` matches nothing without warning, and the binding
+there falls back to `open_url_with`
 ([`kittens/hints/main.py`](https://github.com/kovidgoyal/kitty/blob/master/kittens/hints/main.py):
-`program = get_options().open_url_with if is_default_program else program`) and
-the browser command stays defined in exactly one place. Chromium does its own
-omnibox-style fixup on a scheme-less argument, so nothing needs to prepend
-`https://`.
+`program = get_options().open_url_with if is_default_program else program`).
+
+`gtk-launch` looks like it should work for the scheme-less case and does not: it
+converts a non-URI argument into a `file://` URI relative to the current
+directory, so `gtk-launch chromium-newwindow www.google.com` opens
+`file:///…/www.google.com`.
 
 [`xdg-desktop-portal`](https://github.com/hsimah/blanco/tree/main/dotfiles/config/xdg-desktop-portal) ships `niri-portals.conf`, which picks the backend
 implementation behind each portal interface. Semicolon-separated values are
