@@ -1,0 +1,4 @@
+// Fn+F6 (snip key) is synthesized by the G14 firmware as Super+Shift+S
+binds {
+    Super+Shift+S hotkey-overlay-title="Screenshot: Fn+F6" { screenshot; }
+}

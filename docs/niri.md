@@ -92,6 +92,7 @@ Reference for the `binds { … }` block in
 | `Print` | Screenshot (interactive) |
 | `Alt+Print` | Screenshot focused window |
 | `Ctrl+Print` | Toggle screen recording (noctalia) |
+| `Super+Shift+S` | Screenshot (interactive) — `blanco` only, this is what the G14's `Fn+F6` snip key sends |
 
 ## Session
 

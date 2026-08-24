@@ -316,7 +316,12 @@ declares the named workspaces (`personal`, `work`, `coding`) and their
 `coding` are pinned to the external Dell via `open-on-output`, and the apps are
 Plexamp (on `personal`) and the Google Chat PWA (on `work`); Workplace and the
 Calendar PWA still have `open-on-workspace` rules but are launched by hand. On
-`blanco` only Plexamp starts, on `personal`.
+`blanco` only Plexamp starts, on `personal`. On `blanco` the overlay also carries
+a `binds` block: the G14's `Fn+F6` snip key is synthesized in firmware as
+`Super+Shift+S` (the Windows snipping-tool chord) rather than an `XF86` keysym,
+so the bind is host-specific and lives here, not in the shared `config.kdl`.
+Included files merge into the shared `binds` section, so the overlay adds to
+those binds rather than replacing them.
 
 `noctalia` also appears in both overlays instead of `dotfiles/config` — unlike niri,
 noctalia's `settings.json` is a single app-managed blob with no include
@@ -463,6 +468,16 @@ run it by hand on the work laptop to switch it off GDM (rollback:
 `exec niri-session`s from the login shell — guarded to tty1 only
 (`status is-login`, `tty` check) and to a shell not already inside a niri
 session (`NIRI_SOCKET`), so other tty logins and terminals inside niri are
-unaffected. The lock screen (noctalia, bound to lid-close and idle in
+unaffected.
+
+The `status is-interactive` clause in that guard is load-bearing, not
+decoration: `niri-session` re-execs itself through `$SHELL` as a *login* shell
+(`exec -l "$SHELL" -c "niri-session -l"`), and fish sources `conf.d/` for that
+shell too. Without the interactive check the snippet fires again, `exec`s a
+fresh bare `niri-session`, and the two ping-pong forever — an infinite exec loop
+that pegs a core and never starts niri. The re-exec is non-interactive, so
+requiring interactivity breaks the cycle while still firing on a real autologin.
+
+The lock screen (noctalia, bound to lid-close and idle in
 `niri/config.kdl`) is what actually gates access — FDE-then-straight-to-desktop,
 same threat model on both machines.
