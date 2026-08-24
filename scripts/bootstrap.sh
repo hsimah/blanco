@@ -33,7 +33,7 @@ DNF_PKGS=(
     niri
     pipewire wireplumber pipewire-pulseaudio
     xdg-desktop-portal xdg-desktop-portal-gtk
-    kitty fish fuzzel emacs fastfetch nano
+    kitty fish fuzzel emacs fastfetch nano vlc
     ripgrep fd-find wl-clipboard cliphist cargo
     flatpak git stow jetbrains-mono-fonts
 )

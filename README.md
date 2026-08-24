@@ -166,6 +166,7 @@ Shared config packages live in `dotfiles/config` and are stowed on every machine
 | [niri](https://github.com/hsimah/blanco/tree/main/dotfiles/config/niri) | `~/.config/niri/` (keybinding reference: [`niri.md`](https://github.com/hsimah/blanco/blob/main/docs/niri.md)) |
 | [nvim](https://github.com/hsimah/blanco/tree/main/dotfiles/config/nvim) | `~/.config/nvim/` |
 | [tmux](https://github.com/hsimah/blanco/tree/main/dotfiles/config/tmux) | `~/.config/tmux/` |
+| [vlc](https://github.com/hsimah/blanco/tree/main/dotfiles/config/vlc) | `~/.config/vlc/` |
 | [xdg-desktop-portal](https://github.com/hsimah/blanco/tree/main/dotfiles/config/xdg-desktop-portal) | `~/.config/xdg-desktop-portal/` |
 
 yazi ships a desktop launcher via the `dotfiles/local` tree, running in kitty
@@ -302,7 +303,22 @@ declaratively in the bootstrap instead:
 
 ```bash
 xdg-mime default emacs.desktop text/plain text/markdown
+xdg-mime default vlc.desktop video/mp4 video/x-matroska video/webm …
 ```
+
+Video and audio both go to VLC (`vlc`, a plain Fedora package — no RPM Fusion
+needed), overriding Fedora's `mpv` default across the common container types.
+That block is gated on `vlc.desktop` existing rather than on hostname, so a
+machine without VLC keeps whatever handler it already has.
+
+The `vlc` package tracks `vlcrc` — deliberately just the handful of non-default
+keys (dark palette, privacy prompt off), since VLC fills in every absent setting
+from its own defaults and dumping the full 86 KB would churn on each VLC
+release. VLC only rewrites `vlcrc` when you **Save** in its preferences dialog,
+not on ordinary playback; if that happens the symlink is replaced by a real file
+and the next `deploy.sh` reports it as a `SKIP` conflict to resolve by hand.
+Window geometry and recent files live in `vlc-qt-interface.conf`, which stays
+untracked in the real `~/.config/vlc/` dir thanks to `--no-folding`.
 
 On `blanco`, `deploy.sh` also sets ungoogled Chromium (flatpak) as the default
 web browser — gated to that host since the flatpak isn't installed on `work`.

@@ -105,6 +105,29 @@ if command -v xdg-mime >/dev/null 2>&1; then
     fi
 fi
 
+# Video and audio -> VLC. Gated on vlc.desktop being present so a machine without
+# VLC keeps whatever handler it has (Fedora defaults these to mpv).
+MEDIA_MIMES=(
+    video/mp4 video/x-m4v video/x-matroska video/webm video/quicktime
+    video/x-msvideo video/avi video/mpeg video/mp2t video/ogg
+    video/x-flv video/3gpp video/x-ms-wmv video/x-ms-asf
+    audio/mpeg audio/mp4 audio/x-m4a audio/flac audio/x-flac
+    audio/ogg audio/x-vorbis+ogg audio/opus audio/x-wav audio/aac
+    audio/x-ms-wma audio/x-matroska audio/webm audio/x-aiff
+    audio/x-mpegurl audio/x-scpls
+)
+have_vlc_desktop=0
+for d in "$HOME/.local/share" /usr/local/share /usr/share; do
+    [[ -f "$d/applications/vlc.desktop" ]] && have_vlc_desktop=1
+done
+if [[ $have_vlc_desktop -eq 1 ]] && command -v xdg-mime >/dev/null 2>&1; then
+    if [[ $DRY_RUN -eq 1 ]]; then
+        echo "==> Would set MIME default: vlc.desktop for ${#MEDIA_MIMES[@]} video/audio types"
+    else
+        xdg-mime default vlc.desktop "${MEDIA_MIMES[@]}" || true
+    fi
+fi
+
 # ungoogled Chromium (flatpak) is only installed on blanco; gate the browser default to that host.
 # chromium-newwindow.desktop wraps it with --new-window so links open on the active
 # workspace rather than as a tab in a window niri can't raise (no activation token).
