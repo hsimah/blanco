@@ -6,10 +6,7 @@ workspace "work" {
 }
 
 spawn-at-startup "flatpak" "run" "com.plexamp.Plexamp"
-spawn-at-startup "google-chrome-stable" "--app=https://fb.workplace.com"
 spawn-at-startup "google-chrome-stable" "--profile-directory=Default" "--app-id=pommaclcbfghclhalboakcipcmmndhcj"
-spawn-at-startup "google-chrome-stable" "--profile-directory=Default" "--app-id=gihbagcjamhppndmlkgmccomodfodggj"
-spawn-at-startup "sh" "-c" "exec $HOME/.local/bin/niri-work-layout"
 
 window-rule {
     match app-id="plexamp"

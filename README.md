@@ -65,7 +65,6 @@ dotfiles/
         dev-connect-www/.local/share/applications/dev-connect-www.desktop
         dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator
         dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
-        niri-work-layout/.local/bin/niri-work-layout
         workplace/.local/share/applications/workplace.desktop
 
     blanco/     # overlay, stowed only on the personal host
@@ -314,7 +313,8 @@ pulls in via `include "local.kdl"`; it
 declares the named workspaces (`personal`, `work`, `coding`) and their
 `spawn-at-startup` apps and `open-on-workspace` rules. On work, `work` and
 `coding` are pinned to the external Dell via `open-on-output`, and the apps are
-Plexamp, Workplace (Chrome `--app`), the Calendar PWA, and VS Code @ Meta; on
+Plexamp (on `personal`) and the Google Chat PWA (on `work`); Workplace and the
+Calendar PWA still have `open-on-workspace` rules but are launched by hand. On
 `blanco` only Plexamp starts, on `personal`.
 
 `noctalia` also appears in both overlays instead of `dotfiles/config` — unlike niri,
@@ -398,13 +398,6 @@ one line calling `od-connect`:
 - [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect -n "$DEVSERVER_HOST"` (host from `.env`)
 
 All three land the same way: one tmux pane at `~`.
-
-[`niri-work-layout`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/niri-work-layout/.local/bin/niri-work-layout) is a `dotfiles/hosts/work/local` package: a bin script
-(`~/.local/bin/niri-work-layout`) spawned at startup by `work`'s `local.kdl`. It
-waits for the three `work`-workspace PWAs, then drives `niri msg action` to build
-the layout — Workplace (top) and Calendar (bottom) stacked 50/50 in the left
-column, Google Chat full-height in the right — resolving windows by app-id and
-leaving any other windows on the workspace untouched.
 
 ## Autologin
 
