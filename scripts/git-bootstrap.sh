@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Configure global git on a fresh machine: identity + the nvimdiff two-pane
+# Configure global git on a fresh machine: identity + the nvimdiff three-pane
 # mergetool. Run once, as your normal user:
 #   ./scripts/git-bootstrap.sh
 #
@@ -22,12 +22,12 @@ git config --global user.email "$GIT_USER_EMAIL"
 echo "  user.name  = $GIT_USER_NAME"
 echo "  user.email = $GIT_USER_EMAIL"
 
-echo "==> Merge / mergetool (nvimdiff, two-pane @LOCAL,REMOTE)"
+echo "==> Merge / mergetool (nvimdiff, three-pane LOCAL|BASE|REMOTE over MERGED)"
 git config --global merge.tool nvimdiff
 git config --global merge.conflictstyle zdiff3
 git config --global mergetool.prompt false
 git config --global mergetool.keepBackup false
-git config --global mergetool.vimdiff.layout "@LOCAL,REMOTE"
+git config --global mergetool.vimdiff.layout "(LOCAL,BASE,REMOTE)/MERGED"
 
 echo "==> Result"
 git config --global --get-regexp '^(user|merge|mergetool)\.' | sed 's/^/  /'
