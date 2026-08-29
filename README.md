@@ -59,6 +59,7 @@ dotfiles/
         claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
         od-connect/.local/bin/od-connect
         od-connect/.local/share/od-connect/od-tmux-boot.sh
+        od-connect/.local/share/od-connect/devserver-tmux-boot.sh
         dev-connect-devserver/.local/bin/dev-connect-devserver
         dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
         dev-connect-www/.local/bin/dev-connect-www
@@ -358,7 +359,9 @@ gzip+base64-encodes into a single-line PROG (`base64 -d <<< … | gunzip >
 ~/.od-boot.sh; exec bash ~/.od-boot.sh`). gzip keeps the typed line ~1.7 kB
 (plain base64 was ~3.3 kB, near the terminal's canonical-input limit), and the
 encoded blob is single-quote-free so `dev connect`'s own PROG quoting stays
-clean. Usage: `od-connect <dev connect args…>`.
+clean. Usage: `od-connect [--boot <script>] <dev connect args…>`, where
+`--boot` picks which file in `~/.local/share/od-connect/` gets embedded
+(default `od-tmux-boot.sh`).
 
 [`od-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/od-tmux-boot.sh) (`~/.local/share/od-connect/`) is what runs on the OD:
 
@@ -389,15 +392,23 @@ Two details the bootstrap has to get right:
   ("missing or unsuitable terminal: xterm-kitty") before the dotfiles carrying
   the kitty terminfo are pulled. tmux resets TERM for its own panes regardless.
 
+[`devserver-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/devserver-tmux-boot.sh) is the devserver counterpart, selected with `od-connect --boot`.
+A devserver is a persistent host, not an ephemeral OD: dotsync and devfeature
+have already landed, so waiting on them just delays every connect behind a sync
+(and a devfeature run that reinstalls tooling like Emacs). It drops step 1
+entirely and keeps step 2 plus the login-shell and TERM handling — attach
+session `main`, creating it only if it doesn't already exist.
+
 The three fuzzel launchers (each a `dotfiles/hosts/work/local` bin + a
 `~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
 one line calling `od-connect`:
 
 - [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect -t www`
 - [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect -t www_fbsource_configerator:ent_framework`
-- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect -n "$DEVSERVER_HOST"` (host from `.env`)
+- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect --boot devserver-tmux-boot.sh -n "$DEVSERVER_HOST"` (host from `.env`)
 
-All three land the same way: one tmux pane at `~`.
+All three land the same way: one tmux pane at `~`. The two `www` ODs wait out
+host init first; the devserver attaches straight away.
 
 ## Autologin
 
