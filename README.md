@@ -396,8 +396,25 @@ Two details the bootstrap has to get right:
 A devserver is a persistent host, not an ephemeral OD: dotsync and devfeature
 have already landed, so waiting on them just delays every connect behind a sync
 (and a devfeature run that reinstalls tooling like Emacs). It drops step 1
-entirely and keeps step 2 plus the login-shell and TERM handling — attach
-session `main`, creating it only if it doesn't already exist.
+entirely and keeps step 2 — attach session `main`, creating it only if it
+doesn't already exist.
+
+Dropping the wait exposed two things step 1 had been masking:
+
+- **The tty race.** `dev connect` types PROG into the remote shell and can get
+  ahead of the tty setup, so an immediate `tmux attach` dies with `open terminal
+  failed: not a terminal`. The OD script never hit this only because the init
+  spinner gave the tty seconds to settle. Redirecting from the controlling
+  terminal is *not* the fix — tmux rejects that outright with `can't use
+  /dev/tty` — so the boot script polls `[ -t 0 ]` for up to 5s instead.
+- **`start-server` doesn't persist.** A tmux server started with no sessions
+  exits again (verified on tmux 3.7), so the `set-option -g` calls that follow
+  it fail with `no server running` and the mouse/`default-command` settings are
+  silently lost. The devserver script therefore passes `exec bash -l` as the
+  first pane's command at `new-session` time and sets the global options
+  afterwards, once a session is holding the server open. `od-tmux-boot.sh` still
+  uses the `start-server` ordering — it works against the OD image's tmux, but
+  it is the same latent bug if that tmux ever moves forward.
 
 The three fuzzel launchers (each a `dotfiles/hosts/work/local` bin + a
 `~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
