@@ -401,16 +401,22 @@ doesn't already exist.
 
 Dropping the wait exposed two things step 1 had been masking:
 
-- **stdin isn't a terminal.** `dev connect` types PROG into the remote shell and
-  can get ahead of the tty setup, so an immediate `tmux attach` dies with `open
-  terminal failed: not a terminal`. The OD script never hit this only because
-  the init spinner gave the tty seconds to settle. `</dev/tty` is *not* the fix
-  — tmux rejects that outright with `can't use /dev/tty` — but it does accept
-  the terminal's real name, so the boot script polls `[ -t 0 ]` for up to 5s
-  and, failing that, recovers the controlling terminal from `ps -o tty=` and
-  re-opens stdio on `/dev/pts/N`. If even that comes up empty it prints the tty
-  state it saw and `exec bash -l`s, so a bad connect reports itself instead of
-  dropping you.
+- **stdout isn't a terminal.** EternalTerminal hands PROG a pipe for fd 1 while
+  stdin and stderr stay on the tty, and tmux wants a terminal on all three, so
+  `tmux attach` dies with `open terminal failed: not a terminal`. The OD script
+  never hit it because the init spinner's own writes to stdout kept it honest.
+  `</dev/tty` is *not* the fix — tmux rejects that outright with `can't use
+  /dev/tty` — but it does accept the terminal's real name, so the boot script
+  resolves the tty (`tty`, falling back to `ps -o tty=`) and re-opens whichever
+  of the three fds are not terminals on `/dev/pts/N`. If no terminal can be
+  resolved it prints the state it saw and `exec bash -l`s, so a bad connect
+  reports itself instead of dropping you.
+
+  A trap worth remembering if that diagnostic ever needs extending: `$([ -t 1 ])`
+  and `$(readlink /proc/self/fd/1)` both *lie*. Command substitution repoints
+  fd 1 at its own capture pipe, so they report `out=n` and `fd1=pipe:[…]`
+  whatever the shell's real stdout is. The probes run as plain `if` statements
+  and read `/proc/$$/fd/N` for that reason.
 - **`start-server` doesn't persist.** A tmux server started with no sessions
   exits again (verified on tmux 3.7), so the `set-option -g` calls that follow
   it fail with `no server running` and the mouse/`default-command` settings are
