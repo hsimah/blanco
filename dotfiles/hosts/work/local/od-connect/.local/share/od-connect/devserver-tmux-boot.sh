@@ -8,11 +8,16 @@ SESSION=main
 export TERM=xterm-256color
 
 # `dev connect` types PROG into the remote shell and can get ahead of the tty
-# setup; od-tmux-boot.sh only hides that by spending seconds in its init spinner
-# first. Redirecting tmux from /dev/tty is not a fix — it rejects that outright
-# ("can't use /dev/tty") — so wait for stdin itself.
+# setup, so stdin may not be a terminal yet (or at all) when tmux runs.
+# `</dev/tty` is not the fix — tmux rejects it ("can't use /dev/tty") — but it
+# does accept the terminal's real name, so fall back to the controlling tty.
 for ((i = 0; i < 50; i++)); do
   [ -t 0 ] && break
+  t=$(ps -o tty= -p $$ 2>/dev/null | tr -d '[:space:]')
+  if [ -n "$t" ] && [ "$t" != "?" ] && [ -c "/dev/$t" ]; then
+    exec 0<"/dev/$t" 1>"/dev/$t" 2>&1
+    break
+  fi
   sleep 0.1
 done
 
@@ -24,4 +29,15 @@ if ! tmux has-session -t "$SESSION" 2>/dev/null; then
 fi
 tmux set-option -g default-command "exec bash -l"
 tmux set-option -g mouse on
-exec tmux attach -d -t "$SESSION"
+
+tmux attach -d -t "$SESSION" && exit
+
+# Don't strand the connection on a terminal we failed to work out: report what
+# tmux saw, then hand over a usable shell.
+echo "--- tmux attach failed ---"
+echo "tty=$(tty 2>&1) ctty=$(ps -o tty= -p $$ 2>&1 | tr -d '[:space:]')"
+echo "isatty in=$([ -t 0 ] && echo y || echo n) out=$([ -t 1 ] && echo y || echo n) err=$([ -t 2 ] && echo y || echo n)"
+echo "fd0=$(readlink /proc/self/fd/0 2>&1) TERM=$TERM $(tmux -V 2>&1)"
+echo "sessions: $(tmux ls 2>&1 | tr '\n' ' ')"
+echo "--------------------------"
+exec bash -l

@@ -401,12 +401,16 @@ doesn't already exist.
 
 Dropping the wait exposed two things step 1 had been masking:
 
-- **The tty race.** `dev connect` types PROG into the remote shell and can get
-  ahead of the tty setup, so an immediate `tmux attach` dies with `open terminal
-  failed: not a terminal`. The OD script never hit this only because the init
-  spinner gave the tty seconds to settle. Redirecting from the controlling
-  terminal is *not* the fix — tmux rejects that outright with `can't use
-  /dev/tty` — so the boot script polls `[ -t 0 ]` for up to 5s instead.
+- **stdin isn't a terminal.** `dev connect` types PROG into the remote shell and
+  can get ahead of the tty setup, so an immediate `tmux attach` dies with `open
+  terminal failed: not a terminal`. The OD script never hit this only because
+  the init spinner gave the tty seconds to settle. `</dev/tty` is *not* the fix
+  — tmux rejects that outright with `can't use /dev/tty` — but it does accept
+  the terminal's real name, so the boot script polls `[ -t 0 ]` for up to 5s
+  and, failing that, recovers the controlling terminal from `ps -o tty=` and
+  re-opens stdio on `/dev/pts/N`. If even that comes up empty it prints the tty
+  state it saw and `exec bash -l`s, so a bad connect reports itself instead of
+  dropping you.
 - **`start-server` doesn't persist.** A tmux server started with no sessions
   exits again (verified on tmux 3.7), so the `set-option -g` calls that follow
   it fail with `no server running` and the mouse/`default-command` settings are
