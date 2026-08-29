@@ -4,18 +4,20 @@
 # (see od-tmux-boot.sh). The bootstrap is gzip+base64-embedded into the PROG so
 # it survives `dev connect` typing it into the remote shell as `exec <PROG>`.
 #
-# usage: od-connect [--boot <script>] <dev connect args...>
+# A persistent host needs none of that: `--prog` passes a command straight
+# through as PROG instead, which is the form `dev connect --help` documents
+# (`dev connect -- tmux attach -d`).
+#
+# usage: od-connect [--prog <command>] <dev connect args...>
 #   e.g. od-connect -t www
-#        od-connect --boot devserver-tmux-boot.sh -n devvm123
+#        od-connect --prog "tmux new-session -A -D -s main" -n devvm123
 set -u
 
-boot=od-tmux-boot.sh
-if [[ ${1:-} == --boot ]]; then
-    boot=$2
+prog=""
+if [[ ${1:-} == --prog ]]; then
+    prog=$2
     shift 2
 fi
-
-gz="$(gzip -9 -n -c ~/.local/share/od-connect/"$boot" | base64 -w0)"
 
 echo
 printf "Touch YubiKey: "
@@ -27,4 +29,10 @@ for ((i = 0; i < 32; i++)); do
 done
 echo
 
+if [[ -n $prog ]]; then
+    # shellcheck disable=SC2086  # PROG is a command line, split it deliberately
+    exec dev connect "$@" -y "$y" -- $prog
+fi
+
+gz="$(gzip -9 -n -c ~/.local/share/od-connect/od-tmux-boot.sh | base64 -w0)"
 exec dev connect "$@" -y "$y" -- bash -c "base64 -d <<< $gz | gunzip > ~/.od-boot.sh; exec bash ~/.od-boot.sh"

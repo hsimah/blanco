@@ -59,7 +59,6 @@ dotfiles/
         claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
         od-connect/.local/bin/od-connect
         od-connect/.local/share/od-connect/od-tmux-boot.sh
-        od-connect/.local/share/od-connect/devserver-tmux-boot.sh
         dev-connect-devserver/.local/bin/dev-connect-devserver
         dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
         dev-connect-www/.local/bin/dev-connect-www
@@ -359,9 +358,8 @@ gzip+base64-encodes into a single-line PROG (`base64 -d <<< … | gunzip >
 ~/.od-boot.sh; exec bash ~/.od-boot.sh`). gzip keeps the typed line ~1.7 kB
 (plain base64 was ~3.3 kB, near the terminal's canonical-input limit), and the
 encoded blob is single-quote-free so `dev connect`'s own PROG quoting stays
-clean. Usage: `od-connect [--boot <script>] <dev connect args…>`, where
-`--boot` picks which file in `~/.local/share/od-connect/` gets embedded
-(default `od-tmux-boot.sh`).
+clean. Usage: `od-connect [--prog <command>] <dev connect args…>`, where
+`--prog` skips the bootstrap and passes a command straight through as PROG.
 
 [`od-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/od-tmux-boot.sh) (`~/.local/share/od-connect/`) is what runs on the OD:
 
@@ -392,39 +390,37 @@ Two details the bootstrap has to get right:
   ("missing or unsuitable terminal: xterm-kitty") before the dotfiles carrying
   the kitty terminfo are pulled. tmux resets TERM for its own panes regardless.
 
-[`devserver-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/devserver-tmux-boot.sh) is the devserver counterpart, selected with `od-connect --boot`.
-A devserver is a persistent host, not an ephemeral OD: dotsync and devfeature
-have already landed, so waiting on them just delays every connect behind a sync
-(and a devfeature run that reinstalls tooling like Emacs). It drops step 1
-entirely and keeps step 2 — attach session `main`, creating it only if it
-doesn't already exist.
+The devserver does not use that bootstrap at all. It is a persistent host, so
+dotsync and devfeature have already landed and waiting on them only delays every
+connect behind a sync (and a devfeature run that reinstalls tooling like Emacs).
+It also does not need the gzip+base64 machinery, which exists purely to get a
+*multi-line script* through PROG intact: `dev connect --help` documents passing a
+plain command instead (`dev connect -- tmux attach -d`), and one command survives
+being typed in as-is. `od-connect --prog` takes that path, so the devserver
+launcher is just:
 
-Dropping the wait exposed two things step 1 had been masking:
+    od-connect --prog "env TERM=xterm-256color tmux new-session -A -D -s main" -n "$DEVSERVER_HOST"
 
-- **stdout isn't a terminal.** EternalTerminal hands PROG a pipe for fd 1 while
-  stdin and stderr stay on the tty, and tmux wants a terminal on all three, so
-  `tmux attach` dies with `open terminal failed: not a terminal`. The OD script
-  never hit it because the init spinner's own writes to stdout kept it honest.
-  `</dev/tty` is *not* the fix — tmux rejects that outright with `can't use
-  /dev/tty` — but it does accept the terminal's real name, so the boot script
-  resolves the tty (`tty`, falling back to `ps -o tty=`) and re-opens whichever
-  of the three fds are not terminals on `/dev/pts/N`. If no terminal can be
-  resolved it prints the state it saw and `exec bash -l`s, so a bad connect
-  reports itself instead of dropping you.
+`new-session -A -D` is attach-or-create (`-A`), detaching any other client the
+way `attach -d` does (`-D`). `TERM` is pinned for the same reason as the OD
+bootstrap: kitty exports `xterm-kitty`, which the remote may have no terminfo
+for.
 
-  A trap worth remembering if that diagnostic ever needs extending: `$([ -t 1 ])`
-  and `$(readlink /proc/self/fd/1)` both *lie*. Command substitution repoints
-  fd 1 at its own capture pipe, so they report `out=n` and `fd1=pipe:[…]`
-  whatever the shell's real stdout is. The probes run as plain `if` statements
-  and read `/proc/$$/fd/N` for that reason.
-- **`start-server` doesn't persist.** A tmux server started with no sessions
-  exits again (verified on tmux 3.7), so the `set-option -g` calls that follow
-  it fail with `no server running` and the mouse/`default-command` settings are
-  silently lost. The devserver script therefore passes `exec bash -l` as the
-  first pane's command at `new-session` time and sets the global options
-  afterwards, once a session is holding the server open. `od-tmux-boot.sh` still
-  uses the `start-server` ordering — it works against the OD image's tmux, but
-  it is the same latent bug if that tmux ever moves forward.
+Don't reach for a boot script here. An earlier revision did, and tmux answered
+with `open terminal failed: not a terminal` even though all three fds were on a
+valid ctty — a dead end that no amount of fd plumbing fixed (`</dev/tty` is not
+an option either; tmux rejects it with `can't use /dev/tty`). Exec'ing tmux
+directly as PROG sidesteps the whole class of problem. Two things learned the
+hard way while chasing it: `$([ -t 1 ])` and `$(readlink /proc/self/fd/1)` both
+*lie*, since command substitution repoints fd 1 at its own capture pipe and they
+report `out=n`/`pipe:[…]` whatever stdout really is — probe with plain `if`
+statements and `/proc/$$/fd/N`.
+
+One latent bug the detour did turn up, in `od-tmux-boot.sh`: a tmux server
+started with no sessions exits again (verified on tmux 3.7), so `tmux
+start-server` followed by `set-option -g` can fail with `no server running` and
+silently drop the mouse/`default-command` settings. It works against the OD
+image's tmux today; it is worth remembering if that ever moves forward.
 
 The three fuzzel launchers (each a `dotfiles/hosts/work/local` bin + a
 `~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
@@ -432,10 +428,10 @@ one line calling `od-connect`:
 
 - [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect -t www`
 - [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect -t www_fbsource_configerator:ent_framework`
-- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect --boot devserver-tmux-boot.sh -n "$DEVSERVER_HOST"` (host from `.env`)
+- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect --prog "…tmux new-session -A -D -s main" -n "$DEVSERVER_HOST"` (host from `.env`)
 
-All three land the same way: one tmux pane at `~`. The two `www` ODs wait out
-host init first; the devserver attaches straight away.
+All three land in tmux. The two `www` ODs wait out host init and build a fresh
+single-pane session; the devserver attaches its long-lived `main` straight away.
 
 ## Autologin
 
