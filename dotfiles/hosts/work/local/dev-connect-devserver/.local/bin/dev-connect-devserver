@@ -3,4 +3,5 @@ set -euo pipefail
 env_file="${DOTFILES:-$HOME/.dotfiles}/.env"
 [[ -f $env_file ]] && source "$env_file"
 : "${DEVSERVER_HOST:?set DEVSERVER_HOST in $env_file}"
-exec od-connect -n "$DEVSERVER_HOST" -- python3 -c 'import pty,sys,os; os.environ["TERM"]="xterm-256color"; sys.exit(pty.spawn(["tmux","new-session","-A","-D","-s","main"]))'
+exec od-connect -n "$DEVSERVER_HOST" -- \
+    bash -lc 'TERM=xterm-256color tmux new-session -A -D -s main || exec bash -l'
