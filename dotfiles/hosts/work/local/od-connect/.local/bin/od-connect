@@ -1,23 +1,30 @@
 #!/usr/bin/env bash
-# Shared OnDemand launcher. Prompts for a YubiKey touch, connects, and hands
-# `dev connect` a bootstrap that waits for host init then builds the tmux session
-# (see od-tmux-boot.sh). The bootstrap is gzip+base64-embedded into the PROG so
-# it survives `dev connect` typing it into the remote shell as `exec <PROG>`.
+# Shared OnDemand launcher. Prompts for a YubiKey touch, then connects.
 #
-# A persistent host needs none of that: `--prog` passes a command straight
-# through as PROG instead, which is the form `dev connect --help` documents
-# (`dev connect -- tmux attach -d`).
+# With no `--`, hands `dev connect` the OnDemand bootstrap that waits for host
+# init then builds the tmux session (see od-tmux-boot.sh). The bootstrap is
+# gzip+base64-embedded into the PROG so it survives `dev connect` typing it into
+# the remote shell as `exec <PROG>`.
 #
-# usage: od-connect [--prog <command>] <dev connect args...>
+# Anything after `--` is passed through as PROG verbatim, one argv element each
+# — `dev connect` shell-quotes them individually, so a single pre-quoted string
+# would arrive as one unfindable command name. A persistent host wants this form.
+#
+# usage: od-connect <dev connect args...> [-- <prog...>]
 #   e.g. od-connect -t www
-#        od-connect --prog "tmux new-session -A -D -s main" -n devvm123
+#        od-connect -n devvm123 -- tmux new-session -A -D -s main
 set -u
 
-prog=""
-if [[ ${1:-} == --prog ]]; then
-    prog=$2
-    shift 2
-fi
+args=()
+prog=()
+sep=0
+for a in "$@"; do
+    if ((sep == 0)) && [[ $a == -- ]]; then
+        sep=1
+        continue
+    fi
+    if ((sep)); then prog+=("$a"); else args+=("$a"); fi
+done
 
 echo
 printf "Touch YubiKey: "
@@ -29,10 +36,9 @@ for ((i = 0; i < 32; i++)); do
 done
 echo
 
-if [[ -n $prog ]]; then
-    # shellcheck disable=SC2086  # PROG is a command line, split it deliberately
-    exec dev connect "$@" -y "$y" -- $prog
+if ((${#prog[@]})); then
+    exec dev connect "${args[@]}" -y "$y" -- "${prog[@]}"
 fi
 
 gz="$(gzip -9 -n -c ~/.local/share/od-connect/od-tmux-boot.sh | base64 -w0)"
-exec dev connect "$@" -y "$y" -- bash -c "base64 -d <<< $gz | gunzip > ~/.od-boot.sh; exec bash ~/.od-boot.sh"
+exec dev connect "${args[@]}" -y "$y" -- bash -c "base64 -d <<< $gz | gunzip > ~/.od-boot.sh; exec bash ~/.od-boot.sh"

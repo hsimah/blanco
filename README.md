@@ -358,8 +358,8 @@ gzip+base64-encodes into a single-line PROG (`base64 -d <<< … | gunzip >
 ~/.od-boot.sh; exec bash ~/.od-boot.sh`). gzip keeps the typed line ~1.7 kB
 (plain base64 was ~3.3 kB, near the terminal's canonical-input limit), and the
 encoded blob is single-quote-free so `dev connect`'s own PROG quoting stays
-clean. Usage: `od-connect [--prog <command>] <dev connect args…>`, where
-`--prog` skips the bootstrap and passes a command straight through as PROG.
+clean. Usage: `od-connect <dev connect args…> [-- <prog…>]`, where anything
+after `--` skips the bootstrap and is passed through as PROG verbatim.
 
 [`od-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/od-tmux-boot.sh) (`~/.local/share/od-connect/`) is what runs on the OD:
 
@@ -393,34 +393,43 @@ Two details the bootstrap has to get right:
 The devserver does not use that bootstrap at all. It is a persistent host, so
 dotsync and devfeature have already landed and waiting on them only delays every
 connect behind a sync (and a devfeature run that reinstalls tooling like Emacs).
-It also does not need the gzip+base64 machinery, which exists purely to get a
-*multi-line script* through PROG intact: `dev connect --help` documents passing a
-plain command instead (`dev connect -- tmux attach -d`), and one command survives
-being typed in as-is. `od-connect --prog` takes that path, so the devserver
-launcher is just:
+Anything after `--` is passed to `od-connect` straight through as PROG, one argv
+element each, so no gzip+base64 is needed either — that machinery exists purely
+to get a *multi-line script* through intact.
 
-    od-connect --prog "env TERM=xterm-256color tmux new-session -A -D -s main" -n "$DEVSERVER_HOST"
+    od-connect -n "$DEVSERVER_HOST" -- python3 -c 'import pty,sys,os; …'
+
+The catch is that tmux will not attach to the terminal EternalTerminal provides:
+it fails with `open terminal failed: not a terminal` even though all three fds
+are on a valid ctty (`/dev/pts/N`, `isatty` true on each) and the tmux server is
+plainly reachable from the same shell — `tmux ls` and `tmux -V` both work. That
+holds however tmux is invoked: from a boot script, or exec'd directly as PROG
+the way `dev connect --help`'s own `dev connect -- tmux attach -d` example
+suggests. So the PROG hands tmux a pty it allocates itself:
+
+    python3 -c 'import pty,sys,os; os.environ["TERM"]="xterm-256color"; sys.exit(pty.spawn(["tmux","new-session","-A","-D","-s","main"]))'
 
 `new-session -A -D` is attach-or-create (`-A`), detaching any other client the
-way `attach -d` does (`-D`). `TERM` is pinned for the same reason as the OD
-bootstrap: kitty exports `xterm-kitty`, which the remote may have no terminfo
-for.
+way `attach -d` does (`-D`). `TERM` is pinned because kitty exports
+`xterm-kitty`, which the remote may have no terminfo for. The one-liner uses
+only double quotes so `dev connect`'s own single-quoting of the argument stays
+clean.
 
-Don't reach for a boot script here. An earlier revision did, and tmux answered
-with `open terminal failed: not a terminal` even though all three fds were on a
-valid ctty — a dead end that no amount of fd plumbing fixed (`</dev/tty` is not
-an option either; tmux rejects it with `can't use /dev/tty`). Exec'ing tmux
-directly as PROG sidesteps the whole class of problem. Two things learned the
-hard way while chasing it: `$([ -t 1 ])` and `$(readlink /proc/self/fd/1)` both
-*lie*, since command substitution repoints fd 1 at its own capture pipe and they
-report `out=n`/`pipe:[…]` whatever stdout really is — probe with plain `if`
-statements and `/proc/$$/fd/N`.
+Two traps worth recording from working this out:
 
-One latent bug the detour did turn up, in `od-tmux-boot.sh`: a tmux server
+- **`$([ -t 1 ])` and `$(readlink /proc/self/fd/1)` lie.** Command substitution
+  repoints fd 1 at its own capture pipe, so both report a non-terminal stdout
+  regardless of the truth. Probe with plain `if` statements and `/proc/$$/fd/N`.
+- **A pre-quoted PROG string arrives as one command name.** `dev connect`
+  shell-quotes each argv element individually, so `-- "tmux attach -d"` becomes
+  `exec 'tmux attach -d'` and bash reports `not found`. Pass the words
+  separately.
+
+One latent bug turned up along the way, in `od-tmux-boot.sh`: a tmux server
 started with no sessions exits again (verified on tmux 3.7), so `tmux
 start-server` followed by `set-option -g` can fail with `no server running` and
 silently drop the mouse/`default-command` settings. It works against the OD
-image's tmux today; it is worth remembering if that ever moves forward.
+image's tmux today; worth remembering if that ever moves forward.
 
 The three fuzzel launchers (each a `dotfiles/hosts/work/local` bin + a
 `~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
@@ -428,7 +437,7 @@ one line calling `od-connect`:
 
 - [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect -t www`
 - [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect -t www_fbsource_configerator:ent_framework`
-- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect --prog "…tmux new-session -A -D -s main" -n "$DEVSERVER_HOST"` (host from `.env`)
+- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect -n "$DEVSERVER_HOST" -- python3 -c '…pty.spawn(["tmux","new-session","-A","-D","-s","main"])'` (host from `.env`)
 
 All three land in tmux. The two `www` ODs wait out host init and build a fresh
 single-pane session; the devserver attaches its long-lived `main` straight away.
