@@ -2,5 +2,5 @@
 Type=Application
 Name=Workplace
 Exec=google-chrome-stable --app=https://fb.workplace.com
-Icon=chrome-hondjlkedhnofcgbhifciodpdjfnonjm-Default
+Icon=workplace
 Terminal=false

@@ -66,6 +66,7 @@ dotfiles/
         dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator
         dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
         workplace/.local/share/applications/workplace.desktop
+        workplace/.local/share/icons/hicolor/256x256/apps/workplace.png
 
     blanco/     # overlay, stowed only on the personal host
       config/
@@ -337,6 +338,10 @@ a package that had adopted it).
 (`~/.local/share/applications/workplace.desktop`) that opens Workplace as a
 Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`), giving
 it the stable `chrome-fb.workplace.com__-Default` app-id the niri rule matches.
+It ships its own icon (`hicolor/256x256/apps/workplace.png`, `Icon=workplace`)
+rather than borrowing the Chrome PWA's — Chrome only writes those under
+`~/.local/share/icons` when the PWA is installed, so the entry rendered blank in
+fuzzel once the Workchat PWA went away.
 
 [`claude-code-work`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/claude-code-work) is a `dotfiles/hosts/work/local` package: a fuzzel launcher
 (`~/.local/share/applications/claude-code-work.desktop`, "Claude Code @ Work")
