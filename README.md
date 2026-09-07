@@ -92,6 +92,15 @@ collapses `dev connect …` history entries differing only in the `-y <token>` v
 keeping the most recent, so repeated `dev connect -y [yubi]` calls don't flood
 history (commands that differ in other args are kept separate).
 
+The `calavera`, `fjord`, `viking` and `space-needle` functions are ssh shortcuts
+for the loft hosts. Each delegates to
+[`__loft_ssh`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/functions/__loft_ssh.fish),
+passing its own host, key and port ahead of a `--` separator. Called bare, it
+attaches to (or creates) a persistent `loft` tmux session on the far end, so a
+dropped connection resumes where it left off; called with arguments
+(`space-needle sudo docker ps`) it runs them directly over ssh with no tmux. It
+falls back to a plain login shell on hosts where tmux isn't installed yet.
+
 [`system/`](https://github.com/hsimah/blanco/tree/main/system) holds config for paths outside `$HOME` (`/etc`, `/usr/share`) that
 Stow can't manage since it only targets one tree at a time. It isn't stowed —
 [`bootstrap.sh`](https://github.com/hsimah/blanco/blob/main/scripts/bootstrap.sh) copies it into place by hand with `sudo`: `getty-autologin/`
