@@ -76,6 +76,8 @@ dotfiles/
         noctalia/.config/noctalia/plugins.json
       local/
         chromium-newwindow/.local/share/applications/chromium-newwindow.desktop
+        music-assistant/.local/share/applications/music-assistant.desktop
+        dunst-mask/.local/share/dbus-1/services/org.knopwob.dunst.service
 
 scripts/        # deploy.sh bootstrap.sh setup-autologin.sh git-bootstrap.sh add-package.sh test.sh tests/
 docs/           # niri.md (keybinding reference)
@@ -178,6 +180,27 @@ repos, and the only packaging available is a third-party COPR, which we don't
 want to trust. `bootstrap.sh` instead builds it from source via `cargo install
 --locked yazi-fm yazi-cli` (crates.io, the official Rust registry), which
 lands in `~/.cargo/bin` (on `PATH` via `fish/config.fish`).
+
+[`music-assistant.desktop`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/blanco/local/music-assistant/.local/share/applications/music-assistant.desktop)
+(blanco overlay) launches the Music Assistant PWA in the Chromium flatpak
+(`--app-id=hfmgjhflhflcobjffcknlgaphippkmmd`). Chromium writes its own entry for
+the same app into `~/.local/share/applications` (flextop-prefixed) but marks it
+`NoDisplay=true`, so it never reaches fuzzel, and rewrites it whenever the app's
+manifest changes — this tracked copy is the one that shows up, and survives a
+reinstall. `Icon=` points at the PNGs Chromium exported to the hicolor theme.
+
+[`dunst-mask`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/blanco/local/dunst-mask)
+(blanco overlay) shadows `/usr/share/dbus-1/services/org.knopwob.dunst.service`
+with a user-level file whose `Exec` is `/bin/false`, so D-Bus can no longer
+autostart dunst. dunst is pulled in as a dependency of `system-config-printer`
+and claims `org.freedesktop.Notifications` the moment anything sends a
+notification — which it wins at login, because quickshell needs a second to boot
+before noctalia can register the same name. The result was dunst's default blue
+toasts instead of noctalia's. Removing the package isn't an option (it would
+take `system-config-printer` with it) and `dunst.service` is `static`, so D-Bus
+activation is its only entry point; blocking that leaves the name free for
+noctalia. The first notification of a session is dropped if it arrives before
+noctalia is up.
 
 [`niri-gather-workspaces`](https://github.com/hsimah/blanco/blob/main/dotfiles/local/niri-gather-workspaces/.local/bin/niri-gather-workspaces) ships a `~/.local/bin` script (shared, stowed
 everywhere) bound in niri to `Super+Ctrl+Y`. After docking it moves every
