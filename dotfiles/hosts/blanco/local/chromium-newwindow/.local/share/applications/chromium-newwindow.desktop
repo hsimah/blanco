@@ -6,4 +6,4 @@ Exec=flatpak run io.github.ungoogled_software.ungoogled_chromium --new-window %U
 Terminal=false
 NoDisplay=true
 StartupNotify=true
-MimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;
+MimeType=x-scheme-handler/unknown;x-scheme-handler/about;x-scheme-handler/http;x-scheme-handler/https;text/html;
