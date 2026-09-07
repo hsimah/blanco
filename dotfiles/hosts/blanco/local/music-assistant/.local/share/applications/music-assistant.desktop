@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Music Assistant
+Icon=chrome-hfmgjhflhflcobjffcknlgaphippkmmd-Default
+Exec=flatpak run --command=/app/bin/chromium io.github.ungoogled_software.ungoogled_chromium --profile-directory=Default --app-id=hfmgjhflhflcobjffcknlgaphippkmmd
+Terminal=false
+StartupNotify=true
+StartupWMClass=chrome-hfmgjhflhflcobjffcknlgaphippkmmd-Default
+Categories=AudioVideo;Audio;Player;
