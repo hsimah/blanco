@@ -246,6 +246,23 @@ handler. Trade-off: one new window per link, since a desktop entry has no way to
 ask niri whether a Chromium is already on the current workspace — that would need
 a wrapper script querying `niri msg`.
 
+**Ctrl+click.** kitty binds no mouse action to `ctrl+left` — the only defaults
+that follow a link are plain `left click`, `shift+left click`, and
+`ctrl+shift+left`. `open_url_modifiers`, which used to make `Ctrl` the modifier,
+was removed in kitty 0.19 when `mouse_map` replaced it, so Ctrl+click silently
+does nothing even though it is the gesture GNOME Terminal and VS Code use. Bind
+it back:
+
+```conf
+mouse_map ctrl+left release grabbed,ungrabbed mouse_handle_click link
+mouse_map ctrl+left press grabbed discard_event
+```
+
+It fires on release for the same reason kitty's `ctrl+shift+left` does — a click
+based version would have to wait out `click_interval` to rule out a double
+click. The `press` line discards the matching press so a program that has
+grabbed the mouse never sees half the gesture.
+
 **Scheme-less URLs.** kitty's `url_prefixes` only linkifies known schemes, so
 bare `www.google.com` is never clickable. `Ctrl+Shift+E` runs a `hints` kitten
 whose regex matches bare `www.` text as well as any scheme:
