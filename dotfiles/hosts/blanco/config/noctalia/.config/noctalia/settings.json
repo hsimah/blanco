@@ -349,8 +349,6 @@
         "launcherPosition": "end",
         "launcherUseDistroLogo": false,
         "monitors": [
-            "DP-1",
-            "eDP-1"
         ],
         "onlySameOutput": true,
         "pinnedApps": [
@@ -410,8 +408,6 @@
         "lockScreenBlur": 0,
         "lockScreenCountdownDuration": 10000,
         "lockScreenMonitors": [
-            "DP-1",
-            "DP-6"
         ],
         "lockScreenTint": 0,
         "passwordChars": false,
@@ -507,7 +503,6 @@
         "location": "top_right",
         "lowUrgencyDuration": 3,
         "monitors": [
-            "DP-1",
             "DP-6"
         ],
         "normalUrgencyDuration": 5,
@@ -670,7 +665,7 @@
         "monitorDirectories": [
         ],
         "overviewBlur": 0.4,
-        "overviewEnabled": false,
+        "overviewEnabled": true,
         "overviewTint": 0.6,
         "panelPosition": "follow_bar",
         "randomIntervalSec": 300,
