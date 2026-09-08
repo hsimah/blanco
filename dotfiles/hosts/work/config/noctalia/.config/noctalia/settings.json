@@ -666,7 +666,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "/home/hsimah/Pictures/Wallpapers",
+        "directory": "/home/hblake/Pictures/Wallpapers",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
