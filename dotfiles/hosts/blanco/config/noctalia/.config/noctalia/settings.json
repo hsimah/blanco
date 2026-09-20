@@ -408,6 +408,7 @@
         "lockScreenBlur": 0,
         "lockScreenCountdownDuration": 10000,
         "lockScreenMonitors": [
+            "DP-6"
         ],
         "lockScreenTint": 0,
         "passwordChars": false,
