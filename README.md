@@ -40,6 +40,7 @@ dotfiles/
     kitty/.config/kitty/
     niri/.config/niri/
     nvim/.config/nvim/
+    systemd/.config/systemd/user/noctalia-shell.service
     tmux/.config/tmux/
     xdg-desktop-portal/.config/xdg-desktop-portal/niri-portals.conf
 
@@ -176,6 +177,7 @@ Shared config packages live in `dotfiles/config` and are stowed on every machine
 | [kitty](https://github.com/hsimah/blanco/tree/main/dotfiles/config/kitty) | `~/.config/kitty/` |
 | [niri](https://github.com/hsimah/blanco/tree/main/dotfiles/config/niri) | `~/.config/niri/` (keybinding reference: [`niri.md`](https://github.com/hsimah/blanco/blob/main/docs/niri.md)) |
 | [nvim](https://github.com/hsimah/blanco/tree/main/dotfiles/config/nvim) | `~/.config/nvim/` |
+| [systemd](https://github.com/hsimah/blanco/tree/main/dotfiles/config/systemd) | `~/.config/systemd/user/` |
 | [tmux](https://github.com/hsimah/blanco/tree/main/dotfiles/config/tmux) | `~/.config/tmux/` |
 | [vlc](https://github.com/hsimah/blanco/tree/main/dotfiles/config/vlc) | `~/.config/vlc/` |
 | [xdg-desktop-portal](https://github.com/hsimah/blanco/tree/main/dotfiles/config/xdg-desktop-portal) | `~/.config/xdg-desktop-portal/` |
@@ -403,6 +405,14 @@ otherwise point a stow package at that `plugins/` directory — it mixes
 app-managed real files with stowed symlinks in the same tree, which breaks
 `stow -D`/`-R` (a past incident deleted the live plugin bundle when unstowing
 a package that had adopted it).
+
+[`systemd/noctalia-shell.service`](https://github.com/hsimah/blanco/tree/main/dotfiles/config/systemd) launches noctalia (`qs -c noctalia-shell`) instead of
+niri's `spawn-at-startup`. quickshell is one process behind the bar, wallpaper,
+and lock screen, and `spawn-at-startup` only ever runs it once — an unhandled
+QML exception (or anything else killing the process) took all three down
+silently on `blanco` with no supervisor to notice. The service is `PartOf`/
+`WantedBy=graphical-session.target`, the same target niri's own generated
+`niri.service` binds to, and `Restart=on-failure` brings it back on its own.
 
 [`workplace`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/workplace) is a `dotfiles/hosts/work/local` package: a desktop launcher
 (`~/.local/share/applications/workplace.desktop`) that opens Workplace as a

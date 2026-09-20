@@ -382,7 +382,6 @@ switch-events {
 // [machine] per-host overlay: named workspaces + startup apps
 include "local.kdl"
 
-// [shell] start noctalia shell
-spawn-at-startup "qs" "-c" "noctalia-shell"
+// [shell] noctalia shell started via systemd (noctalia-shell.service)
 // [security] lock screen at 180s; power off monitors at 300s
 // spawn-at-startup "sh" "-c" "swayidle -w timeout 600 'qs -c noctalia-shell ipc call lockScreen lock' timeout 900 'niri msg action power-off-monitors'"
