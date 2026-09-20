@@ -92,7 +92,7 @@ collapses `dev connect …` history entries differing only in the `-y <token>` v
 keeping the most recent, so repeated `dev connect -y [yubi]` calls don't flood
 history (commands that differ in other args are kept separate).
 
-The `calavera`, `fjord`, `viking` and `space-needle` functions are ssh shortcuts
+The `calavera`, `fjord`, `viking`, `woodstock` and `space-needle` functions are ssh shortcuts
 for the loft hosts. Each delegates to
 [`__loft_ssh`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/functions/__loft_ssh.fish),
 passing its own host, key and port ahead of a `--` separator. Called bare, it
