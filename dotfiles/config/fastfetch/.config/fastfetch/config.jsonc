@@ -1,0 +1,21 @@
+{
+  "logo": {
+    "type": "file-raw",
+    "source": "~/.config/fastfetch/laiko.txt",
+    "padding": { "right": 3 }
+  },
+  "modules": [
+    "title",
+    "separator",
+    "os",
+    "host",
+    "kernel",
+    "uptime",
+    "shell",
+    "terminal",
+    "wm",
+    "cpu",
+    "memory",
+    "disk"
+  ]
+}

@@ -33,6 +33,7 @@ non-`$HOME` payloads. [`scripts/deploy.sh`](https://github.com/hsimah/blanco/blo
 dotfiles/
   config/       # ~/.config payloads, stowed everywhere
     doom/.config/doom/
+    fastfetch/.config/fastfetch/
     fish/.config/fish/
     fuzzel/.config/fuzzel/
     gtk-3.0/.config/gtk-3.0/
@@ -150,6 +151,13 @@ push and pull request. Requires `stow`.
 ./scripts/test.sh dry_run      # only tests whose filename contains "dry_run"
 ```
 
+Fish displays Fastfetch with Laiko as its terminal greeting. The artwork lives in
+`dotfiles/config/fastfetch/.config/fastfetch/laiko.txt`; edit that file to update it.
+The portrait is 40 columns by 20 rows, cropped from the photo with the background
+and lead removed. System info appears beside it in terminals at least 100 columns wide and
+below it in narrower terminals. The greeting quietly skips machines without
+Fastfetch (already included in `bootstrap.sh`). Run `fastfetch` to show it again.
+
 ## Adding a new package
 
 [`add-package.sh`](https://github.com/hsimah/blanco/blob/main/scripts/add-package.sh) moves `~/.config/<package>` into `dotfiles/config` and stows it:
@@ -170,6 +178,7 @@ Shared config packages live in `dotfiles/config` and are stowed on every machine
 | Package | Config location |
 |---------|-----------------|
 | [doom](https://github.com/hsimah/blanco/tree/main/dotfiles/config/doom) | `~/.config/doom/` |
+| [fastfetch](dotfiles/config/fastfetch) | `~/.config/fastfetch/` |
 | [fish](https://github.com/hsimah/blanco/tree/main/dotfiles/config/fish) | `~/.config/fish/` |
 | [fuzzel](https://github.com/hsimah/blanco/tree/main/dotfiles/config/fuzzel) | `~/.config/fuzzel/` |
 | [gtk-3.0](https://github.com/hsimah/blanco/tree/main/dotfiles/config/gtk-3.0) | `~/.config/gtk-3.0/` |
@@ -389,6 +398,9 @@ a `binds` block: the G14's `Fn+F6` snip key is synthesized in firmware as
 so the bind is host-specific and lives here, not in the shared `config.kdl`.
 Included files merge into the shared `binds` section, so the overlay adds to
 those binds rather than replacing them.
+
+The shared niri config places Noctalia's `noctalia-overview-` wallpaper layer
+inside the overview backdrop, keeping its blur and tint off the normal desktop.
 
 `noctalia` also appears in both overlays instead of `dotfiles/config` — unlike niri,
 noctalia's `settings.json` is a single app-managed blob with no include
