@@ -154,7 +154,10 @@ push and pull request. Requires `stow`.
 Fish displays Fastfetch with Laiko as its terminal greeting. The artwork lives in
 `dotfiles/config/fastfetch/.config/fastfetch/laiko.txt`; edit that file to update it.
 The portrait is 40 columns by 20 rows, cropped from the photo with the background
-and lead removed. System info appears beside it in terminals at least 100 columns wide and
+and lead removed. `$1`–`$6` markers in the artwork tint his features — grey fur,
+tan brows and cheeks, pink tongue, white eye highlights — from the palette mapped
+under `logo.color` in `config.jsonc`; the markers are only honoured because the
+logo type is `file` rather than `file-raw`. System info appears beside it in terminals at least 100 columns wide and
 below it in narrower terminals. The greeting quietly skips machines without
 Fastfetch (already included in `bootstrap.sh`). Run `fastfetch` to show it again.
 
