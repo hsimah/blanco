@@ -13,7 +13,7 @@
     ],
     "states": {
         "c09595:screen-recorder": {
-            "enabled": false,
+            "enabled": true,
             "sourceUrl": "https://github.com/hsimah/legacy-v4-plugins"
         }
     },

@@ -408,9 +408,9 @@ inside the overview backdrop, keeping its blur and tint off the normal desktop.
 `noctalia` also appears in both overlays instead of `dotfiles/config` — unlike niri,
 noctalia's `settings.json` is a single app-managed blob with no include
 mechanism, so there's no shared base to diverge from; each overlay carries its
-own full copy. The two currently differ by one plugin: the screen-recorder bar
-widget is enabled (`plugins.json` state + a pinned bar widget entry in
-`settings.json`) on `work` only. `colors.json` (wallpaper-derived, regenerated
+own full copy. The screen-recorder plugin is enabled on both machines
+(`plugins.json` state + a pinned bar widget entry in `settings.json`).
+Use `Ctrl+Print` to start/stop recording; recordings default to `~/Videos`. `colors.json` (wallpaper-derived, regenerated
 per machine) is gitignored in both. The screen-recorder plugin's own code
 (`~/.config/noctalia/plugins/c09595:screen-recorder/`) is **not tracked** —
 noctalia's plugin manager downloads it from its source repo
