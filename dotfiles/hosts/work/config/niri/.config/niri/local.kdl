@@ -19,14 +19,6 @@ window-rule {
     default-column-width { proportion 1.0; }
 }
 window-rule {
-    match app-id="chrome-fb.workplace.com__-Default"
-    open-on-workspace "work"
-}
-window-rule {
     match app-id="chrome-pommaclcbfghclhalboakcipcmmndhcj-Default"
-    open-on-workspace "work"
-}
-window-rule {
-    match app-id="chrome-gihbagcjamhppndmlkgmccomodfodggj-Default"
     open-on-workspace "work"
 }

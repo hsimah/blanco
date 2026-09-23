@@ -389,13 +389,12 @@ web browser — gated to that host since the flatpak isn't installed on `work`.
 The per-machine overlays hold each host's niri divergence and work-only
 launchers. `niri` appears in both `dotfiles/hosts/work/config` and
 `dotfiles/hosts/blanco/config` as a `local.kdl` that the shared `config.kdl`
-pulls in via `include "local.kdl"`; it
-declares the named workspaces (`personal`, `work`, `coding`) and their
-`spawn-at-startup` apps and `open-on-workspace` rules. On work, `work` and
-`coding` are pinned to the external Dell via `open-on-output`, and the apps are
-Plexamp (on `personal`) and the Google Chat PWA (on `work`); Workplace and the
-Calendar PWA still have `open-on-workspace` rules but are launched by hand. On
-`blanco` only Plexamp starts, on `personal`. On `blanco` the overlay also carries
+pulls in via `include "local.kdl"`; it declares the named workspaces and their
+`spawn-at-startup` apps and placement rules. On work, `work` is pinned to the
+external Dell via `open-on-output`, and the apps are Plexamp (on `personal`) and
+the Google Chat PWA (on `work`); hand-launched apps such as Workplace and
+Calendar open on the current workspace. On `blanco` only Plexamp starts, on
+`personal`. On `blanco` the overlay also carries
 a `binds` block: the G14's `Fn+F6` snip key is synthesized in firmware as
 `Super+Shift+S` (the Windows snipping-tool chord) rather than an `XF86` keysym,
 so the bind is host-specific and lives here, not in the shared `config.kdl`.
@@ -431,9 +430,8 @@ silently on `blanco` with no supervisor to notice. The service is `PartOf`/
 
 [`workplace`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/workplace) is a `dotfiles/hosts/work/local` package: a desktop launcher
 (`~/.local/share/applications/workplace.desktop`) that opens Workplace as a
-Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`), giving
-it the stable `chrome-fb.workplace.com__-Default` app-id the niri rule matches.
-It ships its own icon (`hicolor/256x256/apps/workplace.png`, `Icon=workplace`)
+Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`). It
+ships its own icon (`hicolor/256x256/apps/workplace.png`, `Icon=workplace`)
 rather than borrowing the Chrome PWA's — Chrome only writes those under
 `~/.local/share/icons` when the PWA is installed, so the entry rendered blank in
 fuzzel once the Workchat PWA went away.
