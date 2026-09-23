@@ -666,7 +666,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "~/Pictures/Wallpaper",
+        "directory": "~/Pictures/Wallpapers",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -678,7 +678,7 @@
         "monitorDirectories": [
         ],
         "overviewBlur": 0.4,
-        "overviewEnabled": false,
+        "overviewEnabled": true,
         "overviewTint": 0.6,
         "panelPosition": "follow_bar",
         "randomIntervalSec": 300,
@@ -697,7 +697,7 @@
             "pixelate",
             "honeycomb"
         ],
-        "useOriginalImages": false,
+        "useOriginalImages": true,
         "useSolidColor": false,
         "useWallhaven": false,
         "viewMode": "browse",
