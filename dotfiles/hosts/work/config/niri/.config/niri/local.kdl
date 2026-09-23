@@ -22,3 +22,9 @@ window-rule {
     match app-id="chrome-pommaclcbfghclhalboakcipcmmndhcj-Default"
     open-on-workspace "work"
 }
+
+switch-events {
+    lid-close {
+        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"
+    }
+}

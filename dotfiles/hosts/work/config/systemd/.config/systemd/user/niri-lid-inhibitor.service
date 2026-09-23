@@ -1,0 +1,12 @@
+[Unit]
+Description=Delegate lid switch handling to niri
+PartOf=graphical-session.target
+After=graphical-session.target
+Requisite=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/systemd-inhibit --what=handle-lid-switch --who=niri --why="niri and Noctalia handle lid close" --mode=block /usr/bin/sleep infinity
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

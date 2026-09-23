@@ -2,3 +2,9 @@
 binds {
     Super+Shift+S hotkey-overlay-title="Screenshot: Fn+F6" { screenshot; }
 }
+
+switch-events {
+    lid-close {
+        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"
+    }
+}

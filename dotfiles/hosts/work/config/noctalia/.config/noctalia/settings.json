@@ -666,7 +666,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "/home/hblake/Pictures/Wallpapers",
+        "directory": "~/Pictures/Wallpaper",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [

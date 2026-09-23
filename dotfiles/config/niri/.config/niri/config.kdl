@@ -378,11 +378,11 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 }
 
-switch-events {
-    lid-close {
-      spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"
-    }
-}
+// switch-events {
+//     lid-close {
+//       spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"
+//     }
+// }
 
 // [machine] per-host overlay: named workspaces + startup apps
 include "local.kdl"

@@ -128,4 +128,6 @@ Reference for the `binds { … }` block in
 
 ## Non-keybind triggers
 
-- **Lid close** → lock screen (noctalia), via `switch-events`.
+- **Work lid close** → Noctalia locks, confirms the lock screen, then suspends;
+  `niri-lid-inhibitor.service` prevents logind from suspending first.
+- **Blanco lid close** → Noctalia locks without suspending.

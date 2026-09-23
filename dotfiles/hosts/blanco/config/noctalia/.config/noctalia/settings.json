@@ -679,7 +679,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "/home/hsimah/Pictures/Wallpapers",
+        "directory": "~/Pictures/Wallpaper",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [

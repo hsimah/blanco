@@ -56,6 +56,7 @@ dotfiles/
         niri/.config/niri/local.kdl
         noctalia/.config/noctalia/settings.json
         noctalia/.config/noctalia/plugins.json
+        systemd/.config/systemd/user/niri-lid-inhibitor.service
       local/
         claude-code-work/.local/share/applications/claude-code-work.desktop
         claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
@@ -407,7 +408,9 @@ inside the overview backdrop, keeping its blur and tint off the normal desktop.
 `noctalia` also appears in both overlays instead of `dotfiles/config` — unlike niri,
 noctalia's `settings.json` is a single app-managed blob with no include
 mechanism, so there's no shared base to diverge from; each overlay carries its
-own full copy. The screen-recorder plugin is enabled on both machines
+own full copy. Both hosts rotate through `~/Pictures/Wallpaper`; work keeps one
+image there while `blanco` has several. The screen-recorder plugin is enabled
+on both machines
 (`plugins.json` state + a pinned bar widget entry in `settings.json`).
 Use `Ctrl+Print` to start/stop recording; recordings default to `~/Videos`. `colors.json` (wallpaper-derived, regenerated
 per machine) is gitignored in both. The screen-recorder plugin's own code
@@ -566,6 +569,8 @@ fresh bare `niri-session`, and the two ping-pong forever — an infinite exec lo
 that pegs a core and never starts niri. The re-exec is non-interactive, so
 requiring interactivity breaks the cycle while still firing on a real autologin.
 
-The lock screen (noctalia, bound to lid-close and idle in
-`niri/config.kdl`) is what actually gates access — FDE-then-straight-to-desktop,
-same threat model on both machines.
+The Noctalia lock screen is available through manual keybinds and its idle
+timer. Lid-close policy lives in the niri host overlays: `blanco` keeps the
+lock-only action, while `work` calls Noctalia's lock-and-suspend action. The work
+overlay's `niri-lid-inhibitor.service` prevents logind from racing that action;
+it holds the lid-switch inhibitor only while the graphical session is active.
