@@ -70,6 +70,8 @@ dotfiles/
         dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
         workplace/.local/share/applications/workplace.desktop
         workplace/.local/share/icons/hicolor/256x256/apps/workplace.png
+        metamate/.local/share/applications/metamate-space-*.desktop
+        metamate/.local/share/icons/hicolor/512x512/apps/metamate.png
 
     blanco/     # overlay, stowed only on the personal host
       config/
@@ -438,6 +440,14 @@ ships its own icon (`hicolor/256x256/apps/workplace.png`, `Icon=workplace`)
 rather than borrowing the Chrome PWA's — Chrome only writes those under
 `~/.local/share/icons` when the PWA is installed, so the entry rendered blank in
 fuzzel once the Workchat PWA went away.
+
+[`metamate`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/metamate) is a `dotfiles/hosts/work/local` package: fuzzel launchers
+(`metamate-space-*.desktop`) that each open a Metamate space in its own Chrome
+app window (`google-chrome-stable --app=https://agentcloud.internalmeta.com/space/<id>`).
+They deliberately bypass the installed Metamate PWA: its manifest sets
+`launch_handler.client_mode` to `focus-existing`, so `--app-id` launches just
+refocus the one PWA window and ignore the target URL. Like `workplace`, it ships
+its own icon (`Icon=metamate`) rather than pointing at the PWA's.
 
 [`claude-code-work`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/claude-code-work) is a `dotfiles/hosts/work/local` package: a fuzzel launcher
 (`~/.local/share/applications/claude-code-work.desktop`, "Claude Code @ Work")

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name=Metamate: Intern Activity
+Comment=Metamate 3 space — Intern Activity
+Exec=google-chrome-stable --profile-directory=Default --app=https://agentcloud.internalmeta.com/space/1072984062129469
+Icon=metamate
+Categories=Network;
+Keywords=metamate;space;intern;activity;

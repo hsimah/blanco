@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name=Metamate: Ent Platform
+Comment=Metamate 3 space — Ent Platform
+Exec=google-chrome-stable --profile-directory=Default --app=https://agentcloud.internalmeta.com/space/2523384538141186
+Icon=metamate
+Categories=Network;
+Keywords=metamate;space;ent;

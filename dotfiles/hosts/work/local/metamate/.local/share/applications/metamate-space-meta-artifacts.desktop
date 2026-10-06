@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name=Metamate: Meta Artifacts
+Comment=Metamate 3 space — Meta Artifacts
+Exec=google-chrome-stable --profile-directory=Default --app=https://agentcloud.internalmeta.com/space/1082883897985204
+Icon=metamate
+Categories=Network;
+Keywords=metamate;space;artifacts;
