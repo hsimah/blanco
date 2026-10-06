@@ -5,10 +5,12 @@ fish_variables
 dotfiles/hosts/blanco/config/noctalia/.config/noctalia/colors.json
 dotfiles/hosts/work/config/noctalia/.config/noctalia/colors.json
 
-# Noctalia plugin bundles (e.g. screen-recorder) are downloaded by noctalia's
-# own plugin manager from their source repo — not tracked, like Doom's
-# framework checkout. Only plugins.json (enable state) is tracked.
-dotfiles/hosts/*/config/noctalia/.config/noctalia/plugins/
+# Noctalia plugin bundles are downloaded by noctalia's plugin manager. The
+# work host tracks only screen-recorder's settings leaf.
+dotfiles/hosts/*/config/noctalia/.config/noctalia/plugins/**
+!dotfiles/hosts/work/config/noctalia/.config/noctalia/plugins/c09595:screen-recorder/
+dotfiles/hosts/work/config/noctalia/.config/noctalia/plugins/c09595:screen-recorder/*
+!dotfiles/hosts/work/config/noctalia/.config/noctalia/plugins/c09595:screen-recorder/settings.json
 
 # MIME defaults are per-machine and rewritten in place by desktop apps
 mimeapps.list

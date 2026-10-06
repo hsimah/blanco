@@ -56,6 +56,7 @@ dotfiles/
         niri/.config/niri/local.kdl
         noctalia/.config/noctalia/settings.json
         noctalia/.config/noctalia/plugins.json
+        noctalia/.config/noctalia/plugins/c09595:screen-recorder/settings.json
         systemd/.config/systemd/user/niri-lid-inhibitor.service
       local/
         claude-code-work/.local/share/applications/claude-code-work.desktop
@@ -410,20 +411,23 @@ inside the overview backdrop, keeping its blur and tint off the normal desktop.
 `noctalia` also appears in both overlays instead of `dotfiles/config` — unlike niri,
 noctalia's `settings.json` is a single app-managed blob with no include
 mechanism, so there's no shared base to diverge from; each overlay carries its
-own full copy. Both hosts rotate through `~/Pictures/Wallpaper`; work keeps one
-image there while `blanco` has several. The screen-recorder plugin is enabled
-on both machines
+own full copy. Both hosts rotate through their configured wallpaper directory;
+work uses `~/Pictures/Wallpapers`, while `blanco` uses `~/Pictures/Wallpaper`.
+The screen-recorder plugin is enabled on both machines
 (`plugins.json` state + a pinned bar widget entry in `settings.json`).
-Use `Ctrl+Print` to start/stop recording; recordings default to `~/Videos`. `colors.json` (wallpaper-derived, regenerated
+Use `Ctrl+Print` to start/stop recording; recordings default to `~/Videos`.
+Work also stows the plugin's `settings.json`, pinning AV1 in an MKV container
+because its Intel encoder exposes AV1 but not H.264 to `gpu-screen-recorder`.
+The deploy script's `--no-folding` mode links only that file into the otherwise
+app-managed plugin directory, and Noctalia preserves it during plugin updates.
+`colors.json` (wallpaper-derived, regenerated
 per machine) is gitignored in both. The screen-recorder plugin's own code
 (`~/.config/noctalia/plugins/c09595:screen-recorder/`) is **not tracked** —
 noctalia's plugin manager downloads it from its source repo
 (`hsimah/legacy-v4-plugins`) when the plugin is enabled, the same
-framework-vs-config-layer split as Doom Emacs. Don't `stow --adopt` or
-otherwise point a stow package at that `plugins/` directory — it mixes
-app-managed real files with stowed symlinks in the same tree, which breaks
-`stow -D`/`-R` (a past incident deleted the live plugin bundle when unstowing
-a package that had adopted it).
+framework-vs-config-layer split as Doom Emacs. Don't `stow --adopt` the plugin
+bundle: a past adopted copy caused `stow -D`/`-R` to remove the live plugin
+files. Only the settings leaf is managed by Stow.
 
 [`systemd/noctalia-shell.service`](https://github.com/hsimah/blanco/tree/main/dotfiles/config/systemd) launches noctalia (`qs -c noctalia-shell`) instead of
 niri's `spawn-at-startup`. quickshell is one process behind the bar, wallpaper,
