@@ -13,26 +13,24 @@ Reference for the `binds { … }` block in
 |-----|--------|
 | `Mod+T` | Open a terminal (kitty) |
 | `Mod+Space` | App launcher (fuzzel) |
-| `Mod+Alt+L` | Lock screen (noctalia) |
 | `Mod+BackSpace` | Lock screen (noctalia) |
-| `Mod+Alt+S` | Toggle screen reader (orca) |
 
 ## Windows & focus
 
 | Key | Action |
 |-----|--------|
-| `Mod+H` | Focus column left |
-| `Mod+L` | Focus column right |
-| `Mod+J` | Focus window / workspace down |
-| `Mod+K` | Focus window / workspace up |
-| `Mod+Home` / `Mod+B` | Focus first column |
-| `Mod+End` / `Mod+N` | Focus last column |
-| `Mod+Ctrl+H` | Move column left |
-| `Mod+Ctrl+L` | Move column right |
-| `Mod+Ctrl+J` | Move window down / to workspace down |
-| `Mod+Ctrl+K` | Move window up / to workspace up |
-| `Mod+Ctrl+Home` / `Mod+Ctrl+B` | Move column to first |
-| `Mod+Ctrl+End` / `Mod+Ctrl+N` | Move column to last |
+| `Mod+H` / `Mod+Left` | Focus column left |
+| `Mod+L` / `Mod+Right` | Focus column right |
+| `Mod+J` / `Mod+Down` | Focus window / workspace down |
+| `Mod+K` / `Mod+Up` | Focus window / workspace up |
+| `Mod+Alt+H` / `Mod+Alt+Left` / `Mod+Home` | Focus first column |
+| `Mod+Alt+L` / `Mod+Alt+Right` / `Mod+End` | Focus last column |
+| `Mod+Ctrl+H` / `Mod+Ctrl+Left` | Move column left |
+| `Mod+Ctrl+L` / `Mod+Ctrl+Right` | Move column right |
+| `Mod+Ctrl+J` / `Mod+Ctrl+Down` | Move window down / to workspace down |
+| `Mod+Ctrl+K` / `Mod+Ctrl+Up` | Move window up / to workspace up |
+| `Mod+Ctrl+Alt+H` / `Mod+Ctrl+Alt+Left` / `Mod+Ctrl+Home` | Move column to first |
+| `Mod+Ctrl+Alt+L` / `Mod+Ctrl+Alt+Right` / `Mod+Ctrl+End` | Move column to last |
 | `Mod+Q` | Close window |
 
 ## Columns & window layout
@@ -69,6 +67,7 @@ Reference for the `binds { … }` block in
 | `Mod+Ctrl+Page_Down` / `Mod+Ctrl+Page_Up` | Move column to workspace down / up |
 | `Mod+Shift+Page_Down` / `Mod+Shift+Page_Up` | Move workspace down / up |
 | `Mod+Shift+J` / `Mod+Shift+K` | Move workspace down / up |
+| `Mod+Shift+Down` / `Mod+Shift+Up` | Move workspace down / up |
 
 ## Monitors
 
@@ -76,13 +75,12 @@ Reference for the `binds { … }` block in
 |-----|--------|
 | `Mod+Shift+Left` / `Mod+Shift+H` | Focus monitor left |
 | `Mod+Shift+Right` / `Mod+Shift+L` | Focus monitor right |
-| `Mod+Shift+Up` / `Mod+Shift+Down` | Focus monitor up / down |
 | `Mod+Shift+Ctrl+H` / `Mod+Shift+Ctrl+Left` | Move column to monitor left |
 | `Mod+Shift+Ctrl+L` / `Mod+Shift+Ctrl+Right` | Move column to monitor right |
 | `Mod+Shift+Ctrl+K` / `Mod+Shift+Ctrl+Up` | Move column to monitor up |
 | `Mod+Shift+Ctrl+J` / `Mod+Shift+Ctrl+Down` | Move column to monitor down |
-| `Mod+Shift+Ctrl+Home` / `Mod+Shift+Ctrl+B` | Move workspace to monitor left |
-| `Mod+Shift+Ctrl+End` / `Mod+Shift+Ctrl+N` | Move workspace to monitor right |
+| `Mod+Shift+Alt+H` / `Mod+Shift+Alt+Left` / `Mod+Shift+Ctrl+Home` | Move workspace to monitor left |
+| `Mod+Shift+Alt+L` / `Mod+Shift+Alt+Right` / `Mod+Shift+Ctrl+End` | Move workspace to monitor right |
 | `Mod+Ctrl+Y` | Gather all workspaces onto external monitor (keep `personal` on laptop) — runs `niri-gather-workspaces` |
 
 ## Screenshots & recording
