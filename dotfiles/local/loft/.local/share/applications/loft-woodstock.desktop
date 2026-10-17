@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Loft: woodstock
+Comment=ssh woodstock, attaching to the persistent loft tmux session
+Icon=kitty
+Exec=kitty --title woodstock fish -c woodstock
+Terminal=false
+Categories=Network;
+Keywords=loft;ssh;woodstock;

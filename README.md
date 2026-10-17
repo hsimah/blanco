@@ -46,6 +46,7 @@ dotfiles/
     xdg-desktop-portal/.config/xdg-desktop-portal/niri-portals.conf
 
   local/        # ~/.local payloads, stowed everywhere
+    loft/.local/share/applications/loft-*.desktop
     yazi/.local/share/applications/yazi.desktop
     yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
     niri-gather-workspaces/.local/bin/niri-gather-workspaces
@@ -106,6 +107,10 @@ attaches to (or creates) a persistent `loft` tmux session on the far end, so a
 dropped connection resumes where it left off; called with arguments
 (`space-needle sudo docker ps`) it runs them directly over ssh with no tmux. It
 falls back to a plain login shell on hosts where tmux isn't installed yet.
+
+The [`loft`](https://github.com/hsimah/blanco/tree/main/dotfiles/local/loft) package in `dotfiles/local` ships a fuzzel launcher per loft host
+(`loft-<host>.desktop`), each running `kitty --title <host> fish -c <host>` so
+it goes through the same fish function and lands in the `loft` tmux session.
 
 [`system/`](https://github.com/hsimah/blanco/tree/main/system) holds config for paths outside `$HOME` (`/etc`, `/usr/share`) that
 Stow can't manage since it only targets one tree at a time. It isn't stowed —

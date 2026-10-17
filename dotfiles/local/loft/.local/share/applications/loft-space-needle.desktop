@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Loft: space-needle
+Comment=ssh space-needle, attaching to the persistent loft tmux session
+Icon=kitty
+Exec=kitty --title space-needle fish -c space-needle
+Terminal=false
+Categories=Network;
+Keywords=loft;ssh;space-needle;

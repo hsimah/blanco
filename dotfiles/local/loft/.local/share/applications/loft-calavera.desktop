@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Loft: calavera
+Comment=ssh calavera, attaching to the persistent loft tmux session
+Icon=kitty
+Exec=kitty --title calavera fish -c calavera
+Terminal=false
+Categories=Network;
+Keywords=loft;ssh;calavera;

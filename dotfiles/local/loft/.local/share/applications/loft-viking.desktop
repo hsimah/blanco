@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Loft: viking
+Comment=ssh viking, attaching to the persistent loft tmux session
+Icon=kitty
+Exec=kitty --title viking fish -c viking
+Terminal=false
+Categories=Network;
+Keywords=loft;ssh;viking;

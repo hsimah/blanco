@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Loft: fjord
+Comment=ssh fjord, attaching to the persistent loft tmux session
+Icon=kitty
+Exec=kitty --title fjord fish -c fjord
+Terminal=false
+Categories=Network;
+Keywords=loft;ssh;fjord;
