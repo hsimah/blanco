@@ -46,7 +46,6 @@ dotfiles/
     xdg-desktop-portal/.config/xdg-desktop-portal/niri-portals.conf
 
   local/        # ~/.local payloads, stowed everywhere
-    loft/.local/share/applications/loft-*.desktop
     yazi/.local/share/applications/yazi.desktop
     yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
     niri-gather-workspaces/.local/bin/niri-gather-workspaces
@@ -83,6 +82,7 @@ dotfiles/
         noctalia/.config/noctalia/plugins.json
       local/
         chromium-newwindow/.local/share/applications/chromium-newwindow.desktop
+        loft/.local/share/applications/loft-*.desktop
         music-assistant/.local/share/applications/music-assistant.desktop
         dunst-mask/.local/share/dbus-1/services/org.knopwob.dunst.service
 
@@ -108,7 +108,7 @@ dropped connection resumes where it left off; called with arguments
 (`space-needle sudo docker ps`) it runs them directly over ssh with no tmux. It
 falls back to a plain login shell on hosts where tmux isn't installed yet.
 
-The [`loft`](https://github.com/hsimah/blanco/tree/main/dotfiles/local/loft) package in `dotfiles/local` ships a fuzzel launcher per loft host
+The [`loft`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/blanco/local/loft) package in the `blanco` overlay ships a fuzzel launcher per loft host
 (`loft-<host>.desktop`), each running `kitty --title <host> fish -c <host>` so
 it goes through the same fish function and lands in the `loft` tmux session.
 
