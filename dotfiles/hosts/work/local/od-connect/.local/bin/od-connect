@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
-# Shared OnDemand launcher. Prompts for a YubiKey touch, then connects.
-#
-# With no `--`, hands `dev connect` the OnDemand bootstrap that waits for host
-# init then builds the tmux session (see od-tmux-boot.sh). The bootstrap is
-# gzip+base64-embedded into the PROG so it survives `dev connect` typing it into
-# the remote shell as `exec <PROG>`.
-#
-# Anything after `--` is passed through as PROG verbatim, one argv element each
-# — `dev connect` shell-quotes them individually, so a single pre-quoted string
-# would arrive as one unfindable command name. A persistent host wants this form.
+# Shared OnDemand launcher: prompts for a YubiKey touch, then `dev connect`.
+# Without `--`, PROG is od-tmux-boot.sh (gzip+base64, since `dev connect` types
+# PROG into the remote shell). After `--`, args pass through one argv element
+# each, as `dev connect` shell-quotes them individually.
 #
 # usage: od-connect <dev connect args...> [-- <prog...>]
-#   e.g. od-connect -t www
-#        od-connect -n devvm123 -- tmux new-session -A -D -s main
 set -u
 
 args=()

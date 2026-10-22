@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Runs on a fresh OnDemand as the `dev connect` PROG (shipped by od-connect).
-# 1) waits for host init (dotfiles.target + devfeature) with a spinner
-# 2) builds/attaches the tmux session: a single shell pane at ~
+# Runs on a fresh OnDemand as the `dev connect` PROG (shipped by od-connect):
+# waits for host init (dotfiles.target + devfeature), then builds/attaches tmux.
 set -u
 SESSION=main
 export TERM=xterm-256color
@@ -11,10 +10,8 @@ fmt() { printf '%d.%01ds' $(($1 / 1000000000)) $((($1 % 1000000000) / 100000000)
 
 DF=$(mktemp); DV=$(mktemp); trap 'rm -f "$DF" "$DV"' EXIT
 
-# dotfiles: block on the systemd target; write elapsed ns
 ( s=$(ns); systemctl --user start dotfiles.target 2>/dev/null; echo "$(($(ns) - s))" >"$DF" ) &
 df_pid=$!
-# devfeature: poll until the initial sync succeeds (or definitively fails)
 ( s=$(ns)
   while true; do
     out=$(devfeature status 2>&1)
@@ -36,13 +33,10 @@ while kill -0 "$df_pid" 2>/dev/null || kill -0 "$dv_pid" 2>/dev/null; do
 done
 printf '\r\033[K  [%s] dotfiles   [%s] devfeature\n' "$(cell "$df_pid" "$DF")" "$(cell "$dv_pid" "$DV")"
 
-# Build the session once; reconnects just re-attach.
 if ! tmux has-session -t "$SESSION" 2>/dev/null; then
   tmux start-server
   tmux set-option -g default-command "exec bash -l"
   tmux new-session -d -s "$SESSION"
 fi
-# Set after the session (and any ~/.tmux.conf sourced at new-session) so it wins;
-# unconditional so it applies on reconnects too.
 tmux set-option -g mouse on
 exec tmux attach -d -t "$SESSION"
