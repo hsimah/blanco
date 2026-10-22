@@ -22,7 +22,7 @@ Each tool is its own stow package mirroring `$HOME`:
 ```
 dotfiles/
   config/       # ~/.config payloads, stowed everywhere
-    doom fastfetch fish fuzzel gtk-3.0 gtk-4.0 kitty niri nvim tmux vlc xdg-desktop-portal
+    fastfetch fish fuzzel gtk-3.0 gtk-4.0 kitty niri nvim tmux vlc xdg-desktop-portal
   local/        # ~/.local payloads, stowed everywhere
     yazi niri-gather-workspaces
   hosts/
@@ -52,7 +52,7 @@ stow --dir=dotfiles/config --target=$HOME --adopt fish    # pull live edits into
 stow --dir=dotfiles/config --target=$HOME --delete fish   # remove symlinks
 ```
 
-On a fresh Fedora install, [`scripts/bootstrap.sh`](scripts/bootstrap.sh) runs first (it refuses on the work host): packages, noctalia, yazi (built with `cargo`, since Fedora doesn't package it), flatpaks, tty1 autologin, `deploy.sh`, git config, and Doom Emacs.
+On a fresh Fedora install, [`scripts/bootstrap.sh`](scripts/bootstrap.sh) runs first (it refuses on the work host): packages, noctalia, yazi (built with `cargo`, since Fedora doesn't package it), flatpaks, tty1 autologin, `deploy.sh`, and git config.
 
 To add a shared package, run `./scripts/add-package.sh <name>`, which moves `~/.config/<name>` into `dotfiles/config` and stows it. A machine-specific package goes in the host's overlay instead, and `deploy.sh` selects the overlay by hostname (`WORK_HOST`/`BLANCO_HOST`).
 
@@ -79,8 +79,6 @@ Configs are self-explanatory; notes below cover only what isn't obvious from the
 
 **vlc.** `vlcrc` tracks only the non-default keys. Saving in VLC's preferences replaces the symlink with a real file, which `deploy.sh` then reports as a `SKIP`. `deploy.sh` makes VLC the video/audio default when `vlc.desktop` exists.
 
-**doom.** Tracks only the config layer (`init.el`, `config.el`, `packages.el`, `work-cheatsheet.org`); the framework lives untracked in `~/.config/emacs` and `bootstrap.sh` clones it and runs `doom sync`. `config.el` also holds the Meta OnDemand setup, inert off-OD: myles file-find on `SPC SPC`, BigGrep content search on `SPC s p/P` (live) and `SPC s x/X` (static), Sapling on `SPC g`, and hh_client LSP for go-to-definition. lsp file-watchers stay off because they hang on EdenFS; diagnostics refresh after save and with `SPC c R`. Projectile is barred from indexing the monorepo checkouts. Doom's `treemacs`, `workspaces` and `lsp` modules are disabled.
-
 **niri.** The shared `config.kdl` includes `noctalia.kdl` (optional, generated) and each host's `local.kdl`. Each overlay declares named workspaces and startup apps, the lock bind, the lid-close action, the noctalia backdrop layer rule, and `honor-xdg-activation-with-invalid-serial` (noctalia v5 needs it for notification actions). On `work`, the `work` workspace is pinned to the external Dell. `blanco` also binds the G14's `Fn+F6` snip key (sent as `Super+Shift+S`) and `Ctrl+Print` for screen recording. Binds in `local.kdl` merge into the shared `binds`. See [`docs/niri.md`](docs/niri.md). `niri-gather-workspaces` (`Super+Ctrl+Y`) moves every non-empty workspace from the laptop panel to the external output after docking, keeping `personal` on the laptop.
 
 **yazi.** Ships a launcher (`kitty yazi %f`, handles `inode/directory`) and a PNG icon, because fuzzel is built without webp.
@@ -106,7 +104,7 @@ Lid close: `blanco` locks only. `work` locks and suspends via noctalia, and `nir
 
 - **workplace, metamate, claude-code-work.** Fuzzel launchers with their own icons. Workplace and the Metamate spaces open as Chrome `--app=` windows; the Metamate launchers bypass the PWA because its `focus-existing` launch handler ignores the target URL. Claude Code @ Work opens `~/work` in kitty and runs `claude`.
 - **od-connect** (`~/.local/bin`) prompts for a YubiKey touch, then runs `dev connect <args> -- <bootstrap>`. `dev connect` delivers PROG by *typing* `exec <PROG>; exit` into the remote shell, so the multi-line `od-tmux-boot.sh` is gzip+base64-encoded into one single-quote-free line. Anything after `--` skips the bootstrap and is passed through as PROG, one argv element each (`dev connect` quotes each individually, so a pre-quoted string arrives as one command name).
-- **od-tmux-boot.sh** runs on a fresh OD. It waits in parallel for `dotfiles.target` (the dotsync pull) and `devfeature status` to report `Initial sync: successful`, because shells spawned earlier lack aliases and doom. Then it creates tmux session `main` (one shell pane at `~`) or re-attaches. Two details matter: `default-command "exec bash -l"` makes panes login shells so aliases load, and `TERM=xterm-256color` is forced because the OD has no `xterm-kitty` terminfo. A tmux server with no sessions exits (tmux 3.7), so `start-server` followed by `set-option -g` can fail; it works on the OD's tmux today.
+- **od-tmux-boot.sh** runs on a fresh OD. It waits in parallel for `dotfiles.target` (the dotsync pull) and `devfeature status` to report `Initial sync: successful`, because shells spawned earlier lack aliases. Then it creates tmux session `main` (one shell pane at `~`) or re-attaches. Two details matter: `default-command "exec bash -l"` makes panes login shells so aliases load, and `TERM=xterm-256color` is forced because the OD has no `xterm-kitty` terminfo. A tmux server with no sessions exits (tmux 3.7), so `start-server` followed by `set-option -g` can fail; it works on the OD's tmux today.
 - **dev-connect-\*.** Fuzzel entry points that call `od-connect`: `-t www`, `-t www_fbsource_configerator:ent_framework`, and the devserver (`-n "$DEVSERVER_HOST"`, read from `.env`). The devserver is persistent, so it skips the bootstrap and runs `tmux new-session -A -D -s main` under `bash -lc` with `TERM` forced, falling back to a login shell.
 
 ## Autologin

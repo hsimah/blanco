@@ -22,7 +22,7 @@ DNF_PKGS=(
     niri
     pipewire wireplumber pipewire-pulseaudio
     xdg-desktop-portal xdg-desktop-portal-gtk
-    kitty fish fuzzel emacs fastfetch nano vlc
+    kitty fish fuzzel fastfetch nano vlc
     ripgrep fd-find wl-clipboard cliphist cargo
     flatpak git stow jetbrains-mono-fonts
 )
@@ -74,21 +74,6 @@ echo "==> Autologin (getty@tty1 -> niri, DM-less)"
 
 echo "==> Global git config (identity + mergetool)"
 "$REPO/scripts/git-bootstrap.sh"
-
-echo "==> Doom Emacs"
-DOOM_DIR="$HOME/.config/emacs"
-if [[ ! -d "$DOOM_DIR" ]]; then
-    echo "  cloning Doom -> $DOOM_DIR"
-    git clone --depth 1 https://github.com/doomemacs/doomemacs "$DOOM_DIR"
-else
-    echo "  $DOOM_DIR already present"
-fi
-if [[ -x "$DOOM_DIR/bin/doom" ]]; then
-    echo "  doom sync"
-    "$DOOM_DIR/bin/doom" sync
-else
-    echo "  WARN: $DOOM_DIR/bin/doom not found, skipping doom sync"
-fi
 
 cat <<'EOF'
 

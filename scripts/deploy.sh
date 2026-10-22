@@ -77,14 +77,6 @@ else
     echo "==> No overlay for $HOST (shared only)"
 fi
 
-if command -v xdg-mime >/dev/null 2>&1; then
-    if [[ $DRY_RUN -eq 1 ]]; then
-        echo "==> Would set MIME default: emacs.desktop for text/plain, text/markdown"
-    else
-        xdg-mime default emacs.desktop text/plain text/markdown || true
-    fi
-fi
-
 MEDIA_MIMES=(
     video/mp4 video/x-m4v video/x-matroska video/webm video/quicktime
     video/x-msvideo video/avi video/mpeg video/mp2t video/ogg
