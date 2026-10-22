@@ -6,7 +6,7 @@ set -euo pipefail
 #   git clone git@github.com:hsimah/blanco.git ~/Projects/blanco
 #   cd ~/Projects/blanco && ./scripts/bootstrap.sh
 #
-# Installs the curated package set, noctalia (via Terra), yazi (via cargo),
+# Installs the curated package set, noctalia v5, yazi (via cargo),
 # Claude Code (native installer), flatpaks, sets fish as the shell, enables
 # tty1 autologin straight into niri, stows configs via deploy.sh, configures
 # global git (identity + mergetool) via git-bootstrap.sh, and sets up Doom
@@ -45,10 +45,10 @@ FLATPAKS=(
 echo "==> Base packages"
 sudo dnf install -y "${DNF_PKGS[@]}"
 
-echo "==> noctalia via Terra (pulls quickshell, brightnessctl, gpu-screen-recorder)"
+echo "==> noctalia (Fedora) + gpu-screen-recorder for its screen_recorder plugin (Terra)"
 sudo dnf install -y --nogpgcheck \
     --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
-sudo dnf install -y noctalia-shell
+sudo dnf install -y noctalia gpu-screen-recorder slurp
 
 echo "==> yazi (via cargo, not COPR — crates.io is the trusted source)"
 if [[ ! -x "$HOME/.cargo/bin/yazi" ]]; then
@@ -79,6 +79,8 @@ echo "==> Stow configs (shared + blanco overlay)"
 # deploy.sh exits non-zero if it skipped a package on a conflict; surface that
 # but keep going so the closing notes still print.
 "$REPO/scripts/deploy.sh" || echo "  (deploy reported conflicts — resolve the SKIPped files above, then re-run ./scripts/deploy.sh)"
+systemctl --user daemon-reload
+systemctl --user enable noctalia.service
 
 echo "==> Autologin (getty@tty1 -> niri, DM-less)"
 "$REPO/scripts/setup-autologin.sh"
