@@ -53,11 +53,9 @@ dotfiles/
     work/       # overlay, stowed only on the work host
       config/
         niri/.config/niri/local.kdl
-        noctalia/.config/noctalia/settings.json
-        noctalia/.config/noctalia/plugins.json
-        noctalia/.config/noctalia/plugins/c09595:screen-recorder/settings.json
+        noctalia/.config/noctalia/config.toml
         systemd/.config/systemd/user/niri-lid-inhibitor.service
-        systemd/.config/systemd/user/noctalia-shell.service
+        systemd/.config/systemd/user/noctalia.service
       local/
         claude-code-work/.local/share/applications/claude-code-work.desktop
         claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
@@ -409,22 +407,20 @@ so the bind is host-specific and lives here, not in the shared `config.kdl`.
 Included files merge into the shared `binds` section, so the overlay adds to
 those binds rather than replacing them.
 
-Everything that talks to noctalia also lives in the overlays, because the two
-hosts run different major versions: `blanco` runs noctalia v5 (the native
-`noctalia` binary, driven by `noctalia msg …`), while `work` stays on v4
-(quickshell, `qs -c noctalia-shell ipc call …`). Each `local.kdl` carries its
-own lock (`Mod+BackSpace`), screen-recording (`Ctrl+Print`) and lid-close
-binds, plus the layer rule that places noctalia's overview wallpaper inside the
-niri overview backdrop, keeping its blur and tint off the normal desktop (v4
-names that layer `noctalia-overview-*`, v5 `noctalia-backdrop*`). The `blanco`
-overlay also floats the v5 settings window (`dev.noctalia.Noctalia`) and sets
-niri's `honor-xdg-activation-with-invalid-serial` debug flag, which v5 needs for
-notification actions to raise their window.
+Everything that talks to noctalia also lives in the overlays. Both hosts run
+noctalia v5 (the native `noctalia` binary, driven by `noctalia msg …`). Each
+`local.kdl` carries its own lock bind (`Mod+BackSpace`) and lid-close action, plus
+the layer rule that places noctalia's overview wallpaper (`noctalia-backdrop*`)
+inside the niri overview backdrop, keeping its blur and tint off the normal
+desktop. Both overlays also float the v5 settings window (`dev.noctalia.Noctalia`)
+and set niri's `honor-xdg-activation-with-invalid-serial` debug flag, which v5
+needs for notification actions to raise their window. `blanco` also binds
+`Ctrl+Print` to toggle screen recording; `work` has no recording bind yet.
 
-`noctalia` also appears in both overlays instead of `dotfiles/config`, since the
-two hosts run different major versions with incompatible config formats.
+`noctalia` appears in both overlays instead of `dotfiles/config` because the
+hosts diverge: `blanco` enables the screen-recorder plugin, `work` doesn't yet.
 
-On `blanco` (v5) the overlay ships a hand-written `config.toml`. v5 merges every
+Each overlay ships a hand-written `config.toml`. v5 merges every
 `*.toml` in `~/.config/noctalia/` over its built-in defaults, then layers
 GUI changes from `~/.local/state/noctalia/settings.toml` on top. That state file
 is app-managed and untracked, so changes made in the Settings window don't touch
@@ -447,37 +443,26 @@ tab-indicator and insert-hint colors), which isn't tracked. The shared
 append its own `include` to the shared file.
 Screen recording uses the official `noctalia/screen_recorder` plugin, enabled
 under `[plugins]` with a control-center shortcut tile; it needs `gpu-screen-recorder` (from Terra)
-and `slurp`, which `bootstrap.sh` installs.
+and `slurp`, which `bootstrap.sh` installs. Recordings default to `~/Videos/Recordings`.
 
-On `work` (v4), `settings.json` is a single app-managed blob with no include
-mechanism, so the overlay carries a full copy. Work rotates through
-`~/Pictures/Wallpapers`. The screen-recorder plugin is enabled
-(`plugins.json` state + a pinned bar widget entry in `settings.json`).
-Use `Ctrl+Print` to start/stop recording on either host; recordings default to `~/Videos`.
-Work also stows the plugin's `settings.json`, pinning AV1 in an MKV container
-because its Intel encoder exposes AV1 but not H.264 to `gpu-screen-recorder`.
-The deploy script's `--no-folding` mode links only that file into the otherwise
-app-managed plugin directory, and Noctalia preserves it during plugin updates.
-`colors.json` (wallpaper-derived, regenerated
-per machine) is gitignored. The screen-recorder plugin's own code
-(`~/.config/noctalia/plugins/c09595:screen-recorder/`) is **not tracked** —
-noctalia's plugin manager downloads it from its source repo
-(`hsimah/legacy-v4-plugins`) when the plugin is enabled, the same
-framework-vs-config-layer split as Doom Emacs. Don't `stow --adopt` the plugin
-bundle: a past adopted copy caused `stow -D`/`-R` to remove the live plugin
-files. Only the settings leaf is managed by Stow.
+`work`'s `config.toml` is the same port without the screen-recorder plugin: the
+plugin hardcodes an MP4 container, whose `moov` atom sits at the end of the file
+so recordings won't play in a browser until processed, and work's Intel encoder
+exposes AV1 but not H.264 to `gpu-screen-recorder`. Recording on `work` is
+deferred until that is sorted out (post-save remux script, or a fork of the
+plugin). The v4 `colors.json` and `plugins/` bundle are no longer tracked.
 
 Each overlay's `systemd` package launches noctalia as a user service instead of
 niri's `spawn-at-startup`: [`noctalia.service`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/blanco/config/systemd)
-(`/usr/bin/noctalia`) on `blanco`, [`noctalia-shell.service`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/config/systemd)
-(`qs -c noctalia-shell`) on `work`. One process sits behind the bar, wallpaper,
+(`/usr/bin/noctalia`) on `blanco`, and the same unit in the [`work`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/config/systemd) overlay.
+One process sits behind the bar, wallpaper,
 and lock screen, and `spawn-at-startup` only ever runs it once — an unhandled
 QML exception (or anything else killing the process) took all three down
 silently on `blanco` with no supervisor to notice. The services are `PartOf`/
 `WantedBy=graphical-session.target`, the same target niri's own generated
 `niri.service` binds to, and `Restart=on-failure` brings them back on their own.
 Stow only links the unit file; enable it once with
-`systemctl --user enable <unit>` (`bootstrap.sh` does this for `blanco`).
+`systemctl --user enable noctalia.service` (`bootstrap.sh` does this for `blanco`).
 
 [`workplace`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/workplace) is a `dotfiles/hosts/work/local` package: a desktop launcher
 (`~/.local/share/applications/workplace.desktop`) that opens Workplace as a

@@ -1,16 +1,6 @@
 fish_variables
 
 
-# Noctalia config uses background colors
-dotfiles/hosts/work/config/noctalia/.config/noctalia/colors.json
-
-# Noctalia plugin bundles are downloaded by noctalia's plugin manager. The
-# work host tracks only screen-recorder's settings leaf.
-dotfiles/hosts/*/config/noctalia/.config/noctalia/plugins/**
-!dotfiles/hosts/work/config/noctalia/.config/noctalia/plugins/c09595:screen-recorder/
-dotfiles/hosts/work/config/noctalia/.config/noctalia/plugins/c09595:screen-recorder/*
-!dotfiles/hosts/work/config/noctalia/.config/noctalia/plugins/c09595:screen-recorder/settings.json
-
 # MIME defaults are per-machine and rewritten in place by desktop apps
 mimeapps.list
 

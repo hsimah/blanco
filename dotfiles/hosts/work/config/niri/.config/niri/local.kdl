@@ -24,17 +24,27 @@ window-rule {
 }
 
 layer-rule {
-    match namespace="^noctalia-overview-"
+    match namespace="^noctalia-backdrop"
     place-within-backdrop true
 }
 
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
 binds {
-    Super+BackSpace hotkey-overlay-title="Lock the Screen: noctalia" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }
-    Ctrl+Print hotkey-overlay-title="Toggle Screen Recording: noctalia" { spawn-sh "qs -c noctalia-shell ipc call plugin:screen-recorder toggle"; }
+    Super+BackSpace hotkey-overlay-title="Lock the Screen: noctalia" { spawn-sh "noctalia msg session lock"; }
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
 }
 
 switch-events {
     lid-close {
-        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"
+        spawn "noctalia" "msg" "session" "lock-and-suspend"
     }
 }
