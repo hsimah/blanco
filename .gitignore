@@ -2,7 +2,6 @@ fish_variables
 
 
 # Noctalia config uses background colors
-dotfiles/hosts/blanco/config/noctalia/.config/noctalia/colors.json
 dotfiles/hosts/work/config/noctalia/.config/noctalia/colors.json
 
 # Noctalia plugin bundles are downloaded by noctalia's plugin manager. The

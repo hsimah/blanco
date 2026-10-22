@@ -1,10 +1,28 @@
 // Fn+F6 (snip key) is synthesized by the G14 firmware as Super+Shift+S
 binds {
     Super+Shift+S hotkey-overlay-title="Screenshot: Fn+F6" { screenshot; }
+    Super+BackSpace hotkey-overlay-title="Lock the Screen: noctalia" { spawn-sh "noctalia msg session lock"; }
+    Ctrl+Print hotkey-overlay-title="Toggle Screen Recording: noctalia" { spawn-sh "noctalia msg plugin noctalia/screen_recorder:service all toggle"; }
+}
+
+layer-rule {
+    match namespace="^noctalia-backdrop"
+    place-within-backdrop true
+}
+
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
 }
 
 switch-events {
     lid-close {
-        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"
+        spawn "noctalia" "msg" "session" "lock"
     }
 }

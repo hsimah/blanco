@@ -23,6 +23,16 @@ window-rule {
     open-on-workspace "work"
 }
 
+layer-rule {
+    match namespace="^noctalia-overview-"
+    place-within-backdrop true
+}
+
+binds {
+    Super+BackSpace hotkey-overlay-title="Lock the Screen: noctalia" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }
+    Ctrl+Print hotkey-overlay-title="Toggle Screen Recording: noctalia" { spawn-sh "qs -c noctalia-shell ipc call plugin:screen-recorder toggle"; }
+}
+
 switch-events {
     lid-close {
         spawn "qs" "-c" "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"

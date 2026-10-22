@@ -13,7 +13,7 @@ Reference for the `binds { … }` block in
 |-----|--------|
 | `Mod+T` | Open a terminal (kitty) |
 | `Mod+Space` | App launcher (fuzzel) |
-| `Mod+BackSpace` | Lock screen (noctalia) |
+| `Mod+BackSpace` | Lock screen (noctalia) — bound in each host's `local.kdl` (v5 on `blanco`, v4 on `work`) |
 
 ## Windows & focus
 
@@ -89,7 +89,7 @@ Reference for the `binds { … }` block in
 |-----|--------|
 | `Print` | Screenshot (interactive) |
 | `Alt+Print` | Screenshot focused window |
-| `Ctrl+Print` | Toggle screen recording (noctalia) |
+| `Ctrl+Print` | Toggle screen recording (noctalia) — bound in each host's `local.kdl` |
 | `Super+Shift+S` | Screenshot (interactive) — `blanco` only, this is what the G14's `Fn+F6` snip key sends |
 
 ## Session

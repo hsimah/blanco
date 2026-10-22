@@ -52,11 +52,6 @@ prefer-no-csd
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-layer-rule {
-    match namespace="^noctalia-overview-"
-    place-within-backdrop true
-}
-
 window-rule {
     draw-border-with-background false
     opacity 0.95
@@ -115,7 +110,6 @@ binds {
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+T hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
     Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
-    Super+BackSpace hotkey-overlay-title="Lock the Screen: noctalia" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }
 
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.
@@ -357,7 +351,6 @@ binds {
     // Mod+Shift+Space { switch-layout "prev"; }
 
     Print { screenshot; }
-    Ctrl+Print hotkey-overlay-title="Toggle Screen Recording: noctalia" { spawn-sh "qs -c noctalia-shell ipc call plugin:screen-recorder toggle"; }
     Alt+Print { screenshot-window; }
 
     // Applications such as remote-desktop clients and software KVM switches may
@@ -379,15 +372,7 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 }
 
-// switch-events {
-//     lid-close {
-//       spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"
-//     }
-// }
-
-// [machine] per-host overlay: named workspaces + startup apps
+// [machine] per-host overlay: named workspaces, startup apps, noctalia binds
 include "local.kdl"
 
-// [shell] noctalia shell started via systemd (noctalia-shell.service)
-// [security] lock screen at 180s; power off monitors at 300s
-// spawn-at-startup "sh" "-c" "swayidle -w timeout 600 'qs -c noctalia-shell ipc call lockScreen lock' timeout 900 'niri msg action power-off-monitors'"
+// [shell] noctalia started via a per-host systemd user unit
