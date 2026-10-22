@@ -3,6 +3,9 @@ mode = "dark"
 source = "wallpaper"
 wallpaper_scheme = "m3-tonal-spot"
 
+[theme.templates]
+builtin_ids = ["niri"]
+
 [wallpaper]
 directory = "~/Pictures/Wallpapers"
 fill_mode = "crop"

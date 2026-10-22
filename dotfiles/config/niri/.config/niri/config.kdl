@@ -372,6 +372,9 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 }
 
+// [theme] noctalia v5 wallpaper colors, written by its niri template; absent on v4
+include optional=true "noctalia.kdl"
+
 // [machine] per-host overlay: named workspaces, startup apps, noctalia binds
 include "local.kdl"
 

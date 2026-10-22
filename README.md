@@ -438,6 +438,13 @@ lock at 11, lock-and-suspend at 30), and a full-width top bar with the system
 monitors grouped into one capsule.
 Shell sounds are off (`[audio] enable_sounds = false`); v5 turns them on by
 default, which v4 didn't.
+v5's built-in `niri` theme template is enabled (`[theme.templates]
+builtin_ids`), so the niri window border follows the wallpaper palette: on every
+color change noctalia writes `~/.config/niri/noctalia.kdl` (border, focus-ring,
+tab-indicator and insert-hint colors), which isn't tracked. The shared
+`config.kdl` pulls it in with `include optional=true "noctalia.kdl"`, so `work`
+(no file) still loads, and the template's apply script sees that line and doesn't
+append its own `include` to the shared file.
 Screen recording uses the official `noctalia/screen_recorder` plugin, enabled
 under `[plugins]` with a control-center shortcut tile; it needs `gpu-screen-recorder` (from Terra)
 and `slurp`, which `bootstrap.sh` installs.
