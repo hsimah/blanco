@@ -439,7 +439,7 @@ monitors grouped into one capsule.
 Shell sounds are off (`[audio] enable_sounds = false`); v5 turns them on by
 default, which v4 didn't.
 Screen recording uses the official `noctalia/screen_recorder` plugin, enabled
-under `[plugins]` and pinned in the bar; it needs `gpu-screen-recorder` (from Terra)
+under `[plugins]` with a control-center shortcut tile; it needs `gpu-screen-recorder` (from Terra)
 and `slurp`, which `bootstrap.sh` installs.
 
 On `work` (v4), `settings.json` is a single app-managed blob with no include

@@ -65,11 +65,29 @@ widget_spacing = 6
 
 start = ["workspaces", "clock", "active_window", "media"]
 center = []
-end = ["noctalia/screen_recorder:recorder", "group:sysmon", "tray", "battery", "network", "volume", "control-center"]
+end = ["group:sysmon", "tray", "battery", "network", "volume", "control-center"]
 
 [[bar.main.capsule_group]]
 id = "sysmon"
 members = ["cpu", "cpu-temp", "ram"]
+
+[[control_center.shortcuts]]
+type = "wifi"
+
+[[control_center.shortcuts]]
+type = "bluetooth"
+
+[[control_center.shortcuts]]
+type = "caffeine"
+
+[[control_center.shortcuts]]
+type = "notification"
+
+[[control_center.shortcuts]]
+type = "power_profile"
+
+[[control_center.shortcuts]]
+type = "noctalia/screen_recorder:toggle"
 
 [widget.clock]
 format = "{:%H:%M %a, %b %d}"
