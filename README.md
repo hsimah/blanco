@@ -1,617 +1,118 @@
 # blanco
 
-A repository of configuration for my daily drivers, managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Configuration for my daily drivers, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## Machines
 
-Both laptops run [niri](https://github.com/YaLTeR/niri) as the Wayland compositor and share the `dotfiles/config` and `dotfiles/local` packages. Machine-specific packages live in a per-machine overlay under `dotfiles/hosts/` (`work/`, `blanco/`) selected by hostname.
+Both laptops run Fedora with [niri](https://github.com/YaLTeR/niri) and share `dotfiles/config` and `dotfiles/local`. Machine-specific packages live in an overlay under `dotfiles/hosts/` (`work/`, `blanco/`) selected by hostname.
 
 | | Personal | Work |
 |---|---|---|
 | Model | ASUS ROG Zephyrus G14 (2024, GA403UI) | Lenovo ThinkPad X1 Carbon Gen 13 |
 | CPU | AMD Ryzen 9 8945HS (8C/16T) | Intel Core Ultra 7 268V (8C/8T) |
-| GPU | Radeon 780M (iGPU) + NVIDIA RTX 4070 Mobile | Intel Arc Graphics 140V (iGPU) |
+| GPU | Radeon 780M + NVIDIA RTX 4070 Mobile | Intel Arc Graphics 140V |
 | Memory | 32 GB | 32 GB |
-| Distro | Fedora | Fedora |
 
-The personal laptop's desktop, external monitor, and gaming all run on the AMD
-iGPU; the discrete NVIDIA RTX 4070 is optional. To enable it later: install RPM
-Fusion, then `akmod-nvidia xorg-x11-drv-nvidia-cuda`, reboot, and run apps on the
-dGPU with `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia <app>`.
+Everything on the personal laptop runs on the AMD iGPU; the RTX 4070 is optional. To enable it: install RPM Fusion, then `akmod-nvidia xorg-x11-drv-nvidia-cuda`, reboot, and run apps on the dGPU with `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia <app>`.
 
 ## Structure
 
-Each tool is its own stow package mirroring `$HOME`. The stow trees live under
-`dotfiles/`: shared packages in `dotfiles/config` (`~/.config` payloads) and
-`dotfiles/local` (`~/.local` payloads), stowed on every machine. Machine-specific
-packages live in a per-machine **overlay** under `dotfiles/hosts/<host>/`
-(mirroring the `config`+`local` layout) that is stowed on top only on that host.
-`scripts/` holds the tooling, `docs/` the reference docs, and `system/` the
-non-`$HOME` payloads. [`scripts/deploy.sh`](https://github.com/hsimah/blanco/blob/main/scripts/deploy.sh) selects the overlay by hostname.
+Each tool is its own stow package mirroring `$HOME`:
 
 ```
 dotfiles/
   config/       # ~/.config payloads, stowed everywhere
-    doom/.config/doom/
-    fastfetch/.config/fastfetch/
-    fish/.config/fish/
-    fuzzel/.config/fuzzel/
-    gtk-3.0/.config/gtk-3.0/
-    gtk-4.0/.config/gtk-4.0/
-    kitty/.config/kitty/
-    niri/.config/niri/
-    nvim/.config/nvim/
-    tmux/.config/tmux/
-    xdg-desktop-portal/.config/xdg-desktop-portal/niri-portals.conf
-
+    doom fastfetch fish fuzzel gtk-3.0 gtk-4.0 kitty niri nvim tmux vlc xdg-desktop-portal
   local/        # ~/.local payloads, stowed everywhere
-    yazi/.local/share/applications/yazi.desktop
-    yazi/.local/share/icons/hicolor/256x256/apps/yazi.png
-    niri-gather-workspaces/.local/bin/niri-gather-workspaces
-
+    yazi niri-gather-workspaces
   hosts/
     work/       # overlay, stowed only on the work host
-      config/
-        niri/.config/niri/local.kdl
-        noctalia/.config/noctalia/config.toml
-        systemd/.config/systemd/user/niri-lid-inhibitor.service
-        systemd/.config/systemd/user/noctalia.service
-      local/
-        claude-code-work/.local/share/applications/claude-code-work.desktop
-        claude-code-work/.local/share/icons/hicolor/scalable/apps/claude-code.svg
-        od-connect/.local/bin/od-connect
-        od-connect/.local/share/od-connect/od-tmux-boot.sh
-        dev-connect-devserver/.local/bin/dev-connect-devserver
-        dev-connect-devserver/.local/share/applications/dev-connect-devserver.desktop
-        dev-connect-www/.local/bin/dev-connect-www
-        dev-connect-www/.local/share/applications/dev-connect-www.desktop
-        dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator
-        dev-connect-www_fbsource_configerator/.local/share/applications/dev-connect-www_fbsource_configerator.desktop
-        workplace/.local/share/applications/workplace.desktop
-        workplace/.local/share/icons/hicolor/256x256/apps/workplace.png
-        metamate/.local/share/applications/metamate-space-*.desktop
-        metamate/.local/share/icons/hicolor/512x512/apps/metamate.png
-
+      config/   niri noctalia systemd
+      local/    claude-code-work od-connect dev-connect-{devserver,www,www_fbsource_configerator}
+                workplace metamate
     blanco/     # overlay, stowed only on the personal host
-      config/
-        kitty/.config/kitty/local.conf
-        niri/.config/niri/local.kdl
-        noctalia/.config/noctalia/config.toml
-        systemd/.config/systemd/user/noctalia.service
-      local/
-        chromium-newwindow/.local/share/applications/chromium-newwindow.desktop
-        loft/.local/share/applications/loft-*.desktop
-        music-assistant/.local/share/applications/music-assistant.desktop
-        dunst-mask/.local/share/dbus-1/services/org.knopwob.dunst.service
-
-scripts/        # deploy.sh bootstrap.sh setup-autologin.sh git-bootstrap.sh add-package.sh test.sh tests/
+      config/   kitty niri noctalia systemd
+      local/    chromium-newwindow dunst-mask loft music-assistant
+scripts/        # deploy, bootstrap, setup-autologin, git-bootstrap, add-package, test, tests/
 docs/           # niri.md (keybinding reference)
-system/         # payloads for paths outside $HOME (/etc, /usr/share); not stowed
+system/         # payloads for paths outside $HOME (/etc); not stowed
 ```
 
-[`fish/config.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/config.fish) sources an untracked `~/.config/fish/local.fish` when present
-(`test -f … and source …`) — the machine-local override seam for per-machine
-environment, secrets, or aliases without splitting the package.
-[`fish/conf.d/dev-connect-history.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/conf.d/dev-connect-history.fish) is a `fish_postexec` hook that
-collapses `dev connect …` history entries differing only in the `-y <token>` value,
-keeping the most recent, so repeated `dev connect -y [yubi]` calls don't flood
-history (commands that differ in other args are kept separate).
-
-The `calavera`, `fjord`, `viking`, `woodstock` and `space-needle` functions are ssh shortcuts
-for the loft hosts. Each delegates to
-[`__loft_ssh`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/functions/__loft_ssh.fish),
-passing its own host, key and port ahead of a `--` separator. Called bare, it
-attaches to (or creates) a persistent `loft` tmux session on the far end, so a
-dropped connection resumes where it left off; called with arguments
-(`space-needle sudo docker ps`) it runs them directly over ssh with no tmux. It
-falls back to a plain login shell on hosts where tmux isn't installed yet.
-
-The [`loft`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/blanco/local/loft) package in the `blanco` overlay ships a fuzzel launcher per loft host
-(`loft-<host>.desktop`), each running `kitty --title <host> fish -c <host>` so
-it goes through the same fish function and lands in the `loft` tmux session.
-
-[`system/`](https://github.com/hsimah/blanco/tree/main/system) holds config for paths outside `$HOME` (`/etc`, `/usr/share`) that
-Stow can't manage since it only targets one tree at a time. It isn't stowed —
-[`bootstrap.sh`](https://github.com/hsimah/blanco/blob/main/scripts/bootstrap.sh) copies it into place by hand with `sudo`: `getty-autologin/`
-is the tty1 autologin drop-in for `blanco` (see Autologin below).
+Untracked, per-machine files that configs pick up when present: `~/.config/fish/local.fish` (fish override seam), `~/.config/mimeapps.list` (rewritten by desktop apps; defaults are set by `deploy.sh`), `~/.config/niri/noctalia.kdl` (generated by noctalia), and `.env` (`DEVSERVER_HOST`, sourced by the launchers).
 
 ## Usage
 
-`scripts/deploy.sh` stows every shared package plus this host's overlay, and sets the
-MIME default. It is idempotent and non-destructive — existing symlinks are
-refreshed, and real files that would conflict are reported (`SKIP`), never
-clobbered. It exits non-zero if anything was skipped. Stow runs with
-`--no-folding`, so each file is symlinked individually (a package dir is a real
-directory, not one folded directory symlink) — new files an app writes into
-`~/.config/<tool>` land in the real dir, not in this repo.
+[`scripts/deploy.sh`](scripts/deploy.sh) stows the shared packages plus this host's overlay and sets MIME defaults. It is idempotent and non-destructive: symlinks are refreshed, and real files that would conflict are reported (`SKIP`) and never clobbered. It exits non-zero if anything was skipped. Stow runs with `--no-folding`, so each file is linked individually and files an app writes into `~/.config/<tool>` land in the real directory, not this repo.
 
 ```bash
 ./scripts/deploy.sh              # stow everything for this host
-./scripts/deploy.sh --dry-run    # show what stow would do, change nothing
+./scripts/deploy.sh --dry-run    # show what stow would do
+
+stow --dir=dotfiles/config --target=$HOME --adopt fish    # pull live edits into the repo
+stow --dir=dotfiles/config --target=$HOME --delete fish   # remove symlinks
 ```
 
-For one-off operations, stow directly with `--dir`:
+On a fresh Fedora install, [`scripts/bootstrap.sh`](scripts/bootstrap.sh) runs first (it refuses on the work host): packages, noctalia, yazi (built with `cargo`, since Fedora doesn't package it), flatpaks, tty1 autologin, `deploy.sh`, git config, and Doom Emacs.
 
-```bash
-# Pull live config edits into the repo
-stow --dir=dotfiles/config --target=$HOME --adopt fish
-
-# Remove symlinks
-stow --dir=dotfiles/config --target=$HOME --delete fish
-```
-
-After stowing, live files are symlinks to the repo — edits are in-place.
-
-On a fresh Fedora install, `bootstrap.sh` runs first: it installs the package
-set, noctalia, and flatpaks, sets up tty1 autologin, calls `scripts/deploy.sh`,
-and sets up Doom Emacs.
+To add a shared package, run `./scripts/add-package.sh <name>`, which moves `~/.config/<name>` into `dotfiles/config` and stows it. A machine-specific package goes in the host's overlay instead, and `deploy.sh` selects the overlay by hostname (`WORK_HOST`/`BLANCO_HOST`).
 
 ## Tests
 
-[`test.sh`](https://github.com/hsimah/blanco/blob/main/scripts/test.sh) runs the suite in [`tests/`](https://github.com/hsimah/blanco/tree/main/scripts/tests) (self-contained `tests/test_*.sh` scripts
-that deploy into a throwaway `$HOME` and assert on the result). GitHub Actions
-([`.github/workflows/test.yml`](https://github.com/hsimah/blanco/blob/main/.github/workflows/test.yml)) runs it on every
-push and pull request. Requires `stow`.
+[`scripts/test.sh`](scripts/test.sh) runs `scripts/tests/test_*.sh`. Each deploys into a throwaway `$HOME` and asserts on the result. CI runs it on every push and pull request. Requires `stow`.
 
 ```bash
-./scripts/test.sh              # run all tests
-./scripts/test.sh dry_run      # only tests whose filename contains "dry_run"
+./scripts/test.sh              # all tests
+./scripts/test.sh dry_run      # tests whose filename contains "dry_run"
 ```
-
-Fish displays Fastfetch with Laiko as its terminal greeting. The artwork lives in
-`dotfiles/config/fastfetch/.config/fastfetch/laiko.txt`; edit that file to update it.
-The portrait is 40 columns by 20 rows, cropped from the photo with the background
-and lead removed. `$1`–`$6` markers in the artwork tint his features — grey fur,
-tan brows and cheeks, pink tongue, white eye highlights — from the palette mapped
-under `logo.color` in `config.jsonc`; the markers are only honoured because the
-logo type is `file` rather than `file-raw`. System info appears beside it in terminals at least 100 columns wide and
-below it in narrower terminals. The greeting quietly skips machines without
-Fastfetch (already included in `bootstrap.sh`). Run `fastfetch` to show it again.
-
-## Adding a new package
-
-[`add-package.sh`](https://github.com/hsimah/blanco/blob/main/scripts/add-package.sh) moves `~/.config/<package>` into `dotfiles/config` and stows it:
-
-```bash
-./scripts/add-package.sh <package-name>
-```
-
-For a machine-specific package, put it in that host's overlay instead
-(`dotfiles/hosts/work/config/…`, `dotfiles/hosts/work/local/…`, or the matching
-`dotfiles/hosts/blanco/` path). `scripts/deploy.sh` picks the overlay by hostname
-(`WORK_HOST`/`BLANCO_HOST` near the top of the script).
 
 ## Packages
 
-Shared config packages live in `dotfiles/config` and are stowed on every machine:
+Configs are self-explanatory; notes below cover only what isn't obvious from the files.
 
-| Package | Config location |
-|---------|-----------------|
-| [doom](https://github.com/hsimah/blanco/tree/main/dotfiles/config/doom) | `~/.config/doom/` |
-| [fastfetch](dotfiles/config/fastfetch) | `~/.config/fastfetch/` |
-| [fish](https://github.com/hsimah/blanco/tree/main/dotfiles/config/fish) | `~/.config/fish/` |
-| [fuzzel](https://github.com/hsimah/blanco/tree/main/dotfiles/config/fuzzel) | `~/.config/fuzzel/` |
-| [gtk-3.0](https://github.com/hsimah/blanco/tree/main/dotfiles/config/gtk-3.0) | `~/.config/gtk-3.0/` |
-| [gtk-4.0](https://github.com/hsimah/blanco/tree/main/dotfiles/config/gtk-4.0) | `~/.config/gtk-4.0/` |
-| [kitty](https://github.com/hsimah/blanco/tree/main/dotfiles/config/kitty) | `~/.config/kitty/` |
-| [niri](https://github.com/hsimah/blanco/tree/main/dotfiles/config/niri) | `~/.config/niri/` (keybinding reference: [`niri.md`](https://github.com/hsimah/blanco/blob/main/docs/niri.md)) |
-| [nvim](https://github.com/hsimah/blanco/tree/main/dotfiles/config/nvim) | `~/.config/nvim/` |
-| [tmux](https://github.com/hsimah/blanco/tree/main/dotfiles/config/tmux) | `~/.config/tmux/` |
-| [vlc](https://github.com/hsimah/blanco/tree/main/dotfiles/config/vlc) | `~/.config/vlc/` |
-| [xdg-desktop-portal](https://github.com/hsimah/blanco/tree/main/dotfiles/config/xdg-desktop-portal) | `~/.config/xdg-desktop-portal/` |
+**fish.** `config.fish` sources `local.fish` when present. `conf.d/dev-connect-history.fish` collapses `dev connect … -y <token>` history entries that differ only in the token. `conf.d/autologin-niri.fish` is described under Autologin. The `calavera`, `fjord`, `viking`, `woodstock` and `space-needle` functions ssh to the loft hosts via `__loft_ssh`: bare, they attach to (or create) a `loft` tmux session; with arguments they run the command over plain ssh. The greeting shows Fastfetch with the Laiko portrait (`fastfetch/laiko.txt`, `$1`–`$6` colour markers mapped in `config.jsonc`, honoured because the logo type is `file`, not `file-raw`).
 
-yazi ships a desktop launcher via the `dotfiles/local` tree, running in kitty
-(`Terminal=false`, `kitty yazi %f`) and advertising `inode/directory` so it can
-handle folders as a terminal file manager; it ships its own PNG app icon under
-the hicolor theme (`Icon=yazi`), since fuzzel is built with png/svg support
-only — no webp. yazi itself is **not** a `dnf` package — it's not in Fedora's
-repos, and the only packaging available is a third-party COPR, which we don't
-want to trust. `bootstrap.sh` instead builds it from source via `cargo install
---locked yazi-fm yazi-cli` (crates.io, the official Rust registry), which
-lands in `~/.cargo/bin` (on `PATH` via `fish/config.fish`).
+**kitty.** `ctrl+left` is bound to follow links (kitty dropped `open_url_modifiers` in 0.19). `ctrl+shift+e` runs a `hints` kitten that also matches scheme-less `www.` URLs. Its regex must stay in single quotes: kitty's `shlex_split` eats unquoted backslashes and the binding silently matches nothing. `xdg-open` rejects scheme-less arguments, so `blanco` overrides `--program` in `local.conf` (pulled in by `globinclude local.conf`; `work` has none).
 
-[`music-assistant.desktop`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/blanco/local/music-assistant/.local/share/applications/music-assistant.desktop)
-(blanco overlay) launches the Music Assistant PWA in the Chromium flatpak
-(`--app-id=hfmgjhflhflcobjffcknlgaphippkmmd`). Chromium writes its own entry for
-the same app into `~/.local/share/applications` (flextop-prefixed) but marks it
-`NoDisplay=true`, so it never reaches fuzzel, and rewrites it whenever the app's
-manifest changes — this tracked copy is the one that shows up, and survives a
-reinstall. `Icon=` points at the PNGs Chromium exported to the hicolor theme.
+**xdg-desktop-portal.** `niri-portals.conf` is the stock niri file plus `FileChooser=gtk;`. Without it Flatpak apps (ungoogled Chromium) get no file picker. `gtk` is pinned alone because the GNOME backend needs a GNOME session.
 
-[`dunst-mask`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/blanco/local/dunst-mask)
-(blanco overlay) shadows `/usr/share/dbus-1/services/org.knopwob.dunst.service`
-with a user-level file whose `Exec` is `/bin/false`, so D-Bus can no longer
-autostart dunst. dunst is pulled in as a dependency of `system-config-printer`
-and claims `org.freedesktop.Notifications` the moment anything sends a
-notification — which it wins at login, because noctalia needs a moment to start
-before it can register the same name. The result was dunst's default blue
-toasts instead of noctalia's. Removing the package isn't an option (it would
-take `system-config-printer` with it) and `dunst.service` is `static`, so D-Bus
-activation is its only entry point; blocking that leaves the name free for
-noctalia. The first notification of a session is dropped if it arrives before
-noctalia is up.
+**tmux.** `Alt-c` (or `prefix + C`) runs `scripts/toggle-console.sh`, which stashes the active pane in a hidden `_stash` window and joins it back on the next press.
 
-[`niri-gather-workspaces`](https://github.com/hsimah/blanco/blob/main/dotfiles/local/niri-gather-workspaces/.local/bin/niri-gather-workspaces) ships a `~/.local/bin` script (shared, stowed
-everywhere) bound in niri to `Super+Ctrl+Y`. After docking it moves every
-non-empty workspace off the laptop panel (`eDP-1`) onto whatever external output
-is connected, keeping the workspace named `personal` on the laptop — one keypress
-instead of dragging each workspace over by hand. It loops re-querying niri after
-each move because `move-workspace-to-monitor --reference` indexes are per-output
-and shift as workspaces leave; empty workspaces are skipped so it terminates.
+**vlc.** `vlcrc` tracks only the non-default keys. Saving in VLC's preferences replaces the symlink with a real file, which `deploy.sh` then reports as a `SKIP`. `deploy.sh` makes VLC the video/audio default when `vlc.desktop` exists.
 
-Clicking a link opened nothing visible on `blanco`. The link did open — the tab
-just landed in a Chromium window on another workspace and never surfaced.
+**doom.** Tracks only the config layer (`init.el`, `config.el`, `packages.el`, `work-cheatsheet.org`); the framework lives untracked in `~/.config/emacs` and `bootstrap.sh` clones it and runs `doom sync`. `config.el` also holds the Meta OnDemand setup, inert off-OD: myles file-find on `SPC SPC`, BigGrep content search on `SPC s p/P` (live) and `SPC s x/X` (static), Sapling on `SPC g`, and hh_client LSP for go-to-definition. lsp file-watchers stay off because they hang on EdenFS; diagnostics refresh after save and with `SPC c R`. Projectile is barred from indexing the monorepo checkouts. Doom's `treemacs`, `workspaces` and `lsp` modules are disabled.
 
-**Why.** On Wayland an already-running app can only raise itself if it is handed
-an xdg-activation token. No token reaches Chromium by any route here: kitty
-strips `XDG_ACTIVATION_TOKEN` from every child process it spawns
-(`kitty/child.py`, unconditional, no setting to disable), and `xdg-open`'s portal
-path calls `OpenURI` with empty options. niri then correctly ignores the
-tokenless raise request. Chromium itself has no setting for this — it has no
-concept of workspaces, and without `--new-window` it targets its last-active
-window wherever that is.
+**niri.** The shared `config.kdl` includes `noctalia.kdl` (optional, generated) and each host's `local.kdl`. Each overlay declares named workspaces and startup apps, the lock bind, the lid-close action, the noctalia backdrop layer rule, and `honor-xdg-activation-with-invalid-serial` (noctalia v5 needs it for notification actions). On `work`, the `work` workspace is pinned to the external Dell. `blanco` also binds the G14's `Fn+F6` snip key (sent as `Super+Shift+S`) and `Ctrl+Print` for screen recording. Binds in `local.kdl` merge into the shared `binds`. See [`docs/niri.md`](docs/niri.md). `niri-gather-workspaces` (`Super+Ctrl+Y`) moves every non-empty workspace from the laptop panel to the external output after docking, keeping `personal` on the laptop.
 
-Since no token can be passed, the window has to be a *new* one.
-[`chromium-newwindow.desktop`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/blanco/local/chromium-newwindow/.local/share/applications/chromium-newwindow.desktop) (blanco overlay) wraps the flatpak:
+**yazi.** Ships a launcher (`kitty yazi %f`, handles `inode/directory`) and a PNG icon, because fuzzel is built without webp.
 
-```ini
-Exec=flatpak run io.github.ungoogled_software.ungoogled_chromium --new-window %U
-```
+### noctalia (overlays)
 
-`deploy.sh` registers it as the default browser, so **every** app's links behave
-the same way, not just kitty's — niri places the new window on the active
-workspace and focuses it. It is `NoDisplay=true` so it stays out of launchers,
-and claims only `http`/`https`/`text/html`, leaving `mailto:` with the mail
-handler. Trade-off: one new window per link, since a desktop entry has no way to
-ask niri whether a Chromium is already on the current workspace — that would need
-a wrapper script querying `niri msg`.
+Both hosts run noctalia v5 as a systemd user service (`systemd/noctalia.service`, `Restart=on-failure`) rather than niri `spawn-at-startup`, so a crash doesn't silently take down the bar, wallpaper and lock screen together. Stow only links the unit: enable it with `systemctl --user enable noctalia.service` (`bootstrap.sh` does for `blanco`).
 
-**Ctrl+click.** kitty binds no mouse action to `ctrl+left` — the only defaults
-that follow a link are plain `left click`, `shift+left click`, and
-`ctrl+shift+left`. `open_url_modifiers`, which used to make `Ctrl` the modifier,
-was removed in kitty 0.19 when `mouse_map` replaced it, so Ctrl+click silently
-does nothing even though it is the gesture GNOME Terminal and VS Code use. Bind
-it back:
+`config.toml` is hand-written. v5 merges every `*.toml` in `~/.config/noctalia/` over its defaults, then layers the untracked `~/.local/state/noctalia/settings.toml` (GUI changes) on top. To keep a GUI change, copy the key from `noctalia config export` into `config.toml` and delete it from `settings.toml`. Validate with `noctalia config validate`. The built-in `niri` theme template is enabled, so niri's border colours follow the wallpaper.
 
-```conf
-mouse_map ctrl+left release grabbed,ungrabbed mouse_handle_click link
-mouse_map ctrl+left press grabbed discard_event
-```
+`blanco` enables the `noctalia/screen_recorder` plugin (needs `gpu-screen-recorder` and `slurp`, installed by `bootstrap.sh`). `work` doesn't: the plugin records MP4, whose `moov` atom sits at the end of the file so recordings won't play in a browser until remuxed, and work's Intel encoder exposes AV1 but not H.264.
 
-It fires on release for the same reason kitty's `ctrl+shift+left` does — a click
-based version would have to wait out `click_interval` to rule out a double
-click. The `press` line discards the matching press so a program that has
-grabbed the mouse never sees half the gesture.
+Lid close: `blanco` locks only. `work` locks and suspends via noctalia, and `niri-lid-inhibitor.service` holds logind's lid-switch inhibitor while the graphical session is active so logind doesn't suspend first.
 
-**Scheme-less URLs.** kitty's `url_prefixes` only linkifies known schemes, so
-bare `www.google.com` is never clickable. `Ctrl+Shift+E` runs a `hints` kitten
-whose regex matches bare `www.` text as well as any scheme:
+### blanco overlay
 
-```conf
-map ctrl+shift+e kitten hints --type regex --regex '(?:[a-z][\w+.-]*://|www\.)\S*[\w/]'
-```
+- **chromium-newwindow.** Links clicked in kitty opened in a Chromium window on another workspace. Wayland only lets a running app raise itself with an xdg-activation token; kitty strips `XDG_ACTIVATION_TOKEN` from children and `xdg-open`'s portal path sends none, so niri correctly ignores the raise. The workaround is a `--new-window` wrapper that `deploy.sh` registers as the default browser, so every app's links land on the active workspace. It is `NoDisplay=true` and claims only `http`, `https` and `text/html`. Trade-off: one new window per link.
+- **music-assistant.** Launches the PWA in the Chromium flatpak. Chromium's own entry is `NoDisplay=true` and rewritten on manifest changes, so this tracked copy is the one fuzzel shows.
+- **loft.** A fuzzel launcher per loft host (`kitty --title <host> fish -c <host>`).
+- **dunst-mask.** Shadows the system D-Bus service file for dunst with `Exec=/bin/false`. dunst arrives as a dependency of `system-config-printer` and claims `org.freedesktop.Notifications` before noctalia is up, producing default blue toasts. Removing the package would remove the printer config tool, and `dunst.service` is `static`, so D-Bus activation is its only entry point. The first notification of a session is dropped if noctalia isn't up yet.
 
-**The single quotes are load-bearing.** kitty splits a kitten definition with its
-own `shlex_split`, which eats unquoted backslashes — `\w` becomes `w`, `\S`
-becomes `S` — leaving a regex that silently matches nothing. Quote the pattern
-(or double every backslash) or the binding does nothing at all.
+### work overlay
 
-The trailing `[\w/]` keeps sentence punctuation out of the match. `open_url_with`
-stays at its `default` (`xdg-open`) so links route through the desktop handler
-above, but `xdg-open` rejects a scheme-less argument as a missing file path, so
-on `blanco` the binding overrides `--program` to reach the flatpak directly and
-let Chromium's own omnibox fixup supply the scheme. That override lives in
-`dotfiles/hosts/blanco/config/kitty/.config/kitty/local.conf`, behind the
-`globinclude local.conf` seam at the end of the shared `kitty.conf` — the same
-per-host pattern as `fish/local.fish` and `niri/local.kdl`. `work` has no
-`local.conf`, `globinclude` matches nothing without warning, and the binding
-there falls back to `open_url_with`
-([`kittens/hints/main.py`](https://github.com/kovidgoyal/kitty/blob/master/kittens/hints/main.py):
-`program = get_options().open_url_with if is_default_program else program`).
-
-`gtk-launch` looks like it should work for the scheme-less case and does not: it
-converts a non-URI argument into a `file://` URI relative to the current
-directory, so `gtk-launch chromium-newwindow www.google.com` opens
-`file:///…/www.google.com`.
-
-[`xdg-desktop-portal`](https://github.com/hsimah/blanco/tree/main/dotfiles/config/xdg-desktop-portal) ships `niri-portals.conf`, which picks the backend
-implementation behind each portal interface. Semicolon-separated values are
-fallback chains, tried left to right. It is the stock niri file from
-`/usr/share/xdg-desktop-portal/` plus one line:
-
-```conf
-org.freedesktop.impl.portal.FileChooser=gtk;
-```
-
-Without it no `FileChooser` backend is named, so the file picker fails to appear
-in Flatpak apps (ungoogled Chromium in particular). `gtk` is pinned alone rather
-than as `gtk;gnome;` — the GNOME backend expects a running GNOME session and the
-fallback is not wanted here.
-
-`doom` tracks only the config layer — [`init.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/init.el) (enabled modules), [`config.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/config.el)
-(personal settings), [`packages.el`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/packages.el), and [`work-cheatsheet.org`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/doom/.config/doom/work-cheatsheet.org) (a keybinding
-reference for the Meta OnDemand workflow). The Doom framework itself lives in
-`~/.config/emacs` as its own git checkout and is **not tracked** here; it is
-managed with `doom sync`/`doom upgrade`. On a fresh machine `bootstrap.sh`
-handles this: it clones Doom to `~/.config/emacs` (if missing) and runs `doom
-sync` after stowing this config package. Fedora's `emacs` package (30.x) already
-ships with pgtk + native-comp, which niri (Wayland) wants. Emacs/Doom is the
-primary editor; `nano` (also in `DNF_PKGS`) is the plain terminal fallback and
-doesn't need a package here — no desktop launcher, no MIME association, just
-invoked directly when wanted.
-
-`config.el` also carries the Meta OnDemand monorepo setup (gated on the Meta
-`emacs-packages` dir, so it's inert off-OD): **myles** live fuzzy file-find on
-`SPC SPC` (replacing projectile's O(repo) find-file, which locks the UI on
-fbsource), **BigGrep** content search — live/incremental on `SPC s p`/`SPC s P`,
-static grep-buffer versions on `SPC s x`/`SPC s X` — and **Sapling** on `SPC g`:
-a live smartlog (`SPC g S`), a unified diff (`SPC g D`), and a side-by-side ediff
-of a changed file (`SPC g d`). Projectile is kept for Doom's plumbing but barred
-from indexing the checkouts (`.hhconfig` marks the fbsource/www root so lsp
-adopts it silently). Go-to-definition comes from **hh_client's LSP** (loaded by
-`fb-master`, daemon-backed by `hh_server`, so no local indexing): `gd`/`gD` reach
-it through Doom's xref fallback even with Doom's own `lsp` module left disabled.
-lsp file-watchers stay off — their workspace walk hangs enumerating the EdenFS
-source trees — so cross-file diagnostics are refreshed instead by an `after-save`
-hook (other open Hack buffers) and on demand with `SPC c R`. Doom's `treemacs`,
-`workspaces`, and `lsp` modules are disabled — the project model doesn't fit a
-single giant monorepo — but hh's own lsp-mode is used deliberately for
-definitions.
-
-`tmux` carries a single toggle: **collapse/expand a pane to a background
-window**. `Alt-c` (or `prefix + C`) runs [`scripts/toggle-console.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/tmux/.config/tmux/scripts/toggle-console.sh), which
-stashes the active pane out to a hidden window named `_stash` (`break-pane -d`)
-and pulls it back in below the current pane on the next press (`join-pane`). It
-keys off whether the `_stash` window exists, so one binding does both
-directions; pressing it in a single-pane window is a no-op.
-
-The actual default handlers live in `~/.config/mimeapps.list`, which is **not
-tracked** — it is per-machine (different browsers/apps) and gets rewritten in
-place by desktop apps whenever you pick "always open with…". Defaults are set
-declaratively in the bootstrap instead:
-
-```bash
-xdg-mime default emacs.desktop text/plain text/markdown
-xdg-mime default vlc.desktop video/mp4 video/x-matroska video/webm …
-```
-
-Video and audio both go to VLC (`vlc`, a plain Fedora package — no RPM Fusion
-needed), overriding Fedora's `mpv` default across the common container types.
-That block is gated on `vlc.desktop` existing rather than on hostname, so a
-machine without VLC keeps whatever handler it already has.
-
-The `vlc` package tracks `vlcrc` — deliberately just the handful of non-default
-keys (dark palette, privacy prompt off), since VLC fills in every absent setting
-from its own defaults and dumping the full 86 KB would churn on each VLC
-release. VLC only rewrites `vlcrc` when you **Save** in its preferences dialog,
-not on ordinary playback; if that happens the symlink is replaced by a real file
-and the next `deploy.sh` reports it as a `SKIP` conflict to resolve by hand.
-Window geometry and recent files live in `vlc-qt-interface.conf`, which stays
-untracked in the real `~/.config/vlc/` dir thanks to `--no-folding`.
-
-On `blanco`, `deploy.sh` also sets ungoogled Chromium (flatpak) as the default
-web browser — gated to that host since the flatpak isn't installed on `work`.
-
-The per-machine overlays hold each host's niri divergence and work-only
-launchers. `niri` appears in both `dotfiles/hosts/work/config` and
-`dotfiles/hosts/blanco/config` as a `local.kdl` that the shared `config.kdl`
-pulls in via `include "local.kdl"`; it declares the named workspaces and their
-`spawn-at-startup` apps and placement rules. On work, `work` is pinned to the
-external Dell via `open-on-output`, and the apps are Plexamp (on `personal`) and
-the Google Chat PWA (on `work`); hand-launched apps such as Workplace and
-Calendar open on the current workspace. On `blanco` only Plexamp starts, on
-`personal`. On `blanco` the overlay also carries
-a `binds` block: the G14's `Fn+F6` snip key is synthesized in firmware as
-`Super+Shift+S` (the Windows snipping-tool chord) rather than an `XF86` keysym,
-so the bind is host-specific and lives here, not in the shared `config.kdl`.
-Included files merge into the shared `binds` section, so the overlay adds to
-those binds rather than replacing them.
-
-Everything that talks to noctalia also lives in the overlays. Both hosts run
-noctalia v5 (the native `noctalia` binary, driven by `noctalia msg …`). Each
-`local.kdl` carries its own lock bind (`Mod+BackSpace`) and lid-close action, plus
-the layer rule that places noctalia's overview wallpaper (`noctalia-backdrop*`)
-inside the niri overview backdrop, keeping its blur and tint off the normal
-desktop. Both overlays also float the v5 settings window (`dev.noctalia.Noctalia`)
-and set niri's `honor-xdg-activation-with-invalid-serial` debug flag, which v5
-needs for notification actions to raise their window. `blanco` also binds
-`Ctrl+Print` to toggle screen recording; `work` has no recording bind yet.
-
-`noctalia` appears in both overlays instead of `dotfiles/config` because the
-hosts diverge: `blanco` enables the screen-recorder plugin, `work` doesn't yet.
-
-Each overlay ships a hand-written `config.toml`. v5 merges every
-`*.toml` in `~/.config/noctalia/` over its built-in defaults, then layers
-GUI changes from `~/.local/state/noctalia/settings.toml` on top. That state file
-is app-managed and untracked, so changes made in the Settings window don't touch
-the repo; to keep one, copy the key into `config.toml` (`noctalia config export`
-prints the merged result) and delete it from `settings.toml`. Run
-`noctalia config validate` after editing. v5 doesn't migrate v4 settings, so
-`config.toml` is a hand port of the old `settings.json`: wallpaper-derived
-tonal-spot theme, `~/Pictures/Wallpapers` rotated every 5 minutes, the overview
-backdrop blur/tint, Seattle weather, the idle ladder (screen off at 10 min,
-lock at 11, lock-and-suspend at 30), and a full-width top bar with the system
-monitors grouped into one capsule.
-Shell sounds are off (`[audio] enable_sounds = false`); v5 turns them on by
-default, which v4 didn't.
-v5's built-in `niri` theme template is enabled (`[theme.templates]
-builtin_ids`), so the niri window border follows the wallpaper palette: on every
-color change noctalia writes `~/.config/niri/noctalia.kdl` (border, focus-ring,
-tab-indicator and insert-hint colors), which isn't tracked. The shared
-`config.kdl` pulls it in with `include optional=true "noctalia.kdl"`, so `work`
-(no file) still loads, and the template's apply script sees that line and doesn't
-append its own `include` to the shared file.
-Screen recording uses the official `noctalia/screen_recorder` plugin, enabled
-under `[plugins]` with a control-center shortcut tile; it needs `gpu-screen-recorder` (from Terra)
-and `slurp`, which `bootstrap.sh` installs. Recordings default to `~/Videos/Recordings`.
-
-`work`'s `config.toml` is the same port without the screen-recorder plugin: the
-plugin hardcodes an MP4 container, whose `moov` atom sits at the end of the file
-so recordings won't play in a browser until processed, and work's Intel encoder
-exposes AV1 but not H.264 to `gpu-screen-recorder`. Recording on `work` is
-deferred until that is sorted out (post-save remux script, or a fork of the
-plugin). The v4 `colors.json` and `plugins/` bundle are no longer tracked.
-
-Each overlay's `systemd` package launches noctalia as a user service instead of
-niri's `spawn-at-startup`: [`noctalia.service`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/blanco/config/systemd)
-(`/usr/bin/noctalia`) on `blanco`, and the same unit in the [`work`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/config/systemd) overlay.
-One process sits behind the bar, wallpaper,
-and lock screen, and `spawn-at-startup` only ever runs it once — an unhandled
-QML exception (or anything else killing the process) took all three down
-silently on `blanco` with no supervisor to notice. The services are `PartOf`/
-`WantedBy=graphical-session.target`, the same target niri's own generated
-`niri.service` binds to, and `Restart=on-failure` brings them back on their own.
-Stow only links the unit file; enable it once with
-`systemctl --user enable noctalia.service` (`bootstrap.sh` does this for `blanco`).
-
-[`workplace`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/workplace) is a `dotfiles/hosts/work/local` package: a desktop launcher
-(`~/.local/share/applications/workplace.desktop`) that opens Workplace as a
-Chrome app window (`google-chrome-stable --app=https://fb.workplace.com`). It
-ships its own icon (`hicolor/256x256/apps/workplace.png`, `Icon=workplace`)
-rather than borrowing the Chrome PWA's — Chrome only writes those under
-`~/.local/share/icons` when the PWA is installed, so the entry rendered blank in
-fuzzel once the Workchat PWA went away.
-
-[`metamate`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/metamate) is a `dotfiles/hosts/work/local` package: fuzzel launchers
-(`metamate-space-*.desktop`) that each open a Metamate space in its own Chrome
-app window (`google-chrome-stable --app=https://agentcloud.internalmeta.com/space/<id>`).
-They deliberately bypass the installed Metamate PWA: its manifest sets
-`launch_handler.client_mode` to `focus-existing`, so `--app-id` launches just
-refocus the one PWA window and ignore the target URL. Like `workplace`, it ships
-its own icon (`Icon=metamate`) rather than pointing at the PWA's.
-
-[`claude-code-work`](https://github.com/hsimah/blanco/tree/main/dotfiles/hosts/work/local/claude-code-work) is a `dotfiles/hosts/work/local` package: a fuzzel launcher
-(`~/.local/share/applications/claude-code-work.desktop`, "Claude Code @ Work")
-that opens `~/work` in kitty and runs `claude`. It ships its own icon
-(`claude-code.svg`, the Claude sunburst) into the hicolor theme so fuzzel
-resolves `Icon=claude-code`.
-
-The `dotfiles/hosts/work` overlay also holds the OnDemand connection tooling. A shared
-launcher, `od-connect`, does the real work; the three `dev-connect-*` packages
-are just fuzzel entry points that call it with a target.
-
-[`od-connect`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/bin/od-connect) (`~/.local/bin/od-connect`, `dotfiles/hosts/work/local`) prompts for a YubiKey
-touch, then runs `dev connect <args> -- <bootstrap>`. Rather than let `dev
-connect` spawn the default (racy, non-login) shell, it hands over a bootstrap via
-the `[PROG]` argument. `dev connect` delivers PROG by **typing** `exec <PROG>;
-exit` into the remote shell, so the bootstrap can't be a normal multi-line
-script — it lives as a readable file (`od-tmux-boot.sh`, below) that `od-connect`
-gzip+base64-encodes into a single-line PROG (`base64 -d <<< … | gunzip >
-~/.od-boot.sh; exec bash ~/.od-boot.sh`). gzip keeps the typed line ~1.7 kB
-(plain base64 was ~3.3 kB, near the terminal's canonical-input limit), and the
-encoded blob is single-quote-free so `dev connect`'s own PROG quoting stays
-clean. Usage: `od-connect <dev connect args…> [-- <prog…>]`, where anything
-after `--` skips the bootstrap and is passed through as PROG verbatim.
-
-[`od-tmux-boot.sh`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/od-connect/.local/share/od-connect/od-tmux-boot.sh) (`~/.local/share/od-connect/`) is what runs on the OD:
-
-1. **Waits for host init.** A fresh OD runs two independent init systems and the
-   shell environment is broken until both finish: `systemctl --user start
-   dotfiles.target` blocks on the dotsync pull, and a poll loop waits for
-   `devfeature status` to report `Initial sync: successful` (devfeature installs
-   tools + shell setup). Both run in parallel (backgrounded, then a spinner loop
-   polls their PIDs), showing live `[|] dotfiles  [ok 5.6s] devfeature` progress
-   and costing the slower of the two, not their sum. `dotsync2 pull` alone is not
-   enough — it returns early, so shells would spawn before the environment lands
-   and come up without aliases/doom. (Barrier cribbed from Josh Kehn's
-   `od-wait-for-init.sh`.)
-2. **Builds/attaches tmux.** On first connect (guarded by `tmux has-session`) it
-   creates session `main` with a single shell pane at `~` — nothing is launched
-   into it, so `doom`/`claude` and any extra panes are yours to open. Reconnects
-   skip the build and re-attach, preserving in-flight work.
-
-Two details the bootstrap has to get right:
-
-- **Login shells.** `set-option -g default-command "exec bash -l"` (set after a
-  `start-server`, since `set-option -g` errors with no server) makes every pane a
-  login shell. Otherwise tmux spawns non-login shells that skip `/etc/profile` →
-  `/etc/shell-login.d/*` → `~/.bash_profile` → `~/.bashrc`, so aliases (including
-  `doom`) never load and the prompt needs a manual `source ~/.bashrc`.
-- **TERM.** `export TERM=xterm-256color` — kitty sets `TERM=xterm-kitty`, which
-  the OD base image has no terminfo for, so tmux otherwise dies at startup
-  ("missing or unsuitable terminal: xterm-kitty") before the dotfiles carrying
-  the kitty terminfo are pulled. tmux resets TERM for its own panes regardless.
-
-The devserver does not use that bootstrap at all. It is a persistent host, so
-dotsync and devfeature have already landed and waiting on them only delays every
-connect behind a sync (and a devfeature run that reinstalls tooling like Emacs).
-Anything after `--` is passed to `od-connect` straight through as PROG, one argv
-element each, so no gzip+base64 is needed either — that machinery exists purely
-to get a *multi-line script* through intact.
-
-    od-connect -n "$DEVSERVER_HOST" -- python3 -c 'import pty,sys,os; …'
-
-The catch is that tmux will not attach to the terminal EternalTerminal provides:
-it fails with `open terminal failed: not a terminal` even though all three fds
-are on a valid ctty (`/dev/pts/N`, `isatty` true on each) and the tmux server is
-plainly reachable from the same shell — `tmux ls` and `tmux -V` both work. That
-holds however tmux is invoked: from a boot script, or exec'd directly as PROG
-the way `dev connect --help`'s own `dev connect -- tmux attach -d` example
-suggests. So the PROG hands tmux a pty it allocates itself:
-
-    python3 -c 'import pty,sys,os; os.environ["TERM"]="xterm-256color"; sys.exit(pty.spawn(["tmux","new-session","-A","-D","-s","main"]))'
-
-`new-session -A -D` is attach-or-create (`-A`), detaching any other client the
-way `attach -d` does (`-D`). `TERM` is pinned because kitty exports
-`xterm-kitty`, which the remote may have no terminfo for. The one-liner uses
-only double quotes so `dev connect`'s own single-quoting of the argument stays
-clean.
-
-Two traps worth recording from working this out:
-
-- **`$([ -t 1 ])` and `$(readlink /proc/self/fd/1)` lie.** Command substitution
-  repoints fd 1 at its own capture pipe, so both report a non-terminal stdout
-  regardless of the truth. Probe with plain `if` statements and `/proc/$$/fd/N`.
-- **A pre-quoted PROG string arrives as one command name.** `dev connect`
-  shell-quotes each argv element individually, so `-- "tmux attach -d"` becomes
-  `exec 'tmux attach -d'` and bash reports `not found`. Pass the words
-  separately.
-
-One latent bug turned up along the way, in `od-tmux-boot.sh`: a tmux server
-started with no sessions exits again (verified on tmux 3.7), so `tmux
-start-server` followed by `set-option -g` can fail with `no server running` and
-silently drop the mouse/`default-command` settings. It works against the OD
-image's tmux today; worth remembering if that ever moves forward.
-
-The three fuzzel launchers (each a `dotfiles/hosts/work/local` bin + a
-`~/.local/share/applications/*.desktop` running `kitty dev-connect-*`) reduce to
-one line calling `od-connect`:
-
-- [`dev-connect-www`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www/.local/bin/dev-connect-www) → `od-connect -t www`
-- [`dev-connect-www_fbsource_configerator`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-www_fbsource_configerator/.local/bin/dev-connect-www_fbsource_configerator) → `od-connect -t www_fbsource_configerator:ent_framework`
-- [`dev-connect-devserver`](https://github.com/hsimah/blanco/blob/main/dotfiles/hosts/work/local/dev-connect-devserver/.local/bin/dev-connect-devserver) → `od-connect -n "$DEVSERVER_HOST" -- python3 -c '…pty.spawn(["tmux","new-session","-A","-D","-s","main"])'` (host from `.env`)
-
-All three land in tmux. The two `www` ODs wait out host init and build a fresh
-single-pane session; the devserver attaches its long-lived `main` straight away.
+- **workplace, metamate, claude-code-work.** Fuzzel launchers with their own icons. Workplace and the Metamate spaces open as Chrome `--app=` windows; the Metamate launchers bypass the PWA because its `focus-existing` launch handler ignores the target URL. Claude Code @ Work opens `~/work` in kitty and runs `claude`.
+- **od-connect** (`~/.local/bin`) prompts for a YubiKey touch, then runs `dev connect <args> -- <bootstrap>`. `dev connect` delivers PROG by *typing* `exec <PROG>; exit` into the remote shell, so the multi-line `od-tmux-boot.sh` is gzip+base64-encoded into one single-quote-free line. Anything after `--` skips the bootstrap and is passed through as PROG, one argv element each (`dev connect` quotes each individually, so a pre-quoted string arrives as one command name).
+- **od-tmux-boot.sh** runs on a fresh OD. It waits in parallel for `dotfiles.target` (the dotsync pull) and `devfeature status` to report `Initial sync: successful`, because shells spawned earlier lack aliases and doom. Then it creates tmux session `main` (one shell pane at `~`) or re-attaches. Two details matter: `default-command "exec bash -l"` makes panes login shells so aliases load, and `TERM=xterm-256color` is forced because the OD has no `xterm-kitty` terminfo. A tmux server with no sessions exits (tmux 3.7), so `start-server` followed by `set-option -g` can fail; it works on the OD's tmux today.
+- **dev-connect-\*.** Fuzzel entry points that call `od-connect`: `-t www`, `-t www_fbsource_configerator:ent_framework`, and the devserver (`-n "$DEVSERVER_HOST"`, read from `.env`). The devserver is persistent, so it skips the bootstrap and runs `tmux new-session -A -D -s main` under `bash -lc` with `TERM` forced, falling back to a login shell.
 
 ## Autologin
 
-Both machines are display-manager-less: LUKS passphrase → agetty autologin →
-fish → niri, no GDM/greeter in between (getty pulls in nothing beyond the base
-system, unlike GDM which drags in the GNOME stack just to launch not-GNOME).
+Both machines are display-manager-less: LUKS passphrase, agetty autologin, fish, niri.
 
-[`scripts/setup-autologin.sh`](https://github.com/hsimah/blanco/blob/main/scripts/setup-autologin.sh) is the system side: it templates
-[`system/getty-autologin/autologin.conf`](https://github.com/hsimah/blanco/blob/main/system/getty-autologin/autologin.conf) (`__USER__` → `$USER`) into
-`/etc/systemd/system/getty@tty1.service.d/` and disables any display manager
-(GDM on the work laptop; no-op on `blanco`). `bootstrap.sh` runs it on `blanco`;
-run it by hand on the work laptop to switch it off GDM (rollback:
-`sudo systemctl enable gdm`). The session side is shared config
-[`dotfiles/config/fish/.config/fish/conf.d/autologin-niri.fish`](https://github.com/hsimah/blanco/blob/main/dotfiles/config/fish/.config/fish/conf.d/autologin-niri.fish), which
-`exec niri-session`s from the login shell — guarded to tty1 only
-(`status is-login`, `tty` check) and to a shell not already inside a niri
-session (`NIRI_SOCKET`), so other tty logins and terminals inside niri are
-unaffected.
+[`scripts/setup-autologin.sh`](scripts/setup-autologin.sh) is the system side. It templates [`system/getty-autologin/autologin.conf`](system/getty-autologin/autologin.conf) into `/etc/systemd/system/getty@tty1.service.d/` and disables any display manager. `bootstrap.sh` runs it on `blanco`; run it by hand on `work` to leave GDM (rollback: `sudo systemctl enable gdm`).
 
-The `status is-interactive` clause in that guard is load-bearing, not
-decoration: `niri-session` re-execs itself through `$SHELL` as a *login* shell
-(`exec -l "$SHELL" -c "niri-session -l"`), and fish sources `conf.d/` for that
-shell too. Without the interactive check the snippet fires again, `exec`s a
-fresh bare `niri-session`, and the two ping-pong forever — an infinite exec loop
-that pegs a core and never starts niri. The re-exec is non-interactive, so
-requiring interactivity breaks the cycle while still firing on a real autologin.
-
-The Noctalia lock screen is available through manual keybinds and its idle
-timer. Lid-close policy lives in the niri host overlays: `blanco` keeps the
-lock-only action, while `work` calls Noctalia's lock-and-suspend action. The work
-overlay's `niri-lid-inhibitor.service` prevents logind from racing that action;
-it holds the lid-switch inhibitor only while the graphical session is active.
+The session side is `conf.d/autologin-niri.fish`, which `exec`s `niri-session` from the login shell on tty1 only, when not already inside niri (`NIRI_SOCKET`). Its `status is-interactive` check is load-bearing: `niri-session` re-execs itself through `$SHELL` as a login shell, and without the check the snippet fires again and the two exec each other forever.
