@@ -34,7 +34,6 @@ dotfiles/
       config/   kitty niri noctalia systemd
       local/    chromium-newwindow dunst-mask loft music-assistant
 scripts/        # deploy, bootstrap, setup-autologin, git-bootstrap, add-package, test, tests/
-docs/           # niri.md (keybinding reference)
 system/         # payloads for paths outside $HOME (/etc); not stowed
 ```
 
@@ -79,7 +78,7 @@ Configs are self-explanatory; notes below cover only what isn't obvious from the
 
 **vlc.** `vlcrc` tracks only the non-default keys. Saving in VLC's preferences replaces the symlink with a real file, which `deploy.sh` then reports as a `SKIP`. `deploy.sh` makes VLC the video/audio default when `vlc.desktop` exists.
 
-**niri.** The shared `config.kdl` includes `noctalia.kdl` (optional, generated) and each host's `local.kdl`. Each overlay declares named workspaces and startup apps, the lock bind, the lid-close action, the noctalia backdrop layer rule, and `honor-xdg-activation-with-invalid-serial` (noctalia v5 needs it for notification actions). On `work`, the `work` workspace is pinned to the external Dell. `blanco` also binds the G14's `Fn+F6` snip key (sent as `Super+Shift+S`) and `Ctrl+Print` for screen recording. Binds in `local.kdl` merge into the shared `binds`. See [`docs/niri.md`](docs/niri.md). `niri-gather-workspaces` (`Super+Ctrl+Y`) moves every non-empty workspace from the laptop panel to the external output after docking, keeping `personal` on the laptop.
+**niri.** The shared `config.kdl` includes `noctalia.kdl` (optional, generated) and each host's `local.kdl`. Each overlay declares named workspaces and startup apps, the lock bind, the lid-close action, the noctalia backdrop layer rule, and `honor-xdg-activation-with-invalid-serial` (noctalia v5 needs it for notification actions). On `work`, the `work` workspace is pinned to the external Dell. `blanco` also binds the G14's `Fn+F6` snip key (sent as `Super+Shift+S`) and `Ctrl+Print` for screen recording. Binds in `local.kdl` merge into the shared `binds`. `niri-gather-workspaces` (`Super+Ctrl+Y`) moves every non-empty workspace from the laptop panel to the external output after docking, keeping `personal` on the laptop.
 
 **yazi.** Ships a launcher (`kitty yazi %f`, handles `inode/directory`) and a PNG icon, because fuzzel is built without webp.
 

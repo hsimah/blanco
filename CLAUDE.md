@@ -4,7 +4,7 @@ GNU Stow dotfiles repo (`blanco`) for two Fedora laptops (personal `blanco`, wor
 
 - Shared packages: `dotfiles/config` (`~/.config`) and `dotfiles/local` (`~/.local`), stowed everywhere.
 - Per-host overlays: `dotfiles/hosts/<host>/{config,local}`, stowed only on that host. `scripts/deploy.sh` picks the overlay by hostname; a new host needs a matching case there.
-- `scripts/` is tooling, `docs/` is reference docs, `system/` is non-`$HOME` payloads (not stowed).
+- `scripts/` is tooling, `system/` is non-`$HOME` payloads (not stowed).
 - Run `./scripts/deploy.sh` (`--dry-run` to preview) to apply changes and `./scripts/test.sh` to run the tests.
 - Per-machine divergence goes through the seams (`fish/local.fish`, `niri/local.kdl`, `kitty/local.conf`) or an overlay package, not by splitting a shared package.
 
