@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Set up DM-less autologin into niri, the system side. Installs the getty@tty1
-# autologin drop-in for the current user and disables any display manager, so
-# boot goes: LUKS passphrase -> agetty autologins -> fish -> niri-session.
-# The fish half (conf.d/autologin-niri.fish) is shared config, stowed by
-# deploy.sh — run that first.
-#
-# Run as your normal user (calls sudo). Idempotent, safe to re-run.
-#   ./scripts/deploy.sh && ./scripts/setup-autologin.sh
-#
-# bootstrap.sh calls this on blanco; run it by hand on the work laptop to
-# switch it off GDM. Rollback: sudo systemctl enable <dm> (printed below).
+# System side of DM-less autologin: getty@tty1 drop-in plus disabling any display
+# manager. The fish half (conf.d/autologin-niri.fish) is stowed by deploy.sh, so
+# run that first. Idempotent; run as your normal user (calls sudo).
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 

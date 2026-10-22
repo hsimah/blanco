@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Configure global git on a fresh machine: identity + the nvimdiff three-pane
-# mergetool. Run once, as your normal user:
-#   ./scripts/git-bootstrap.sh
-#
-# Identity defaults to the personal account. Override per machine (e.g. a work
-# email) without editing this file:
-#   GIT_USER_EMAIL=hblake@work.example ./scripts/git-bootstrap.sh
-#
-# Idempotent — each `git config --global` overwrites the key, safe to re-run.
+# Global git identity + nvimdiff mergetool. Idempotent. Identity defaults to the
+# personal account; override with GIT_USER_NAME / GIT_USER_EMAIL.
 
 GIT_USER_NAME="${GIT_USER_NAME:-Hamish Blake}"
 GIT_USER_EMAIL="${GIT_USER_EMAIL:-hamishblake+github@gmail.com}"

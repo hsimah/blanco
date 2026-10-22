@@ -1,18 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Post-install bootstrap for a fresh minimal Fedora on `blanco`.
-# Run once, as your normal user, from a cloned checkout:
-#   git clone git@github.com:hsimah/blanco.git ~/Projects/blanco
-#   cd ~/Projects/blanco && ./scripts/bootstrap.sh
-#
-# Installs the curated package set, noctalia v5, yazi (via cargo),
-# Claude Code (native installer), flatpaks, sets fish as the shell, enables
-# tty1 autologin straight into niri, stows configs via deploy.sh, configures
-# global git (identity + mergetool) via git-bootstrap.sh, and sets up Doom
-# Emacs (clone + doom sync).
-# Idempotent — safe to re-run. The optional NVIDIA dGPU is deliberately left out
-# (the AMD iGPU drives everything); see the README to enable it later.
+# Post-install bootstrap for a fresh minimal Fedora on `blanco`. Idempotent.
+# Run as your normal user from a cloned checkout: ./scripts/bootstrap.sh
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -20,8 +10,7 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 . /etc/os-release
 [[ "${ID:-}" == "fedora" ]] || { echo "This targets Fedora (found: ${ID:-unknown})."; exit 1; }
 
-# This installs the personal (blanco) package set — niri, plexamp, etc.
-# Refuse to run it on the work laptop by mistake. Override with BOOTSTRAP_FORCE=1.
+# Personal package set: refuse on the work laptop unless BOOTSTRAP_FORCE=1.
 WORK_HOST="hblake-fedora-PF627G59"
 if [[ "$(hostname)" == "$WORK_HOST" && "${BOOTSTRAP_FORCE:-0}" != "1" ]]; then
     echo "Refusing to run: this is the work host ($WORK_HOST)."
@@ -76,8 +65,6 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 flatpak install -y flathub "${FLATPAKS[@]}"
 
 echo "==> Stow configs (shared + blanco overlay)"
-# deploy.sh exits non-zero if it skipped a package on a conflict; surface that
-# but keep going so the closing notes still print.
 "$REPO/scripts/deploy.sh" || echo "  (deploy reported conflicts — resolve the SKIPped files above, then re-run ./scripts/deploy.sh)"
 systemctl --user daemon-reload
 systemctl --user enable noctalia.service
@@ -86,13 +73,9 @@ echo "==> Autologin (getty@tty1 -> niri, DM-less)"
 "$REPO/scripts/setup-autologin.sh"
 
 echo "==> Global git config (identity + mergetool)"
-# blanco only runs here (work host is refused above), so the personal identity
-# default is correct. Override with GIT_USER_EMAIL=… when running standalone.
 "$REPO/scripts/git-bootstrap.sh"
 
 echo "==> Doom Emacs"
-# The Doom framework lives in ~/.config/emacs as its own checkout and is not
-# tracked here; the config layer (~/.config/doom) is stowed by deploy.sh above.
 DOOM_DIR="$HOME/.config/emacs"
 if [[ ! -d "$DOOM_DIR" ]]; then
     echo "  cloning Doom -> $DOOM_DIR"

@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-# Run the dotfiles test suite. Each tests/test_*.sh is a standalone script
-# (exit 0 = pass). Prints a summary and exits non-zero if any test fails.
-#
-#   ./scripts/test.sh              run all tests
-#   ./scripts/test.sh <pattern>   only run tests whose filename contains <pattern>
+# Run tests/test_*.sh (exit 0 = pass); optional arg filters by filename substring.
 set -u
 cd "$(dirname "$0")"
 

@@ -2,20 +2,6 @@
 set -euo pipefail
 shopt -s nullglob
 
-# Deploy this machine's dotfiles with GNU Stow.
-#
-# Shared packages (dotfiles/config, dotfiles/local) are stowed on every machine.
-# A per-machine overlay (dotfiles/hosts/{work,blanco}) is selected by hostname
-# and stowed on top. Idempotent and non-destructive: existing symlinks are
-# refreshed; real files that would conflict are reported (SKIP), never clobbered.
-# Resolve those by hand.
-#
-# Options:
-#   -n, --dry-run   Simulate: show what stow would do, change nothing.
-#   -h, --help      Show this help.
-#
-# Exits non-zero if any package was skipped due to a conflict.
-
 DRY_RUN=0
 for arg in "$@"; do
     case "$arg" in
@@ -43,8 +29,7 @@ done
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DOTFILES="$REPO/dotfiles"
 
-# Map hostname -> overlay dir. Add machines here as they diverge.
-# DOTFILES_HOST overrides the detected hostname (used by the test suite).
+# DOTFILES_HOST overrides the hostname (used by the tests).
 WORK_HOST="hblake-fedora-PF627G59"
 BLANCO_HOST="blanco"
 HOST="${DOTFILES_HOST:-$(hostname)}"
@@ -54,9 +39,6 @@ case "$HOST" in
     *)              OVERLAY="" ;;
 esac
 
-# --no-folding: symlink each file individually rather than folding a whole
-# directory into one symlink, so apps that write new files into ~/.config/<tool>
-# write into the real dir, not into this repo.
 STOW_FLAGS=(-R --no-folding)
 [[ $DRY_RUN -eq 1 ]] && STOW_FLAGS+=(-n -v)
 
@@ -76,7 +58,6 @@ stow_dir() {  # stow every package (top-level dir) inside $1
             echo "  SKIP   $pkg (conflict — resolve by hand)"
             fail=1
         fi
-        # In dry-run, surface stow's simulation / conflict detail (indented).
         if [[ $DRY_RUN -eq 1 && -n "$out" ]]; then
             printf '%s\n' "$out" | sed 's/^/      /'
         fi
@@ -96,7 +77,6 @@ else
     echo "==> No overlay for $HOST (shared only)"
 fi
 
-# mimeapps.list is per-machine and untracked; set the editor default explicitly.
 if command -v xdg-mime >/dev/null 2>&1; then
     if [[ $DRY_RUN -eq 1 ]]; then
         echo "==> Would set MIME default: emacs.desktop for text/plain, text/markdown"
@@ -105,8 +85,6 @@ if command -v xdg-mime >/dev/null 2>&1; then
     fi
 fi
 
-# Video and audio -> VLC. Gated on vlc.desktop being present so a machine without
-# VLC keeps whatever handler it has (Fedora defaults these to mpv).
 MEDIA_MIMES=(
     video/mp4 video/x-m4v video/x-matroska video/webm video/quicktime
     video/x-msvideo video/avi video/mpeg video/mp2t video/ogg
@@ -128,9 +106,6 @@ if [[ $have_vlc_desktop -eq 1 ]] && command -v xdg-mime >/dev/null 2>&1; then
     fi
 fi
 
-# ungoogled Chromium (flatpak) is only installed on blanco; gate the browser default to that host.
-# chromium-newwindow.desktop wraps it with --new-window so links open on the active
-# workspace rather than as a tab in a window niri can't raise (no activation token).
 if [[ "$OVERLAY" == "blanco" ]]; then
     CHROMIUM_DESKTOP="chromium-newwindow.desktop"
     if [[ $DRY_RUN -eq 1 ]]; then
