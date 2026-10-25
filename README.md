@@ -22,12 +22,12 @@ Each tool is its own stow package mirroring `$HOME`:
 ```
 dotfiles/
   config/       # ~/.config payloads, stowed everywhere
-    fastfetch fish fuzzel gtk-3.0 gtk-4.0 kitty niri nvim tmux vlc xdg-desktop-portal
+    fastfetch fish fuzzel gtk-3.0 gtk-4.0 kitty niri noctalia nvim tmux vlc xdg-desktop-portal
   local/        # ~/.local payloads, stowed everywhere
     yazi niri-gather-workspaces
   hosts/
     work/       # overlay, stowed only on the work host
-      config/   niri noctalia systemd
+      config/   niri systemd
       local/    claude-code-work od-connect dev-connect-{devserver,www,www_fbsource_configerator}
                 workplace metamate
     blanco/     # overlay, stowed only on the personal host
@@ -82,13 +82,13 @@ Configs are self-explanatory; notes below cover only what isn't obvious from the
 
 **yazi.** Ships a launcher (`kitty yazi %f`, handles `inode/directory`) and a PNG icon, because fuzzel is built without webp.
 
-### noctalia (overlays)
+### noctalia (shared + blanco overlay)
 
 Both hosts run noctalia v5 as a systemd user service (`systemd/noctalia.service`, `Restart=on-failure`) rather than niri `spawn-at-startup`, so a crash doesn't silently take down the bar, wallpaper and lock screen together. Stow only links the unit: enable it with `systemctl --user enable noctalia.service` (`bootstrap.sh` does for `blanco`).
 
-`config.toml` is hand-written. v5 merges every `*.toml` in `~/.config/noctalia/` over its defaults, then layers the untracked `~/.local/state/noctalia/settings.toml` (GUI changes) on top. To keep a GUI change, copy the key from `noctalia config export` into `config.toml` and delete it from `settings.toml`. Validate with `noctalia config validate`. The built-in `niri` theme template is enabled, so niri's border colours follow the wallpaper.
+`config.toml` (shared) is hand-written, and `blanco` adds `host.toml` (`work` has none). v5 merges every `*.toml` in `~/.config/noctalia/` over its defaults in filename order, so `host.toml` wins over `config.toml`; arrays are replaced, not appended, so `host.toml` restates the whole `bar.main.start` and `control_center.shortcuts` lists. The untracked `~/.local/state/noctalia/settings.toml` (GUI changes) layers on top. To keep a GUI change, copy the key from `noctalia config export` into `config.toml` (both hosts) or `host.toml` (this host) and delete it from `settings.toml`. Wallpaper paths stay in `settings.toml`: automation rewrites them every few minutes. Validate with `noctalia config validate`. The built-in `niri` theme template is enabled, so niri's border colours follow the wallpaper.
 
-`blanco` enables the `noctalia/screen_recorder` plugin (needs `gpu-screen-recorder` and `slurp`, installed by `bootstrap.sh`). `work` doesn't: the plugin records MP4, whose `moov` atom sits at the end of the file so recordings won't play in a browser until remuxed, and work's Intel encoder exposes AV1 but not H.264.
+`host.toml` also holds blanco's lock screen monitor and login-box layout, and puts `media` before `active_window` in the bar. It enables the `noctalia/screen_recorder` plugin (needs `gpu-screen-recorder` and `slurp`, installed by `bootstrap.sh`), recording AV1 because Fedora's Mesa has no H.264 encoder (the plugin's default). `work` doesn't: the plugin records MP4, whose `moov` atom sits at the end of the file so recordings won't play in a browser until remuxed, and work's Intel encoder exposes AV1 but not H.264.
 
 Lid close: `blanco` locks only. `work` locks and suspends via noctalia, and `niri-lid-inhibitor.service` holds logind's lid-switch inhibitor while the graphical session is active so logind doesn't suspend first.
 

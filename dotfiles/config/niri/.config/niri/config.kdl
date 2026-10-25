@@ -246,7 +246,8 @@ binds {
 }
 
 // noctalia wallpaper colors (generated, untracked)
-include optional=true "noctalia.kdl"
 
 // per-host overlay
 include "local.kdl"
+
+include "noctalia.kdl"
