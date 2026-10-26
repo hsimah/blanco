@@ -6,7 +6,6 @@ workspace "work" {
 }
 
 spawn-at-startup "flatpak" "run" "com.plexamp.Plexamp"
-spawn-at-startup "google-chrome-stable" "--profile-directory=Default" "--app-id=pommaclcbfghclhalboakcipcmmndhcj"
 
 window-rule {
     match app-id="plexamp"
@@ -17,10 +16,6 @@ window-rule {
     match app-id="chrome-hfmgjhflhflcobjffcknlgaphippkmmd-Default"
     open-on-workspace "personal"
     default-column-width { proportion 1.0; }
-}
-window-rule {
-    match app-id="chrome-pommaclcbfghclhalboakcipcmmndhcj-Default"
-    open-on-workspace "work"
 }
 
 layer-rule {
