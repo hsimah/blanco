@@ -1,7 +1,23 @@
 [plugins]
 enabled = ["noctalia/screen_recorder"]
 
+[[plugins.source]]
+kind = "git"
+location = "https://github.com/noctalia-dev/official-plugins"
+name = "official"
+
+[[plugins.source]]
+kind = "git"
+location = "https://github.com/noctalia-dev/community-plugins"
+name = "community"
+
+[[plugins.source]]
+kind = "git"
+location = "https://github.com/hsimah/noctalia-official-plugins"
+name = "hsimah"
+
 [plugin_settings."noctalia/screen_recorder"]
+container = "mkv"
 video_codec = "av1"
 
 [bar.main]
