@@ -1,3 +1,43 @@
+[plugins]
+enabled = ["noctalia/screen_recorder"]
+
+[[plugins.source]]
+kind = "git"
+location = "https://github.com/noctalia-dev/official-plugins"
+name = "official"
+
+[[plugins.source]]
+kind = "git"
+location = "https://github.com/noctalia-dev/community-plugins"
+name = "community"
+
+[[plugins.source]]
+kind = "git"
+location = "https://github.com/hsimah/noctalia-official-plugins"
+name = "hsimah"
+
+[plugin_settings."noctalia/screen_recorder"]
+container = "mkv"
+video_codec = "av1"
+
+[bar.main]
+end = [ "tray", "recorder", "group:sysmon", "battery", "network", "volume", "control-center" ]
+
+[[control_center.shortcuts]]
+type = "noctalia/screen_recorder:toggle"
+
+[[control_center.shortcuts]]
+type = "caffeine"
+
+[[control_center.shortcuts]]
+type = "bluetooth"
+
+[[control_center.shortcuts]]
+type = "power_profile"
+
+[widget.recorder]
+type = "noctalia/screen_recorder:recorder"
+
 [lockscreen]
 monitors = [ "DP-1", "DP-6" ]
 

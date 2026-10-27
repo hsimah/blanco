@@ -32,6 +32,7 @@ window-rule {
 
 binds {
     Super+BackSpace hotkey-overlay-title="Lock the Screen: noctalia" { spawn-sh "noctalia msg session lock"; }
+    Ctrl+Print hotkey-overlay-title="Toggle Screen Recording: noctalia" { spawn-sh "noctalia msg plugin noctalia/screen_recorder:service all toggle"; }
 }
 
 debug {
