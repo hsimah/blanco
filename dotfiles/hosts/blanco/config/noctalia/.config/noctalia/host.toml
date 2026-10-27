@@ -30,6 +30,7 @@ type = "noctalia/screen_recorder:toggle"
 monitors = [ "DP-6" ]
 
 [lockscreen_widgets]
+enabled = false
 schema_version = 2
 widget_order = [ "lockscreen-login-box@DP-6", "lockscreen-login-box@eDP-2" ]
 
