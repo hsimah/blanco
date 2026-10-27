@@ -29,6 +29,7 @@ DNF_PKGS=(
 FLATPAKS=(
     com.plexamp.Plexamp
     io.github.ungoogled_software.ungoogled_chromium
+    com.dec05eba.gpu_screen_recorder
 )
 
 echo "==> Base packages"
@@ -37,7 +38,7 @@ sudo dnf install -y "${DNF_PKGS[@]}"
 echo "==> noctalia (Fedora) + gpu-screen-recorder for its screen_recorder plugin (Terra)"
 sudo dnf install -y --nogpgcheck \
     --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
-sudo dnf install -y noctalia gpu-screen-recorder slurp
+sudo dnf install -y noctalia slurp
 
 echo "==> yazi (via cargo, not COPR — crates.io is the trusted source)"
 if [[ ! -x "$HOME/.cargo/bin/yazi" ]]; then
