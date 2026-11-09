@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Loft: lady-grey
+Comment=ssh lady-grey, attaching to the persistent loft tmux session
+Icon=kitty
+Exec=kitty --title lady-grey fish -c lady-grey
+Terminal=false
+Categories=Network;
+Keywords=loft;ssh;lady-grey;
