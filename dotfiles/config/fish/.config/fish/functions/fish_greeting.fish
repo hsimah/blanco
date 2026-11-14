@@ -5,5 +5,5 @@ function fish_greeting
     if test "$COLUMNS" -lt 100
         set position top
     end
-    command fastfetch --logo-position $position
+    command fastfetch --logo-position $position $fastfetch_logo_args
 end
