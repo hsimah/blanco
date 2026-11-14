@@ -80,7 +80,7 @@ type = "custom_button"
 glyph = "terminal-2"
 
 [widget.terminal.actions]
-left = "exec kitty"
+left = "exec loft-terminal"
 
 [widget.launcher]
 glyph = "rocket"

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -u
+niri msg action move-workspace-to-index --reference terminal 6
+niri msg action focus-workspace terminal
+ws="$(niri msg --json workspaces | jq 'first(.[] | select(.name == "terminal")).id')"
+niri msg --json windows | jq -e --argjson ws "$ws" \
+  'any(.[]; .workspace_id == $ws and .app_id == "kitty")' > /dev/null \
+  || exec kitty

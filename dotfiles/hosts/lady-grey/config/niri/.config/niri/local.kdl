@@ -12,6 +12,7 @@ workspace "music"
 workspace "radarr"
 workspace "sonarr"
 workspace "lidarr"
+workspace "terminal"
 
 binds {
     XF86PowerOff { power-off-monitors; }
