@@ -17,6 +17,10 @@ if [[ "$(hostname)" == "$WORK_HOST" && "${BOOTSTRAP_FORCE:-0}" != "1" ]]; then
     echo "bootstrap.sh installs the personal package set. Set BOOTSTRAP_FORCE=1 to override."
     exit 1
 fi
+if [[ "$(hostname)" == "lady-grey" ]]; then
+    echo "Refusing to run: lady-grey is provisioned by the-loft (loft-ctl setup)."
+    exit 1
+fi
 
 DNF_PKGS=(
     niri

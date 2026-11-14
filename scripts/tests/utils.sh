@@ -7,6 +7,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 WORK_HOST="hblake-fedora-PF627G59"
 BLANCO_HOST="blanco"
+LADY_GREY_HOST="lady-grey"
 
 FAILED=0
 _TMPDIRS=()

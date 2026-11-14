@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -u
+# shellcheck source=/dev/null
+. /etc/default/loft-kiosk
+profile="${HOME}/.local/share/loft-photos-firefox"
+pidfile="${XDG_RUNTIME_DIR:-/tmp}/loft-photo-frame.pid"
+
+running() { [[ -f "$pidfile" ]] && kill -0 "$(< "$pidfile")" 2>/dev/null; }
+
+case "${1:-}" in
+  start)
+    running && exit 0
+    curl -fs -o /dev/null --max-time 3 "${KIOSK_PHOTO_URL}/health" || exit 0
+    firefox --kiosk --new-instance --profile "$profile" "$KIOSK_PHOTO_URL" \
+      > /dev/null 2>&1 &
+    pid=$!
+    echo "$pid" > "$pidfile"
+    for _ in $(seq 60); do
+      id="$(niri msg --json windows | jq -r --argjson pid "$pid" \
+        'first(.[] | select(.pid == $pid) | .id) // empty')"
+      if [[ -n "$id" ]]; then
+        niri msg action fullscreen-window --id "$id"
+        break
+      fi
+      sleep 0.5
+    done
+    ;;
+  stop)
+    running && kill "$(< "$pidfile")"
+    rm -f "$pidfile"
+    ;;
+  *)
+    echo "usage: loft-photo-frame start|stop" >&2
+    exit 2
+    ;;
+esac

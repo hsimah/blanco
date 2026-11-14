@@ -1,0 +1,34 @@
+output "eDP-1" {
+    scale 2
+}
+
+cursor {
+    hide-when-typing
+    hide-after-inactive-ms 2000
+}
+
+spawn-sh-at-startup "exec ~/.local/bin/loft-dashboard"
+spawn-sh-at-startup "exec ~/.local/bin/loft-idle"
+
+window-rule {
+    match app-id="firefox"
+    open-maximized true
+    open-fullscreen false
+    opacity 1.0
+}
+
+layer-rule {
+    match namespace="^noctalia-backdrop"
+    place-within-backdrop true
+}
+
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+}

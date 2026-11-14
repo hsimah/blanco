@@ -4,14 +4,16 @@ Configuration for my daily drivers, managed with [GNU Stow](https://www.gnu.org/
 
 ## Machines
 
-Both laptops run Fedora with [niri](https://github.com/YaLTeR/niri) and share `dotfiles/config` and `dotfiles/local`. Machine-specific packages live in an overlay under `dotfiles/hosts/` (`work/`, `blanco/`) selected by hostname.
+All three run Fedora with [niri](https://github.com/YaLTeR/niri) and share `dotfiles/config` and `dotfiles/local`. Machine-specific packages live in an overlay under `dotfiles/hosts/` (`work/`, `blanco/`, `lady-grey/`) selected by hostname.
 
-| | Personal | Work |
-|---|---|---|
-| Model | ASUS ROG Zephyrus G14 (2024, GA403UI) | Lenovo ThinkPad X1 Carbon Gen 13 |
-| CPU | AMD Ryzen 9 8945HS (8C/16T) | Intel Core Ultra 7 268V (8C/8T) |
-| GPU | Radeon 780M + NVIDIA RTX 4070 Mobile | Intel Arc Graphics 140V |
-| Memory | 32 GB | 32 GB |
+| | Personal | Work | lady-grey |
+|---|---|---|---|
+| Model | ASUS ROG Zephyrus G14 (2024, GA403UI) | Lenovo ThinkPad X1 Carbon Gen 13 | Microsoft Surface Pro 4 |
+| CPU | AMD Ryzen 9 8945HS (8C/16T) | Intel Core Ultra 7 268V (8C/8T) | Intel Core i5-6300U (2C/4T) |
+| GPU | Radeon 780M + NVIDIA RTX 4070 Mobile | Intel Arc Graphics 140V | Intel HD Graphics 520 |
+| Memory | 32 GB | 32 GB | 8 GB |
+
+lady-grey is a Home Assistant wall tablet in the loft. The system side (packages, linux-surface kernel, greetd, Docker services, `/etc/default/loft-kiosk`) is provisioned by `the-loft` (`hosts/lady-grey`); this repo owns its desktop, deployed as the kiosk user `rodnik`.
 
 Everything on the personal laptop runs on the AMD iGPU; the RTX 4070 is optional. To enable it: install RPM Fusion, then `akmod-nvidia xorg-x11-drv-nvidia-cuda`, reboot, and run apps on the dGPU with `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia <app>`.
 
@@ -33,6 +35,9 @@ dotfiles/
     blanco/     # overlay, stowed only on the personal host
       config/   kitty niri noctalia systemd
       local/    chromium-newwindow dunst-mask loft music-assistant
+    lady-grey/  # overlay, stowed only on the Surface kiosk
+      config/   niri noctalia systemd
+      local/    kiosk
 scripts/        # deploy, bootstrap, setup-autologin, git-bootstrap, add-package, test, tests/
 system/         # payloads for paths outside $HOME (/etc); not stowed
 ```
@@ -51,9 +56,9 @@ stow --dir=dotfiles/config --target=$HOME --adopt fish    # pull live edits into
 stow --dir=dotfiles/config --target=$HOME --delete fish   # remove symlinks
 ```
 
-On a fresh Fedora install, [`scripts/bootstrap.sh`](scripts/bootstrap.sh) runs first (it refuses on the work host): packages, noctalia, yazi (built with `cargo`, since Fedora doesn't package it), flatpaks, tty1 autologin, `deploy.sh`, and git config.
+On a fresh Fedora install, [`scripts/bootstrap.sh`](scripts/bootstrap.sh) runs first (it refuses on the work host and on lady-grey): packages, noctalia, yazi (built with `cargo`, since Fedora doesn't package it), flatpaks, tty1 autologin, `deploy.sh`, and git config.
 
-To add a shared package, run `./scripts/add-package.sh <name>`, which moves `~/.config/<name>` into `dotfiles/config` and stows it. A machine-specific package goes in the host's overlay instead, and `deploy.sh` selects the overlay by hostname (`WORK_HOST`/`BLANCO_HOST`).
+To add a shared package, run `./scripts/add-package.sh <name>`, which moves `~/.config/<name>` into `dotfiles/config` and stows it. A machine-specific package goes in the host's overlay instead, and `deploy.sh` selects the overlay by hostname (`WORK_HOST`/`BLANCO_HOST`/`LADY_GREY_HOST`).
 
 ## Tests
 
@@ -78,17 +83,19 @@ Configs are self-explanatory; notes below cover only what isn't obvious from the
 
 **vlc.** `vlcrc` tracks only the non-default keys. Saving in VLC's preferences replaces the symlink with a real file, which `deploy.sh` then reports as a `SKIP`. `deploy.sh` makes VLC the video/audio default when `vlc.desktop` exists.
 
-**niri.** The shared `config.kdl` includes `noctalia.kdl` (optional, generated) and each host's `local.kdl`. Each overlay declares named workspaces and startup apps, the lock bind, the lid-close action, the noctalia backdrop layer rule, and `honor-xdg-activation-with-invalid-serial` (noctalia v5 needs it for notification actions). On `work`, the `work` workspace is pinned to the external Dell. Both hosts bind `Ctrl+Print` for screen recording; `blanco` also binds the G14's `Fn+F6` snip key (sent as `Super+Shift+S`). Binds in `local.kdl` merge into the shared `binds`. `niri-gather-workspaces` (`Super+Ctrl+Y`) moves every non-empty workspace from the laptop panel to the external output after docking, keeping `personal` on the laptop.
+**niri.** The shared `config.kdl` includes `noctalia.kdl` (optional, generated) and each host's `local.kdl`. Each overlay declares named workspaces and startup apps, the lock bind, the lid-close action, the noctalia backdrop layer rule, and `honor-xdg-activation-with-invalid-serial` (noctalia v5 needs it for notification actions). On `work`, the `work` workspace is pinned to the external Dell. `lady-grey` declares no workspaces and starts the kiosk instead (see its overlay). Both hosts bind `Ctrl+Print` for screen recording; `blanco` also binds the G14's `Fn+F6` snip key (sent as `Super+Shift+S`). Binds in `local.kdl` merge into the shared `binds`. `niri-gather-workspaces` (`Super+Ctrl+Y`) moves every non-empty workspace from the laptop panel to the external output after docking, keeping `personal` on the laptop.
 
 **yazi.** Ships a launcher (`kitty yazi %f`, handles `inode/directory`) and a PNG icon, because fuzzel is built without webp.
 
 ### noctalia (shared + host overlays)
 
-Both hosts run noctalia v5 as a systemd user service (`systemd/noctalia.service`, `Restart=on-failure`) rather than niri `spawn-at-startup`, so a crash doesn't silently take down the bar, wallpaper and lock screen together. Stow only links the unit: enable it with `systemctl --user enable noctalia.service` (`bootstrap.sh` does for `blanco`).
+All hosts run noctalia v5 as a systemd user service (`systemd/noctalia.service`, `Restart=on-failure`) rather than niri `spawn-at-startup`, so a crash doesn't silently take down the bar, wallpaper and lock screen together. Stow only links the unit: enable it with `systemctl --user enable noctalia.service` (`bootstrap.sh` does for `blanco`; on `lady-grey` run it as `rodnik`).
 
 `config.toml` (shared) is hand-written, and each host adds a `host.toml`. v5 merges every `*.toml` in `~/.config/noctalia/` over its defaults in filename order, so `host.toml` wins over `config.toml`; arrays are replaced, not appended, so `host.toml` restates the whole `bar.main.start` and `control_center.shortcuts` lists. The untracked `~/.local/state/noctalia/settings.toml` (GUI changes) layers on top. To keep a GUI change, copy the key from `noctalia config export` into `config.toml` (both hosts) or `host.toml` (this host) and delete it from `settings.toml`. Wallpaper paths stay in `settings.toml`: automation rewrites them every few minutes. Validate with `noctalia config validate`. The built-in `niri` theme template is enabled, so niri's border colours follow the wallpaper.
 
 `work`'s `host.toml` restricts the lock screen to the external monitor (`DP-1` at the office, `DP-6` at home; it falls back to the laptop panel when neither is connected) and turns the lock screen widgets off. `blanco`'s turns them off too, holds its lock screen monitor and login-box layout, and puts `media` before `active_window` in the bar. Both hosts enable the `noctalia/screen_recorder` plugin and put its toggle in the control-center shortcuts (`work` also has a `recorder` bar widget). `blanco` records H.264/AAC MP4 (Messenger rejects Opus audio in MP4) with the Flathub `com.dec05eba.gpu_screen_recorder` (installed by `bootstrap.sh`, along with `slurp`) because Fedora's Mesa has no H.264 encoder and Messenger rejects AV1; the plugin only falls back to the flatpak when no native `gpu-screen-recorder` is on `PATH`, so don't install the dnf package. `work` records MKV in AV1 with the native binary, from a fork (`hsimah/noctalia-official-plugins`, declared as a `[[plugins.source]]` in its `host.toml` and restating the `official` and `community` sources, since arrays are replaced) that adds a `container` setting (upstream PR #135): the stock plugin writes MP4, whose `moov` atom sits at the end of the file so recordings won't play in a browser until remuxed, and work's Intel encoder exposes AV1 but not H.264. Sources added through the GUI or `noctalia msg plugins source add` land in `settings.toml`, which would override the `host.toml` list. Drop the fork once the PR merges.
+
+`lady-grey`'s `host.toml` disables idle screen-off, lock and suspend (`loft-idle` shows the photo frame instead) and drops the media, tray, volume, Bluetooth and power-profile entries (no audio).
 
 Lid close: `blanco` locks only. `work` locks and suspends via noctalia, and `niri-lid-inhibitor.service` holds logind's lid-switch inhibitor while the graphical session is active so logind doesn't suspend first.
 
@@ -99,6 +106,13 @@ Lid close: `blanco` locks only. `work` locks and suspends via noctalia, and `nir
 - **loft.** A fuzzel launcher per loft host (`kitty --title <host> fish -c <host>`).
 - **dunst-mask.** Shadows the system D-Bus service file for dunst with `Exec=/bin/false`. dunst arrives as a dependency of `system-config-printer` and claims `org.freedesktop.Notifications` before noctalia is up, producing default blue toasts. Removing the package would remove the printer config tool, and `dunst.service` is `static`, so D-Bus activation is its only entry point. The first notification of a session is dropped if noctalia isn't up yet.
 
+### lady-grey overlay
+
+Firefox kiosk on the Capcom dashboard, with the Pupshow photo frame over it when idle. Settings (`KIOSK_DASHBOARD_URL`, `KIOSK_PHOTO_URL`, `KIOSK_PHOTO_IDLE`, `KIOSK_SCREEN_OFF_IDLE`) come from `/etc/default/loft-kiosk`, written by the-loft from its `host.conf`. greetd and `loft-kiosk-session` (which restarts `niri-session` on exit) also stay in the-loft. Deploy as `rodnik`: `sudo -iu rodnik`, clone, `./scripts/deploy.sh`, then `systemctl --user enable noctalia.service`.
+
+- **niri.** `local.kdl` sets `eDP-1` to scale 2 (2736x1824 at 12.3"), hides the cursor, and starts `loft-dashboard` and `loft-idle` with `spawn-sh-at-startup` so `~` expands. Firefox opens maximized under the bar and its `--kiosk` fullscreen request is refused (`open-fullscreen false`).
+- **kiosk.** `loft-dashboard` waits for any HTTP answer from the dashboard (a failed first load leaves Firefox on an error page with no retry; Home Assistant answers 400 until `trusted_proxies` is set), then runs Firefox in a restart loop. `loft-idle` is swayidle: after `KIOSK_PHOTO_IDLE` seconds `loft-photo-frame start` opens a second Firefox on Pupshow and fullscreens it by PID over the dashboard and bar; the next input stops it. It does nothing while Pupshow's `/health` fails. `KIOSK_SCREEN_OFF_IDLE` > 0 also powers the panel off. Both Firefox profiles live in `~/.local/share/loft-{dashboard,photos}-firefox` and share one `user.js` (the photos copy is a symlink to the dashboard one).
+
 ### work overlay
 
 - **workplace, metamate, claude-code-work.** Fuzzel launchers with their own icons. Workplace and the Metamate spaces open as Chrome `--app=` windows; the Metamate launchers bypass the PWA because its `focus-existing` launch handler ignores the target URL. Claude Code @ Work opens `~/work` in kitty and runs `claude`.
@@ -108,7 +122,7 @@ Lid close: `blanco` locks only. `work` locks and suspends via noctalia, and `nir
 
 ## Autologin
 
-Both machines are display-manager-less: LUKS passphrase, agetty autologin, fish, niri.
+`blanco` and `work` are display-manager-less: LUKS passphrase, agetty autologin, fish, niri. `lady-grey` uses greetd instead (the-loft).
 
 [`scripts/setup-autologin.sh`](scripts/setup-autologin.sh) is the system side. It templates [`system/getty-autologin/autologin.conf`](system/getty-autologin/autologin.conf) into `/etc/systemd/system/getty@tty1.service.d/` and disables any display manager. `bootstrap.sh` runs it on `blanco`; run it by hand on `work` to leave GDM (rollback: `sudo systemctl enable gdm`).
 

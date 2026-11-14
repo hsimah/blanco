@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -u
+# shellcheck source=/dev/null
+. /etc/default/loft-kiosk
+profile="${HOME}/.local/share/loft-dashboard-firefox"
+
+until curl -s -o /dev/null --max-time 5 "${KIOSK_DASHBOARD_URL%%#*}"; do
+  sleep 2
+done
+
+while true; do
+  firefox --kiosk --new-instance --profile "$profile" "$KIOSK_DASHBOARD_URL"
+  sleep 2
+done

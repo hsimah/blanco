@@ -11,7 +11,7 @@ for arg in "$@"; do
 Usage: deploy.sh [-n|--dry-run]
 
 Stow shared packages (dotfiles/config, dotfiles/local) plus this host's overlay
-(dotfiles/hosts/{work,blanco}, selected by hostname). Idempotent and
+(dotfiles/hosts/{work,blanco,lady-grey}, selected by hostname). Idempotent and
 non-destructive: existing symlinks are refreshed; real files that would conflict
 are reported (SKIP), never clobbered. Exits non-zero if any package was skipped.
 
@@ -32,10 +32,12 @@ DOTFILES="$REPO/dotfiles"
 # DOTFILES_HOST overrides the hostname (used by the tests).
 WORK_HOST="hblake-fedora-PF627G59"
 BLANCO_HOST="blanco"
+LADY_GREY_HOST="lady-grey"
 HOST="${DOTFILES_HOST:-$(hostname)}"
 case "$HOST" in
     "$WORK_HOST")   OVERLAY="work" ;;
     "$BLANCO_HOST") OVERLAY="blanco" ;;
+    "$LADY_GREY_HOST") OVERLAY="lady-grey" ;;
     *)              OVERLAY="" ;;
 esac
 

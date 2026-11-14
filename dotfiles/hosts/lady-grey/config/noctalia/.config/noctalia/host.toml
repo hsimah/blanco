@@ -1,0 +1,21 @@
+[idle.behavior.screen-off]
+enabled = false
+
+[idle.behavior.lock]
+enabled = false
+
+[idle.behavior.suspend]
+enabled = false
+
+[bar.main]
+start = ["workspaces", "clock", "active_window"]
+end = ["group:sysmon", "battery", "network", "control-center"]
+
+[[control_center.shortcuts]]
+type = "wifi"
+
+[[control_center.shortcuts]]
+type = "caffeine"
+
+[[control_center.shortcuts]]
+type = "notification"
