@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -u
+if (( $# != 2 )); then
+  echo "usage: loft-app <workspace> <url>" >&2
+  exit 2
+fi
+ws="$1"
+url="$2"
+profile="${HOME}/.local/share/loft-${ws}-firefox"
+
+mkdir -p "$profile"
+[[ -e "$profile/user.js" ]] || ln -s ../loft-dashboard-firefox/user.js "$profile/user.js"
+
+window_id() {
+  niri msg --json windows | jq -r --argjson pid "$1" \
+    'first(.[] | select(.pid == $pid) | .id) // empty'
+}
+
+covers_output() {
+  niri msg --json windows | jq -e --argjson id "$1" \
+    --argjson out "$(niri msg --json outputs | jq '[.[] | .logical | select(.)] | first')" \
+    'first(.[] | select(.id == $id) | .layout.tile_size) as $s
+     | $s != null and (($s[0] - $out.width) | fabs) < 1 and (($s[1] - $out.height) | fabs) < 1' \
+    > /dev/null
+}
+
+until curl -s -o /dev/null --max-time 5 "${url%%#*}"; do
+  sleep 2
+done
+
+while true; do
+  firefox --kiosk --new-instance --profile "$profile" "$url" > /dev/null 2>&1 &
+  pid=$!
+  id=""
+  for _ in $(seq 60); do
+    id="$(window_id "$pid")"
+    [[ -n "$id" ]] && break
+    sleep 0.5
+  done
+  if [[ -n "$id" ]]; then
+    niri msg action move-window-to-workspace --window-id "$id" --focus false "$ws"
+    fixes=0
+    for _ in $(seq 30); do
+      kill -0 "$pid" 2>/dev/null || break
+      if (( fixes < 3 )) && covers_output "$id"; then
+        niri msg action toggle-windowed-fullscreen --id "$id"
+        fixes=$((fixes + 1))
+      fi
+      sleep 1
+    done
+  fi
+  wait "$pid"
+  sleep 2
+done

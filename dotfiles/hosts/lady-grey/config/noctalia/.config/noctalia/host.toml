@@ -8,8 +8,24 @@ enabled = false
 enabled = false
 
 [bar.main]
+thickness = 51
 start = ["workspaces", "clock", "active_window"]
 end = ["group:sysmon", "battery", "network", "control-center"]
+
+[bar.side]
+position = "left"
+thickness = 102
+background_opacity = 0.7
+margin_ends = 0
+margin_edge = 0
+radius = 0
+capsule = true
+capsule_radius = 4
+capsule_padding = 10
+widget_spacing = 6
+start = ["ws-home", "ws-music", "ws-radarr", "ws-sonarr", "ws-lidarr", "side-gap", "terminal"]
+center = []
+end = ["launcher"]
 
 [[control_center.shortcuts]]
 type = "wifi"
@@ -19,3 +35,59 @@ type = "caffeine"
 
 [[control_center.shortcuts]]
 type = "notification"
+
+[widget.ws-home]
+type = "custom_button"
+glyph = "home"
+
+[widget.ws-home.actions]
+left = "exec niri msg action focus-workspace home"
+
+[widget.ws-music]
+type = "custom_button"
+glyph = "music"
+
+[widget.ws-music.actions]
+left = "exec niri msg action focus-workspace music"
+
+[widget.ws-radarr]
+type = "custom_button"
+glyph = "radar"
+
+[widget.ws-radarr.actions]
+left = "exec niri msg action focus-workspace radarr"
+
+[widget.ws-sonarr]
+type = "custom_button"
+glyph = "device-tv-old"
+
+[widget.ws-sonarr.actions]
+left = "exec niri msg action focus-workspace sonarr"
+
+[widget.ws-lidarr]
+type = "custom_button"
+glyph = "vinyl"
+
+[widget.ws-lidarr.actions]
+left = "exec niri msg action focus-workspace lidarr"
+
+[widget.side-gap]
+type = "spacer"
+length = 24
+
+[widget.terminal]
+type = "custom_button"
+glyph = "terminal-2"
+
+[widget.terminal.actions]
+left = "exec kitty"
+
+[widget.launcher]
+glyph = "rocket"
+
+[shell.launcher]
+app_grid = true
+
+[shell.panel]
+launcher_placement = "attached"
+open_near_click_launcher = true
