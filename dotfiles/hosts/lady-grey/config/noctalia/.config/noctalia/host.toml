@@ -1,5 +1,6 @@
 [idle.behavior.screen-off]
-enabled = false
+timeout = 600
+enabled = true
 
 [idle.behavior.lock]
 enabled = false

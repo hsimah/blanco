@@ -9,8 +9,4 @@ if (( ${KIOSK_PHOTO_IDLE:-0} > 0 )); then
   args+=(timeout "$KIOSK_PHOTO_IDLE" "$frame start"
          resume "$frame stop")
 fi
-if (( ${KIOSK_SCREEN_OFF_IDLE:-0} > 0 )); then
-  args+=(timeout "$KIOSK_SCREEN_OFF_IDLE" 'niri msg action power-off-monitors'
-         resume 'niri msg action power-on-monitors')
-fi
 exec swayidle "${args[@]}"
