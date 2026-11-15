@@ -23,7 +23,7 @@ capsule = true
 capsule_radius = 4
 capsule_padding = 10
 widget_spacing = 6
-start = ["ws-home", "ws-music", "ws-radarr", "ws-sonarr", "ws-lidarr", "side-gap", "terminal"]
+start = ["ws-ha", "ws-music", "ws-radarr", "ws-sonarr", "ws-lidarr", "side-gap", "ws-homepage", "terminal"]
 center = []
 end = ["launcher"]
 
@@ -36,12 +36,12 @@ type = "caffeine"
 [[control_center.shortcuts]]
 type = "notification"
 
-[widget.ws-home]
+[widget.ws-ha]
 type = "custom_button"
 glyph = "home"
 
-[widget.ws-home.actions]
-left = "exec niri msg action focus-workspace home"
+[widget.ws-ha.actions]
+left = "exec niri msg action focus-workspace ha"
 
 [widget.ws-music]
 type = "custom_button"
@@ -74,6 +74,13 @@ left = "exec niri msg action focus-workspace lidarr"
 [widget.side-gap]
 type = "spacer"
 length = 24
+
+[widget.ws-homepage]
+type = "custom_button"
+glyph = "layout-dashboard"
+
+[widget.ws-homepage.actions]
+left = "exec niri msg action focus-workspace homepage"
 
 [widget.terminal]
 type = "custom_button"

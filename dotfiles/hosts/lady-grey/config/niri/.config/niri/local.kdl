@@ -7,23 +7,25 @@ cursor {
     hide-after-inactive-ms 2000
 }
 
-workspace "home"
+workspace "ha"
 workspace "music"
 workspace "radarr"
 workspace "sonarr"
 workspace "lidarr"
+workspace "homepage"
 workspace "terminal"
 
 binds {
     XF86PowerOff { power-off-monitors; }
 }
 
-spawn-sh-at-startup "exec ~/.local/bin/loft-app home https://homepage.loft.hsimah.com/"
+spawn-sh-at-startup "exec ~/.local/bin/loft-app ha https://capcom.loft.hsimah.com/"
 spawn-sh-at-startup "exec ~/.local/bin/loft-idle"
 spawn-sh-at-startup "exec ~/.local/bin/loft-app music https://howlr.loft.hsimah.com/"
 spawn-sh-at-startup "exec ~/.local/bin/loft-app radarr https://radarr.loft.hsimah.com/"
 spawn-sh-at-startup "exec ~/.local/bin/loft-app sonarr https://sonarr.loft.hsimah.com/"
 spawn-sh-at-startup "exec ~/.local/bin/loft-app lidarr https://lidarr.loft.hsimah.com/"
+spawn-sh-at-startup "exec ~/.local/bin/loft-app homepage https://homepage.loft.hsimah.com/"
 
 window-rule {
     match app-id="firefox"
