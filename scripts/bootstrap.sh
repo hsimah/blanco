@@ -34,6 +34,7 @@ FLATPAKS=(
     com.plexamp.Plexamp
     io.github.ungoogled_software.ungoogled_chromium
     com.dec05eba.gpu_screen_recorder
+    net.openra.OpenRA
 )
 
 echo "==> Base packages"
