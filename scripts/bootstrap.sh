@@ -27,7 +27,7 @@ DNF_PKGS=(
     pipewire wireplumber pipewire-pulseaudio
     xdg-desktop-portal xdg-desktop-portal-gtk
     kitty fish fuzzel fastfetch nano vlc
-    ripgrep fd-find wl-clipboard cliphist cargo
+    ripgrep fd-find wl-clipboard cliphist cargo openssl-devel
     flatpak git stow jetbrains-mono-fonts
 )
 FLATPAKS=(
@@ -48,6 +48,13 @@ sudo dnf install -y noctalia slurp
 echo "==> yazi (via cargo, not COPR — crates.io is the trusted source)"
 if [[ ! -x "$HOME/.cargo/bin/yazi" ]]; then
     cargo install --locked yazi-fm yazi-cli
+else
+    echo "  already installed"
+fi
+
+echo "==> forgejo-cli (fj, via cargo)"
+if [[ ! -x "$HOME/.cargo/bin/fj" ]]; then
+    cargo install --locked forgejo-cli
 else
     echo "  already installed"
 fi

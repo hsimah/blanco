@@ -56,7 +56,7 @@ stow --dir=dotfiles/config --target=$HOME --adopt fish    # pull live edits into
 stow --dir=dotfiles/config --target=$HOME --delete fish   # remove symlinks
 ```
 
-On a fresh Fedora install, [`scripts/bootstrap.sh`](scripts/bootstrap.sh) runs first (it refuses on the work host and on lady-grey): packages, noctalia, yazi (built with `cargo`, since Fedora doesn't package it), flatpaks, tty1 autologin, `deploy.sh`, and git config.
+On a fresh Fedora install, [`scripts/bootstrap.sh`](scripts/bootstrap.sh) runs first (it refuses on the work host and on lady-grey): packages, noctalia, yazi and forgejo-cli (`fj`, for releases and PRs on the Forgejo remote) built with `cargo`, since Fedora doesn't package them, flatpaks, tty1 autologin, `deploy.sh`, and git config.
 
 To add a shared package, run `./scripts/add-package.sh <name>`, which moves `~/.config/<name>` into `dotfiles/config` and stows it. A machine-specific package goes in the host's overlay instead, and `deploy.sh` selects the overlay by hostname (`WORK_HOST`/`BLANCO_HOST`/`LADY_GREY_HOST`).
 
